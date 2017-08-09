@@ -8,6 +8,7 @@ export class EditorState {
     @observable workflow: Workflow;
     @observable currentStep?: WorkflowStep;
     @observable catalog: CatalogImage[];
+    createEditor: (script: string) => HTMLElement;
 
     @action setCatalog(catalog: CatalogImage[]) {
         this.catalog = catalog;

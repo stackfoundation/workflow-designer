@@ -35,13 +35,19 @@ export interface WorkFlowEditorIO {
     getWorkflow: () => IWorkflow;
 }
 
-export function bootstrap(element: Element, ide: boolean, workflow: IWorkflow): WorkFlowEditorIO {
+export function bootstrap(
+    element: Element, 
+    ide: boolean, 
+    workflow: IWorkflow, 
+    createEditor: (script: string) => HTMLElement): WorkFlowEditorIO {
+
     let state = new EditorState();
     new WorkflowService().getWorkflowImagesCatalog()
         .then(response => state.setCatalog(response));
 
     state.workflow = Workflow.apply(workflow) || new Workflow();
     state.ide = ide;
+    state.createEditor = createEditor;
     
     if (ide) {
         (window as any).ide = ide;
