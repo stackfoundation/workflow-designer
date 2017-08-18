@@ -1,4 +1,4 @@
-import { observable } from "mobx";
+import { observable, computed } from "mobx";
 import { IWorkflow, IWorkflowStepBase, IWorkflowStepSimple, IWorkflowStepSequential, IWorkflowStepParallel, IWorkflowStepCompound, StepType } from '../../../workflow';
 
 export interface WorkflowStepPos {
@@ -69,7 +69,36 @@ export class Workflow implements IWorkflow {
         return undefined;
     }
 
-    flattenedSteps(includeCompoundSteps: boolean = false) {
+    @computed
+    get flattenedStepsSimple () {
+        return this.getFlattenedSteps(false);
+    }
+
+    @computed
+    get flattenedStepsAll () {
+        return this.getFlattenedSteps(false);
+    }
+
+    stepsBefore (step: WorkflowStepBase) {
+        if (step) {
+            let previousSteps = [];
+            let steps = this.flattenedStepsSimple;
+
+            for (let currentStep of steps) {
+                if (currentStep !== step) {
+                    previousSteps.push(currentStep);
+                } else {
+                    break;
+                }
+            }
+
+            return previousSteps.map(currentStep => ({ label: currentStep.name, value: currentStep.name }));
+        }
+
+        return [];
+    }
+
+    private getFlattenedSteps(includeCompoundSteps: boolean = false) {
         return this.flattenSteps(this.steps, includeCompoundSteps);
     }
 
@@ -84,7 +113,7 @@ export class Workflow implements IWorkflow {
     }
 
     addStep () {
-        let steps = this.flattenedSteps(),
+        let steps = this.flattenedStepsAll,
             name = 'New step',
             nameCount = 1;
 

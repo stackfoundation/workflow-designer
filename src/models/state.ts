@@ -2,21 +2,24 @@ import { observable, action } from 'mobx';
 
 import {CatalogImage} from './catalog';
 import {Workflow, WorkflowStep, WorkflowStepSimple, ImageSource} from './workflow';
+import {CustomInputIO} from '../models/custom-input';
+
+export type TextEditorFactory = (el: HTMLElement, initialContent: string) => CustomInputIO<string>;
 
 export class EditorState {
     ide: boolean;
     @observable workflow: Workflow;
     @observable currentStep?: WorkflowStep;
     @observable catalog: CatalogImage[];
-    createEditor: (script: string) => HTMLElement;
+    textEditorFactory: TextEditorFactory;
 
     @action setCatalog(catalog: CatalogImage[]) {
         this.catalog = catalog;
     }
 
-    @action setSelectedImage(image: CatalogImage) {
-        (this.currentStep as WorkflowStepSimple).image = image.name;
-    }
+    // @action setSelectedImage(image: CatalogImage) {
+    //     (this.currentStep as WorkflowStepSimple).image = image.name;
+    // }
 
     @action selectInitialStep() {
         if (this.workflow && this.workflow.steps && this.workflow.steps.length > 0) {
@@ -40,9 +43,9 @@ export class EditorState {
         this.currentStep = this.workflow.changeStepType(this.currentStep, type);
     }
 
-    @action setImageSource(source: ImageSource) {
-        if (this.currentStep && (this.currentStep as WorkflowStepSimple).imageSource) {
-            (this.currentStep as WorkflowStepSimple).imageSource = source;
-        }
-    }
+    // @action setImageSource(source: ImageSource) {
+    //     if (this.currentStep && (this.currentStep as WorkflowStepSimple).imageSource) {
+    //         (this.currentStep as WorkflowStepSimple).imageSource = source;
+    //     }
+    // }
 }

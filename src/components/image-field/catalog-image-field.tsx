@@ -5,15 +5,14 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 
 import { globalEditorStyles, classes } from '../../style';
-import { EditorState } from '../../models/state';
 import { CatalogImage } from '../../models/catalog';
 import { WorkflowStepSimple, Workflow } from '../../models/workflow';
 
 import { CatalogSelect } from '../catalog-select';
 
 @observer
-export class CatalogImageField extends React.Component<{ state: EditorState, workflow: Workflow, step: WorkflowStepSimple }, {}> {
-    constructor(props: { state: EditorState, workflow: Workflow, step: WorkflowStepSimple }) {
+export class CatalogImageField extends React.Component<{ catalog: CatalogImage[], workflow: Workflow, step: WorkflowStepSimple }, {}> {
+    constructor(props: { catalog: CatalogImage[], workflow: Workflow, step: WorkflowStepSimple }) {
         super(props);
     }
 
@@ -21,8 +20,8 @@ export class CatalogImageField extends React.Component<{ state: EditorState, wor
     private get tags() {
         let currentStep = this.props.step as WorkflowStepSimple;
 
-        if (currentStep && currentStep.image && this.props.state.catalog) {
-            let image = this.props.state.catalog.find(image => image.name === currentStep.image);
+        if (currentStep && currentStep.image && this.props.catalog) {
+            let image = this.props.catalog.find(image => image.name === currentStep.image);
             if (image) {
                 return image.tags.map(tag => ({ label: tag, value: tag }));
             }
@@ -40,7 +39,7 @@ export class CatalogImageField extends React.Component<{ state: EditorState, wor
     }
 
     private onImageChange = (image: CatalogImage) => {
-        this.props.state.setSelectedImage(image);
+        this.props.step.image = image.name;
     }
 
     private onTagChange = (tag: string) => {
@@ -52,7 +51,7 @@ export class CatalogImageField extends React.Component<{ state: EditorState, wor
             <div className="pure-g">
                 <div className="pure-u-3-4">
                     <CatalogSelect 
-                        catalog={this.props.state.catalog} 
+                        catalog={this.props.catalog} 
                         value={this.props.step.image} 
                         onChange={this.onImageChange}>
                     </CatalogSelect>

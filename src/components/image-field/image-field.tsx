@@ -4,12 +4,13 @@ import { observer } from 'mobx-react';
 
 import { translate } from '../../util/translation-service';
 import { EditorState } from '../../models/state';
-import { ImageSource, WorkflowStepSimple } from '../../models/workflow';
+import { ImageSource, WorkflowStepSimple, Workflow } from '../../models/workflow';
 import { CatalogImageField } from './catalog-image-field';
 import { ManualImageField } from './manual-image-field';
 import { StepImageField } from './step-image-field';
 
 import { StyleSheet, globalEditorStyles, classes, themeColors } from '../../style';
+import { CatalogImage } from "../../models/catalog";
 
 const activeImageSource = {
     fontWeight: 'bold',
@@ -57,9 +58,11 @@ const styles = {
     }
 };
 
+interface ImageFieldProps { ide: boolean, catalog: CatalogImage[], workflow: Workflow, step: WorkflowStepSimple }
+
 @observer
-export class ImageField extends React.Component<{ state: EditorState, step: WorkflowStepSimple }, {}> {
-    constructor(props: { state: EditorState, step: WorkflowStepSimple }) {
+export class ImageField extends React.Component<ImageFieldProps, {}> {
+    constructor(props: ImageFieldProps) {
         super(props);
     }
 
@@ -68,7 +71,7 @@ export class ImageField extends React.Component<{ state: EditorState, step: Work
     }
 
     private setImageSource(source: ImageSource) {
-        this.props.state.setImageSource(source);
+        this.props.step.imageSource = source;
     }
 
     private sourceClass(source: ImageSource) {
@@ -76,7 +79,7 @@ export class ImageField extends React.Component<{ state: EditorState, step: Work
     }
 
     private sourceOption(source: ImageSource) {
-        return this.props.state.ide ?
+        return this.props.ide ?
             (<button className={this.sourceClass(source)} onClick={_ => this.setImageSource(source)}>
                 {translate('SOURCE_' + source.toUpperCase())}
             </button>) :
@@ -90,30 +93,30 @@ export class ImageField extends React.Component<{ state: EditorState, step: Work
     private selectedEditor() {
         switch (this.source) {
             case 'step':
-                return (<StepImageField step={this.props.step} workflow={this.props.state.workflow}></StepImageField>)
+                return (<StepImageField step={this.props.step} workflow={this.props.workflow}></StepImageField>)
             case 'manual':
                 return (<ManualImageField step={this.props.step}></ManualImageField>)
             default:
-                return (<CatalogImageField state={this.props.state} step={this.props.step} workflow={this.props.state.workflow}></CatalogImageField>)
+                return (<CatalogImageField catalog={this.props.catalog} step={this.props.step} workflow={this.props.workflow}></CatalogImageField>)
         }
     }
 
     public render() {
         return (
             <div>
-                {this.props.state.ide ?
+                {this.props.ide ?
                     (<div className="block padded">
                         <div className="btn-group">
                             {this.sourceOption('catalog')}
                             {this.sourceOption('manual')}
-                            {this.sourceOption('step')}
+                            {this.props.workflow.stepsBefore(this.props.step).length > 0 ? this.sourceOption('step') : null}
                         </div>
                     </div>) :
                     (<div className="pure-menu pure-menu-horizontal">
                         <ul className="pure-menu-list select-list">
                             {this.sourceOption('catalog')}
                             {this.sourceOption('manual')}
-                            {this.sourceOption('step')}
+                            {this.props.workflow.stepsBefore(this.props.step).length > 0 ? this.sourceOption('step') : null}
                         </ul>
                     </div>)}
                 {this.selectedEditor()}

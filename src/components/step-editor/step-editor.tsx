@@ -12,7 +12,7 @@ import {
     WorkflowStepSequential,
     WorkflowStepSimple,
 } from '../../models/workflow';
-import { EditorState } from '../../models/state';
+import { EditorState, TextEditorFactory } from '../../models/state';
 import { WorkflowService } from '../../services/workflow_service';
 import { StepTypeSelect } from '../step-type-select';
 import { SimpleStepEditor } from './simple-step-editor';
@@ -25,16 +25,25 @@ export interface WorkflowStepTypeChangeEvent {
     type: string;
 };
 
+interface StepEditorProps { 
+    state: EditorState, 
+    ide: boolean, 
+    step: WorkflowStep, 
+    workflow: Workflow, 
+    catalog: CatalogImage[], 
+    textEditorFactory: TextEditorFactory 
+}
+
 @observer
-export class StepEditor extends FormReactComponent<{ state: EditorState, step: WorkflowStep }, {}> {
+export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
     private nameField: Field;
 
-    constructor(props: { state: EditorState, step: WorkflowStep}) {
+    constructor(props: StepEditorProps) {
         super(props);
 
         this.nameField = this.createField('props.step.name', value => {
             let errors: string[] = [],
-                stepFoundPos = this.props.state.workflow.findStep(step => step.name === value);
+                stepFoundPos = this.props.workflow.findStep(step => step.name === value);
 
             if (!value || value.length === 0) {
                 errors.push('requiredField');
@@ -47,10 +56,6 @@ export class StepEditor extends FormReactComponent<{ state: EditorState, step: W
         });
     }
 
-    private get catalog() {
-        return this.props.state.catalog;
-    }
-
     public render() {
         return (
             <form className="pure-form pure-form-stacked">
@@ -58,7 +63,7 @@ export class StepEditor extends FormReactComponent<{ state: EditorState, step: W
                     <div className="pure-g">
                         <label className="pure-u-1-12 text-right">Step:</label>
                         <input type="text" 
-                            className="pure-u-11-12 pure-u-md-1-2" 
+                            className="pure-u-11-12 pure-u-md-1-2 native-key-bindings" 
                             name="name"
                             value={this.nameField.fieldVal || ''} onChange={this.onNameChange} />
                         <div className="pure-u-1 pure-u-md-5-12 step-type-input">
@@ -68,15 +73,17 @@ export class StepEditor extends FormReactComponent<{ state: EditorState, step: W
                         </div>
                     </div>
                     {this.props.step && this.props.step.getType() === WorkflowStepCompound.name ?
-                        (<div></div>) :
-                        (<SimpleStepEditor state={this.props.state} step={this.props.step}></SimpleStepEditor>)}
+                        null :
+                        (<SimpleStepEditor
+                            textEditorFactory={this.props.textEditorFactory} 
+                            workflow={this.props.workflow} 
+                            ide={this.props.ide} 
+                            catalog={this.props.catalog} 
+                            step={this.props.step}>
+                        </SimpleStepEditor>)}
                 </fieldset>
             </form >
         );
-    }
-
-    private onImageChange(image: CatalogImage) {
-
     }
 
     private onTypeChange = (type: string) => {

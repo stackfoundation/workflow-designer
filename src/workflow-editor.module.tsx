@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { observable, action, toJS } from 'mobx';
+import { observable, action, toJS, spy, reaction } from 'mobx';
 
 import { EditorState } from './models/state'
 import { Workflow, WorkflowStepSequential, WorkflowStepCompound } from './models/workflow'
@@ -9,6 +9,7 @@ import { WorkflowEditor } from './components/workflow-editor'
 
 import { WorkflowService } from './services/workflow_service'
 import { IWorkflow } from "../../workflow";
+import { CustomInputIO, CustomInputFactory } from "./models/custom-input";
 
 let step = new WorkflowStepSequential({ name: 'Test' });
 let step2 = new WorkflowStepSequential({ name: 'Test2' });
@@ -31,15 +32,53 @@ export function createTestWorkflow() {
     return workflow;
 }
 
-export interface WorkFlowEditorIO {
+export interface IWorkFlowEditorIO {
     getWorkflow: () => IWorkflow;
+    destroy: () => void;
+    onDirty: (callback: Function) => () => void;
+}
+
+export class WorkFlowEditorIO implements IWorkFlowEditorIO {
+    private onChangeSubs: Function[] = [];
+
+    constructor (private editorState: EditorState, private parentElement: Element) {
+
+
+        ReactDOM.render((
+            <WorkflowEditor state={this.editorState}></WorkflowEditor>
+        ), parentElement);
+
+        reaction(() => {
+            return toJS(this.editorState.workflow.steps);
+        }, workflow => { 
+            for (var i = 0; i < this.onChangeSubs.length; i++) {
+                this.onChangeSubs[i]();
+            }
+         })
+    }
+
+    public getWorkflow (): IWorkflow {
+        return toJS(this.editorState.workflow) as IWorkflow;
+    };
+
+    public onDirty (callback: Function) {
+        this.onChangeSubs.push (callback);
+
+        return () => {
+            this.onChangeSubs.splice(this.onChangeSubs.indexOf(callback), 1);
+        };
+    };
+
+    public destroy () {
+        ReactDOM.unmountComponentAtNode(this.parentElement);
+    }
 }
 
 export function bootstrap(
     element: Element, 
     ide: boolean, 
     workflow: IWorkflow, 
-    createEditor: (script: string) => HTMLElement): WorkFlowEditorIO {
+    textEditorFactory: CustomInputFactory<string>): IWorkFlowEditorIO {
 
     let state = new EditorState();
     new WorkflowService().getWorkflowImagesCatalog()
@@ -47,17 +86,11 @@ export function bootstrap(
 
     state.workflow = Workflow.apply(workflow) || new Workflow();
     state.ide = ide;
-    state.createEditor = createEditor;
+    state.textEditorFactory = textEditorFactory;
     
     if (ide) {
         (window as any).ide = ide;
     }
 
-    ReactDOM.render((
-        <WorkflowEditor state={state}></WorkflowEditor>
-    ), element);
-
-    return {
-        getWorkflow: () => toJS(state.workflow) as IWorkflow
-    };
+    return new WorkFlowEditorIO(state, element);
 }

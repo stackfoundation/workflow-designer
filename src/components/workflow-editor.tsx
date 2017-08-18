@@ -42,7 +42,14 @@ export class WorkflowEditor extends React.Component<{ state: EditorState }, {}> 
                     <StepList state={this.props.state}></StepList>
                 </div>
                 <div className={classes(styles.stepEditor)}>
-                    <StepEditor state={this.props.state} step={this.props.state.currentStep}></StepEditor>
+                    <StepEditor 
+                        state={this.props.state}
+                        ide={this.props.state.ide}
+                        textEditorFactory={this.props.state.textEditorFactory}
+                        catalog={this.props.state.catalog}
+                        workflow={this.props.state.workflow}
+                        step={this.props.state.currentStep}>
+                    </StepEditor>
                 </div>
             </div>
         );

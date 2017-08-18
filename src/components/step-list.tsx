@@ -155,11 +155,12 @@ export class StepList extends React.Component<{ state: EditorState }, {}> {
         }
         else {
             let siblingStep: WorkflowStep = sibling && (sibling as any).relatedStep,
-                parentStep: WorkflowStepCompound | Workflow = (target as any).parentStep,
-                targetIndex = siblingStep ? this.workflow.findStep(siblingStep).index : parentStep.steps.length;
+                parentStep: WorkflowStepCompound | Workflow = (target as any).parentStep;
+
             
-            this.workflow.moveStep(
-                (el as any).relatedStep, 
+            let targetIndex = siblingStep ? this.props.state.workflow.findStep(siblingStep, parentStep).index : parentStep.steps.length
+            this.props.state.workflow.moveStep(
+                (el as any).relatedStep,
                 targetIndex, 
                 parentStep);
         }
@@ -207,10 +208,19 @@ export class StepList extends React.Component<{ state: EditorState }, {}> {
         this.props.state.selectInitialStep();
     }
 
+    componentWillUnmount() {
+        this.drake.destroy();
+    }
+
     private stepClasses(step: WorkflowStep) {
-        return classes(styles.step) +
-            (this.currentStep === step ? ' ' + classes(styles.selected) : '') +
-            (step.getType() == WorkflowStepCompound.name ? ' ' + classes(styles.subList) : '');
+        try {
+            return classes(styles.step) +
+                (this.currentStep === step ? ' ' + classes(styles.selected) : '') +
+                (step.getType() == WorkflowStepCompound.name ? ' ' + classes(styles.subList) : '');
+        }
+        catch(e) {
+            throw(e);   
+        }
     }
 
     private stepTitle(parentList: WorkflowStep[], step: WorkflowStep, key: number) {
@@ -221,6 +231,13 @@ export class StepList extends React.Component<{ state: EditorState }, {}> {
             </span>);
     }
 
+    setStep = (el: HTMLLIElement, parent: any, step: any) => {
+        if (el) {
+            if (parent) {}
+            (el as any).relatedStep = step;
+        }
+    }
+
     private subSteps(parent: WorkflowStep | Workflow): JSX.Element {
         if (parent instanceof WorkflowStepCompound || parent instanceof Workflow) {
             return (
@@ -229,7 +246,7 @@ export class StepList extends React.Component<{ state: EditorState }, {}> {
                         <li 
                             className={this.stepClasses(step)} 
                             key={step.name} 
-                            ref={el => el && ((el as any).relatedStep = step)}
+                            ref={el => this.setStep(el, parent, step)}
                             onClick={e => this.selectStep(step, e)}>
                             {this.stepTitle(parent.steps, step, i)}
                             {parent instanceof Workflow && this.subSteps(step)}
@@ -244,7 +261,7 @@ export class StepList extends React.Component<{ state: EditorState }, {}> {
         return (
             <div>
                 <h3 className="title">Steps:</h3>
-                {this.subSteps(this.workflow)}
+                {this.subSteps(this.props.state.workflow)}
                 <div 
                     ref={(div) => { this.deleteDiv = div; }}
                     className={classes([
