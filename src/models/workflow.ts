@@ -1,5 +1,5 @@
 import { observable, computed } from "mobx";
-import { IWorkflow, IWorkflowStepBase, IWorkflowStepSimple, IWorkflowStepSequential, IWorkflowStepParallel, IWorkflowStepCompound, StepType } from '../../../workflow';
+import { IWorkflow, IWorkflowStepBase, IWorkflowStepSimple, IWorkflowStepCompound, StepType, StepRunType, isStepRunType } from '../../../workflow';
 
 export interface WorkflowStepPos {
     parent: Workflow | WorkflowStepCompound;
@@ -10,17 +10,14 @@ export class Workflow implements IWorkflow {
     @observable steps: WorkflowStep[] = [];
 
     changeStepType(step: WorkflowStep, newStepType: string): WorkflowStep {
-        let newStep: WorkflowStepSequential | WorkflowStepCompound | WorkflowStepParallel | undefined = undefined;
-        if (newStepType === WorkflowStepSequential.name) {
-            newStep = new WorkflowStepSequential({ name: '' });
+        let newStep: WorkflowStepSimple | WorkflowStepCompound | undefined = undefined;
+        if (newStepType === WorkflowStepSimple.name) {
+            newStep = new WorkflowStepSimple({ name: '' });
         } else if (newStepType === WorkflowStepCompound.name) {
             newStep = new WorkflowStepCompound({ name: '' });
-        } else if (newStepType === WorkflowStepParallel.name) {
-            newStep = new WorkflowStepParallel({ name: '' });
         }
 
-        if ((newStepType === WorkflowStepSequential.name || newStepType === WorkflowStepParallel.name) &&
-            (step.getType() === WorkflowStepSequential.name || step.getType() === WorkflowStepParallel.name)) {
+        if (newStepType === WorkflowStepSimple.name && step.getType() === WorkflowStepSimple.name) {
             Object.assign(newStep as WorkflowStepSimple, step as WorkflowStepSimple);
         }
 
@@ -39,14 +36,16 @@ export class Workflow implements IWorkflow {
         return newStep;
     }
 
-    deleteStep(step: WorkflowStepSequential | WorkflowStepCompound | WorkflowStepParallel, stepPos?: WorkflowStepPos, deleteChildren: boolean = false) {
+    deleteStep(step: WorkflowStepSimple | WorkflowStepCompound, stepPos?: WorkflowStepPos, deleteChildren: boolean = false) {
         stepPos = stepPos || this.findStep(step);
 
         if (stepPos) {
             stepPos.parent.steps.splice(stepPos.index, 1);
 
             if (step.getType() === WorkflowStepCompound.name && !deleteChildren) {
-                stepPos.parent.steps.splice(stepPos.index, 0, ...(step as WorkflowStepCompound).steps);
+                let steps = (step as WorkflowStepCompound).steps;
+                
+                stepPos.parent.steps.splice(stepPos.index, 0, ...(steps.map(a => a)));
             }
         }
     }
@@ -122,7 +121,7 @@ export class Workflow implements IWorkflow {
             name = 'New step (' + nameCount + ')';
         }
 
-        this.steps.push(new WorkflowStepSequential({name}));
+        this.steps.push(new WorkflowStepSimple({name}));
     }
 
     private flattenSteps(steps: WorkflowStep[], includeCompoundSteps: boolean = false) {
@@ -159,31 +158,27 @@ export class Workflow implements IWorkflow {
     static apply (source: IWorkflow): Workflow {
         return Object.assign(Object.create(Workflow.prototype), source, {
             steps: source.steps.map(step => {
-                if (step.type === 'sequential') return WorkflowStepSequential.apply(step);
-                if (step.type === 'parallel') return WorkflowStepParallel.apply(step);
-                if (step.type === 'compound') return WorkflowStepCompound.apply(step);
+                if (step.type === 'compound') return WorkflowStepCompound.apply(step  as IWorkflowStepCompound);
+                else return WorkflowStepSimple.apply(step as IWorkflowStepSimple);
             })
         });
     }
 }
 
-export type WorkflowStep = WorkflowStepSequential | WorkflowStepParallel | WorkflowStepCompound;
+export type WorkflowStep = WorkflowStepSimple | WorkflowStepCompound;
 export type ImageSource = 'catalog' | 'manual' | 'step';
 
 export abstract class WorkflowStepBase implements IWorkflowStepBase {
     @observable name: string = '';
-    readonly type: string;
+    readonly type: StepType;
 
     constructor(step: Partial<WorkflowStepBase>) {
         this.name = step.name;
     }
 
     getType() {
-        if (this instanceof WorkflowStepSequential) {
-            return WorkflowStepSequential.name;
-        }
-        else if (this instanceof WorkflowStepParallel) {
-            return WorkflowStepParallel.name;
+        if (this instanceof WorkflowStepSimple) {
+            return WorkflowStepSimple.name;
         }
         else if (this instanceof WorkflowStepCompound) {
             return WorkflowStepCompound.name;
@@ -201,45 +196,30 @@ export abstract class WorkflowStepBase implements IWorkflowStepBase {
 }
 
 export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowStepSimple {
+    readonly type: StepType = 'simple';
+
     constructor(step: Partial<WorkflowStepSimple>) {
         super(step);
     }
+
+    @observable runType: StepRunType = 'sequential';
 
     @observable imageSource?: ImageSource = 'catalog';
     @observable image?: string = '';
     @observable tag?: string = '';
     @observable script?: string = '';
+    @observable healthCheck?: string = '';
     @observable envVariables?: { name: string, value: string }[] = [];
     @observable ports?: string[] = [];
 
     static apply (source: IWorkflowStepSimple): WorkflowStepSimple {
-        return Object.assign(Object.create(WorkflowStepSimple.prototype), source);
-    }
-}
+        let step: WorkflowStepSimple = Object.assign(Object.create(WorkflowStepSimple.prototype), source, {type: 'simple'});
 
-export class WorkflowStepSequential extends WorkflowStepSimple implements IWorkflowStepSequential {
-    readonly type: StepType = 'sequential';
+        if (!isStepRunType(step.runType)) {
+            step.runType = 'sequential';
+        }
 
-    constructor(step: Partial<WorkflowStepSequential>) {
-        super(step);
-        Object.assign(this, step);
-    }
-
-    static apply (source: IWorkflowStepSequential): WorkflowStepSequential {
-        return Object.assign(Object.create(WorkflowStepSequential.prototype), source);
-    }
-}
-
-export class WorkflowStepParallel extends WorkflowStepSimple implements IWorkflowStepParallel {
-    readonly type: StepType = 'parallel';
-
-    constructor(step: Partial<WorkflowStepParallel>) {
-        super(step);
-        Object.assign(this, step);
-    }
-
-    static apply (source: IWorkflowStepParallel) {
-        return Object.assign(Object.create(WorkflowStepParallel.prototype), source);
+        return step;
     }
 }
 
@@ -255,17 +235,16 @@ export class WorkflowStepCompound extends WorkflowStepBase implements IWorkflowS
 
     static apply (source: IWorkflowStepCompound): WorkflowStepCompound {
         return Object.assign(Object.create(WorkflowStepCompound.prototype), source, {
+            type: 'compound',
             steps: source.steps.map(step => {
-                if (step.type === 'sequential') return WorkflowStepSequential.apply(step);
-                if (step.type === 'parallel') return WorkflowStepParallel.apply(step);
                 if (step.type === 'compound') return WorkflowStepCompound.apply(step);
+                else return WorkflowStepSimple.apply(step as WorkflowStepSimple);
             })
         });
     }
 }
 
 export const WorkflowTypes = [
-    WorkflowStepSequential.name,
-    WorkflowStepParallel.name,
+    WorkflowStepSimple.name,
     WorkflowStepCompound.name
 ];

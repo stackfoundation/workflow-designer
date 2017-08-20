@@ -4,7 +4,7 @@ import VirtualizedSelect from 'react-virtualized-select'
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 
-import { globalEditorStyles, classes } from '../../style';
+import { globalEditorStyles } from '../../style';
 import { CatalogImage } from '../../models/catalog';
 import { WorkflowStepSimple, Workflow } from '../../models/workflow';
 
@@ -58,7 +58,7 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
                 </div>
                 <div className="pure-u-1-4">
                     <VirtualizedSelect
-                        className={classes(globalEditorStyles.largeSelect)}
+                        className={globalEditorStyles.largeSelect}
                         clearable={false}
                         options={this.tags}
                         optionHeight={100}

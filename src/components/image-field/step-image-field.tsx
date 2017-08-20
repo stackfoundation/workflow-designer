@@ -4,7 +4,7 @@ import VirtualizedSelect from 'react-virtualized-select'
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 
-import { globalEditorStyles, classes } from '../../style';
+import { globalEditorStyles } from '../../style';
 import { EditorState } from '../../models/state';
 import { WorkflowStepSimple, Workflow } from "../../models/workflow";
 
@@ -23,7 +23,7 @@ export class StepImageField extends React.Component<{ workflow: Workflow, step: 
             <div className="pure-g">
                 <div className="pure-u-1">
                     <VirtualizedSelect
-                        className={classes(globalEditorStyles.largeSelect)}
+                        className={globalEditorStyles.largeSelect}
                         clearable={false}
                         options={this.props.workflow.stepsBefore(this.props.step)}
                         optionHeight={100}

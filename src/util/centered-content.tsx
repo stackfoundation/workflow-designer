@@ -1,10 +1,10 @@
 import * as React from 'react';
 
-import { StyleSheet, classes } from '../style';
+import injectSheet from 'react-jss';
 
-const stylesheet = StyleSheet.create({
+const styles = theme => ({
     container: {
-        ':before': {
+        '&:before': {
             content: "''",
             display: 'inline-block',
             height: '100%',
@@ -20,25 +20,34 @@ const stylesheet = StyleSheet.create({
 
 export interface ContentProperties extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     container?: boolean;
+    classes?: any;
 }
 
+interface ContentPropertiesIgnoreTheme extends ContentProperties {
+    sheet?: any;
+    theme?: any;
+}
+
+@injectSheet(styles)
 export class CenteredContent extends React.Component<ContentProperties, {}> {
     constructor(props: ContentProperties) {
         super(props);
     }
 
     public render() {
-        let { container, className, ...other } = this.props;
+        let { container, className, classes, sheet, theme, ...other } = this.props as ContentPropertiesIgnoreTheme;
+        classes = classes || {};
+
         if (container !== false) {
-            const containerClasses = classes(stylesheet.container);
+            const containerClasses = classes.container;
             return (
                 <div className={className ? className + ' ' + containerClasses : containerClasses} {...other}>
-                    <div className={classes(stylesheet.content)}>
+                    <div className={classes.content}>
                         {this.props.children}
                     </div>
                 </div>)
         } else {
-            const contentClasses = classes(stylesheet.content);
+            const contentClasses = classes.content;
             return (<div className={className ? className + ' ' + contentClasses : contentClasses} {...other}>
                 {this.props.children}
             </div>)

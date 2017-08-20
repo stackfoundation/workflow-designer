@@ -9,8 +9,10 @@ import { CatalogImageField } from './catalog-image-field';
 import { ManualImageField } from './manual-image-field';
 import { StepImageField } from './step-image-field';
 
-import { StyleSheet, globalEditorStyles, classes, themeColors } from '../../style';
+import { globalEditorStyles, themeColors } from '../../style';
 import { CatalogImage } from "../../models/catalog";
+
+import injectSheet from 'react-jss';
 
 const activeImageSource = {
     fontWeight: 'bold',
@@ -26,40 +28,52 @@ const activeSelectedImageSource = {
     background: 'none'
 };
 
-const stylesheet = StyleSheet.create({
-    imageSource: {
-        color: '#aaa',
-        fontWeight: 'bold',
-        borderBottom: 'solid 3px transparent',
-        ':hover': activeImageSource,
-        ':focus': {
-            background: 'none',
-            color: '#aaa',
-            fontWeight: 'bold',
-        }
-    },
-    selected: {
-        borderBottom: 'solid 3px ' + themeColors.darkerGreen,
-        color: themeColors.darkerGreen,
-        fontWeight: 'bold',
-        ':hover': activeSelectedImageSource,
-        ':focus': activeSelectedImageSource
+const styles = theme => {
+    if (theme.ide) {
+        return {
+            imageSource: {
+                composes: 'btn'
+            },
+            selected: {
+                composes: 'btn selected'
+            }
+        };
     }
-});
-
-const styles = {
-    imageSource: {
-        ide: ['btn'],
-        web: ['pure-menu-link', stylesheet.imageSource]
-    },
-    selected: {
-        ide: ['btn', 'selected'],
-        web: ['pure-menu-link', stylesheet.selected]
+    else {
+        return {
+            imageSource: {
+                composes: 'pure-menu-link',
+                color: '#aaa',
+                fontWeight: 'bold',
+                borderBottom: 'solid 3px transparent',
+                ':hover': activeImageSource,
+                ':focus': {
+                    background: 'none',
+                    color: '#aaa',
+                    fontWeight: 'bold',
+                }
+            },
+            selected: {
+                composes: 'pure-menu-link',
+                borderBottom: 'solid 3px ' + themeColors.darkerGreen,
+                color: themeColors.darkerGreen,
+                fontWeight: 'bold',
+                ':hover': activeSelectedImageSource,
+                ':focus': activeSelectedImageSource
+            }
+        };
     }
 };
 
-interface ImageFieldProps { ide: boolean, catalog: CatalogImage[], workflow: Workflow, step: WorkflowStepSimple }
+interface ImageFieldProps { 
+    ide: boolean, 
+    catalog: CatalogImage[], 
+    workflow: Workflow, 
+    step: WorkflowStepSimple,
+    classes?: any
+}
 
+@injectSheet(styles)
 @observer
 export class ImageField extends React.Component<ImageFieldProps, {}> {
     constructor(props: ImageFieldProps) {
@@ -75,7 +89,8 @@ export class ImageField extends React.Component<ImageFieldProps, {}> {
     }
 
     private sourceClass(source: ImageSource) {
-        return classes(this.source === source ? styles.selected : styles.imageSource);
+        let classes = this.props.classes || {};
+        return this.source === source ? classes.selected : classes.imageSource;
     }
 
     private sourceOption(source: ImageSource) {

@@ -4,33 +4,19 @@ import * as ReactDOM from 'react-dom';
 import { observable, action, toJS, spy, reaction } from 'mobx';
 
 import { EditorState } from './models/state'
-import { Workflow, WorkflowStepSequential, WorkflowStepCompound } from './models/workflow'
+import { Workflow, WorkflowStepSimple, WorkflowStepCompound } from './models/workflow'
 import { WorkflowEditor } from './components/workflow-editor'
 
 import { WorkflowService } from './services/workflow_service'
 import { IWorkflow } from "../../workflow";
 import { CustomInputIO, CustomInputFactory } from "./models/custom-input";
 
-let step = new WorkflowStepSequential({ name: 'Test' });
-let step2 = new WorkflowStepSequential({ name: 'Test2' });
+import {jss, JssProvider, ThemeProvider} from 'react-jss';
+import jssComposer from 'jss-compose';
+import jssNested from 'jss-nested';
 
-export function createTestWorkflow() {
-    let workflow = new Workflow();
-    workflow.steps = [
-        new WorkflowStepSequential({ name: 'one', image: 'telegraf', tag: '1.3.4' }),
-        new WorkflowStepCompound({
-            name: 'two',
-            steps: [
-                new WorkflowStepSequential({ name: 'two dot one' }),
-                new WorkflowStepSequential({ name: 'two dot two' }),
-            ]
-        }),
-        new WorkflowStepSequential({ name: 'three' }),
-        new WorkflowStepSequential({ name: 'four' })
-    ];
-
-    return workflow;
-}
+jss.use(jssComposer());
+jss.use(jssNested());
 
 export interface IWorkFlowEditorIO {
     getWorkflow: () => IWorkflow;
@@ -43,9 +29,16 @@ export class WorkFlowEditorIO implements IWorkFlowEditorIO {
 
     constructor (private editorState: EditorState, private parentElement: Element) {
 
+        let theme = {
+            ide: editorState.ide
+        };
 
         ReactDOM.render((
-            <WorkflowEditor state={this.editorState}></WorkflowEditor>
+            <JssProvider jss={jss}>
+            <ThemeProvider theme={theme}>
+                <WorkflowEditor state={this.editorState}></WorkflowEditor>
+            </ThemeProvider>
+            </JssProvider>
         ), parentElement);
 
         reaction(() => {

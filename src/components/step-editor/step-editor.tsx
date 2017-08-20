@@ -8,8 +8,6 @@ import {
     Workflow,
     WorkflowStep,
     WorkflowStepCompound,
-    WorkflowStepParallel,
-    WorkflowStepSequential,
     WorkflowStepSimple,
 } from '../../models/workflow';
 import { EditorState, TextEditorFactory } from '../../models/state';
@@ -68,7 +66,7 @@ export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
                             value={this.nameField.fieldVal || ''} onChange={this.onNameChange} />
                         <div className="pure-u-1 pure-u-md-5-12 step-type-input">
                             <StepTypeSelect
-                                type={(this.props.step && this.props.step.getType()) || WorkflowStepSequential.name}
+                                type={(this.props.step && this.props.step.getType()) || WorkflowStepSimple.name}
                                 onChange={this.onTypeChange}></StepTypeSelect>
                         </div>
                     </div>
@@ -79,7 +77,7 @@ export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
                             workflow={this.props.workflow} 
                             ide={this.props.ide} 
                             catalog={this.props.catalog} 
-                            step={this.props.step}>
+                            step={this.props.step as WorkflowStepSimple}>
                         </SimpleStepEditor>)}
                 </fieldset>
             </form >

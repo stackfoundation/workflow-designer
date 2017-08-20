@@ -6,10 +6,11 @@ import { observable, computed, action } from 'mobx';
 import { observer } from 'mobx-react';
 const Plus = require('react-icons/lib/go/plus');
 
-import { StyleSheet, classes, themeColors } from '../style';
+import { themeColors } from '../style';
 
-// import { TranslationService } from '../../../translations/translation-service';
-import { Workflow, WorkflowStep, WorkflowStepCompound, WorkflowStepParallel, WorkflowStepSequential } from '../models/workflow';
+import injectSheet from 'react-jss';
+
+import { Workflow, WorkflowStep, WorkflowStepCompound, WorkflowStepSimple } from '../models/workflow';
 import { EditorState } from '../models/state';
 
 declare global {
@@ -22,73 +23,70 @@ declare global {
 
 const stepListClass = 'step-list';
 
-const stylesheet = StyleSheet.create({
-    step: {
-        listStyle: 'none',
-        lineHeight: '2em',
-        fontSize: '16px',
-        color: '#000',
-        fontWeight: 'normal',
-        cursor: 'pointer'
-    },
-    selected: {
-        fontWeight: 'bold',
-        color: themeColors.darkerGreen
-    },
-    stepPrefix: {
-        fontWeight: 'bold'
-    },
-    deleteStep: {
-        display: 'block',
-        position: 'relative'
-    },
-    deleteStepDeleting: {
-        color: 'red'
-    },
-    deleteStepInner: {
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0
-    },
-    hidden: {
-        display: 'none'
-    }
-});
+const styles = theme => {
 
-const styles = {
-    stepList: {
-        ide: ['list-tree'],
-        all: stepListClass
-    },
-    subList: {
-        ide: 'list-nested-item'
-    },
-    step: {
-        ide: 'list-item',
-        web: stylesheet.step,
-        all: 'step'
-    },
-    selected: {
-        ide: 'selected',
-        web: stylesheet.selected
-    },
-    deleteStep: {
-        all: stylesheet.deleteStep
-    },
-    deleteStepDeleting: {
-        all: stylesheet.deleteStepDeleting
-    },
-    deleteStepInner: {
-        all: stylesheet.deleteStepInner
-    },
-    stepPrefix: stylesheet.stepPrefix,
-    hidden: stylesheet.hidden
+    let ide = {
+        step: {
+            composes: 'list-item step'
+        },
+        selected: {
+            composes: 'selected'
+        }
+    }
+    
+    let web = {
+        step: {
+            composes: 'step',
+            listStyle: 'none',
+            lineHeight: '2em',
+            fontSize: '16px',
+            color: '#000',
+            fontWeight: 'normal',
+            cursor: 'pointer'
+        },
+        selected: {
+            fontWeight: 'bold',
+            color: themeColors.darkerGreen
+        },
+    }
+
+    return {
+        stepList: {
+            composes: `${stepListClass} ${theme.ide ? 'list-tree' : ''}`
+        },
+        subList: {
+            composes: theme.ide ? 'list-nested-item' : ''
+        },
+        step: theme.ide ? ide.step : web.step,
+        selected: theme.ide ? ide.selected : web.selected,
+        deleteStep: {
+            display: 'block',
+            position: 'relative',
+
+            '& > div' : {
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0
+            },
+            
+            '&.deleting': {
+                color: 'red'
+            }
+        },
+        stepPrefix: {
+            fontWeight: 'bold'
+        },
+        hidden: {
+            display: 'none'
+        }
+    }
 };
 
+@injectSheet(styles)
 @observer
-export class StepList extends React.Component<{ state: EditorState }, {}> {
+export class StepList extends React.Component<{ state: EditorState, classes?:any }, {}> {
     private drake: Dragula.Drake;
     public state = {
         dragging: false,
@@ -96,7 +94,7 @@ export class StepList extends React.Component<{ state: EditorState }, {}> {
     };
     private deleteDiv: HTMLElement;
 
-    constructor(props: { state: EditorState }) {
+    constructor(props: { state: EditorState, classes?:any }) {
         super(props);
     }
 
@@ -121,13 +119,18 @@ export class StepList extends React.Component<{ state: EditorState }, {}> {
         if (index === 0) {
             return '';
         }
-        else if (parentList[index - 1].getType() === WorkflowStepSequential.name) {
-            // return this.translationService.translate('SEQUENTIAL_STEP_PREFIX');
-            return 'Then';
-        }
-        else if (parentList[index - 1].getType() === WorkflowStepParallel.name) {
-            // return this.translationService.translate('PARALLEL_STEP_PREFIX');
-            return 'And';
+        else if (parentList[index - 1].type === "simple") {
+            let step = parentList[index - 1] as WorkflowStepSimple;
+            
+            if (step.runType === 'sequential') {
+                return 'Then';
+            }
+            else if (step.runType === 'parallel') {
+                return 'And';
+            }
+            else if (step.runType === 'service') {
+                return 'After ready';
+            }
         }
         else if (parentList[index - 1].getType() === WorkflowStepCompound.name) {
             let compoundStep = parentList[index - 1] as WorkflowStepCompound;
@@ -213,10 +216,11 @@ export class StepList extends React.Component<{ state: EditorState }, {}> {
     }
 
     private stepClasses(step: WorkflowStep) {
+        let classes = this.props.classes || {};
         try {
-            return classes(styles.step) +
-                (this.currentStep === step ? ' ' + classes(styles.selected) : '') +
-                (step.getType() == WorkflowStepCompound.name ? ' ' + classes(styles.subList) : '');
+            return classes.step +
+                (this.currentStep === step ? ' ' + classes.selected : '') +
+                (step.getType() == WorkflowStepCompound.name ? ' ' + classes.subList : '');
         }
         catch(e) {
             throw(e);   
@@ -224,9 +228,10 @@ export class StepList extends React.Component<{ state: EditorState }, {}> {
     }
 
     private stepTitle(parentList: WorkflowStep[], step: WorkflowStep, key: number) {
+        let classes = this.props.classes || {};
         return (
             <span>
-                <span className={classes(styles.stepPrefix)}>{this.stepPrefix(parentList, key)}</span>
+                <span className={classes.stepPrefix}>{this.stepPrefix(parentList, key)}</span>
                 &nbsp;{step.name}
             </span>);
     }
@@ -239,9 +244,11 @@ export class StepList extends React.Component<{ state: EditorState }, {}> {
     }
 
     private subSteps(parent: WorkflowStep | Workflow): JSX.Element {
+        let classes = this.props.classes || {};
+
         if (parent instanceof WorkflowStepCompound || parent instanceof Workflow) {
             return (
-                <ul className={classes(styles.stepList)} ref={el => el && ((el as any).parentStep = parent)}>
+                <ul className={classes.stepList} ref={el => el && ((el as any).parentStep = parent)}>
                     {parent.steps.map((step, i) => (
                         <li 
                             className={this.stepClasses(step)} 
@@ -257,23 +264,25 @@ export class StepList extends React.Component<{ state: EditorState }, {}> {
         return null;
     }
 
-    private content() {
+    private content = () => {
+        const classes = this.props.classes || {};
+        
         return (
             <div>
                 <h3 className="title">Steps:</h3>
                 {this.subSteps(this.props.state.workflow)}
                 <div 
                     ref={(div) => { this.deleteDiv = div; }}
-                    className={classes([
-                        stepListClass,
-                        styles.deleteStep,
-                        (!this.state.dragging ? styles.hidden : ''),
-                        (this.state.deleting ? styles.deleteStepDeleting : '')]
-                    )}>
+                    className={[
+                        classes.stepList,
+                        classes.deleteStep,
+                        (!this.state.dragging ? classes.hidden : ''),
+                        (this.state.deleting ? 'deleting' : '')].join(' ')
+                    }>
                     <i className="glyphicon glyphicon-trash"></i> Delete...
-                    <div className={classes(styles.deleteStepInner)}></div>
+                    <div></div>
                 </div>
-                <div className={classes([(this.state.dragging ? styles.hidden : '')])}
+                <div className={this.state.dragging ? classes.hidden : ''}
                     onClick={this.addStep}>
                     <Plus /> Add Step...
                 </div>

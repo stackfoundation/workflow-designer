@@ -4,13 +4,19 @@ import VirtualizedSelect from 'react-virtualized-select'
 import { VirtualizedOptionRenderOptions } from 'react-virtualized-select'
 
 import { translate } from '../util/translation-service';
-import { StyleSheet, globalEditorStyles, classes, themeColors } from '../style';
+import { globalEditorStyles, themeColors } from '../style';
 import { CenteredContent } from '../util/centered-content';
 
 import { WorkflowTypes } from '../models/workflow';
 
-const stylesheet = StyleSheet.create({
+import injectSheet from 'react-jss';
+
+const styles = theme => ({
+    select: {
+        composes: `${globalEditorStyles.largeSelect} ${theme.ide ? 'button-background-color': ''}`,
+    },
     title: {
+        composes: theme.ide ? 'text-color': '',
         padding: 0,
         margin: 0,
         fontSize: '20px',
@@ -18,6 +24,7 @@ const stylesheet = StyleSheet.create({
         lineHeight: '24px'
     },
     description: {
+        composes: theme.ide ? 'text-color': '',
         padding: 0,
         margin: 0,
         fontSize: '14px',
@@ -35,71 +42,67 @@ const stylesheet = StyleSheet.create({
     }
 });
 
-const styles = {
-    select: {
-        ide: 'button-background-color',
-        all: [globalEditorStyles.largeSelect]
-    },
-    title: {
-        ide: 'text-color',
-        all: stylesheet.title
-    },
-    description: {
-        ide: 'text-color',
-        all: stylesheet.description
-    }
-}
-
 const typeOptions = WorkflowTypes.map(type => ({ value: type }));
 
-function valueRenderer(option: Option) {
-    return (
-        <CenteredContent container={false}>
-            <div className={classes(styles.title)}>
-                {translate('NAME_' + (option.value as string).toUpperCase())}
-                </div>
-            <div className={classes(styles.description)}>
-                {translate('DESCRIPTION_' + (option.value as string).toUpperCase())}
-                </div>
-        </CenteredContent>
-    );
+interface StepTypeSelectProps {
+    type: string;
+    onChange: (value: string) => void;
+    classes?: any
 }
 
-function optionRenderer(options: VirtualizedOptionRenderOptions<Option>) {
-    let option = options.option;
-    return (
-        <CenteredContent
-            className={options.focusedOption == option ?
-                classes([stylesheet.option, stylesheet.selected]) : classes(stylesheet.option)}
-            key={options.key}
-            onClick={() => options.selectValue(option)}
-            onMouseOver={() => options.focusOption(option)}
-            style={options.style}>
-            <div className={classes(styles.title)}>
-                {translate('NAME_' + (option.value as string).toUpperCase())}
-                </div>
-            <div className={classes(styles.description)}>
-                {translate('DESCRIPTION_' + (option.value as string).toUpperCase())}
-                </div>
-        </CenteredContent>
-    );
-}
-
-export class StepTypeSelect extends React.Component<{ type: string, onChange: (value: string) => void }, {}> {
-    constructor(props: { type: string, onChange: (value: string) => void }) {
+@injectSheet(styles)
+export class StepTypeSelect extends React.Component<StepTypeSelectProps, {}> {
+    constructor(props: StepTypeSelectProps) {
         super(props);
     }
 
+    private valueRenderer = (option: Option) => {
+        let classes = this.props.classes || {};
+
+        return (
+            <CenteredContent container={false}>
+                <div className={classes.title}>
+                    {translate('NAME_' + (option.value as string).toUpperCase())}
+                    </div>
+                <div className={classes.description}>
+                    {translate('DESCRIPTION_' + (option.value as string).toUpperCase())}
+                    </div>
+            </CenteredContent>
+        );
+    }
+
+    private optionRenderer = (options: VirtualizedOptionRenderOptions<Option>) => {
+        let option = options.option,
+            classes = this.props.classes || {};
+        return (
+            <CenteredContent
+                className={`${classes.option} ${options.focusedOption == option ? classes.selected : ''}`}
+                key={options.key}
+                onClick={() => options.selectValue(option)}
+                onMouseOver={() => options.focusOption(option)}
+                style={options.style}>
+                <div className={classes.title}>
+                    {translate('NAME_' + (option.value as string).toUpperCase())}
+                    </div>
+                <div className={classes.description}>
+                    {translate('DESCRIPTION_' + (option.value as string).toUpperCase())}
+                    </div>
+            </CenteredContent>
+        );
+    }
+
     public render() {
+        let classes = this.props.classes || {};
+
         return (
             <VirtualizedSelect
-                className={classes(styles.select)}
+                className={classes.select}
                 clearable={false}
                 options={typeOptions}
-                optionRenderer={optionRenderer}
+                optionRenderer={this.optionRenderer}
                 optionHeight={100}
                 maxHeight={400}
-                valueRenderer={valueRenderer}
+                valueRenderer={this.valueRenderer}
                 onChange={option => this.props.onChange((option as Option).value as string)}
                 value={this.props.type} />
         )

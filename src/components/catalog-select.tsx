@@ -5,15 +5,21 @@ import { observer } from 'mobx-react';
 import VirtualizedSelect from 'react-virtualized-select'
 import { VirtualizedOptionRenderOptions } from 'react-virtualized-select'
 
-import { globalEditorStyles, StyleSheet, classes, themeColors } from '../style';
+import { globalEditorStyles, themeColors } from '../style';
 import { CenteredContent } from '../util/centered-content';
 
 import { CatalogImage } from '../models/catalog';
 import { EditorState } from '../models/state';
 import { WorkflowStepSimple } from '../models/workflow';
+import injectSheet from 'react-jss';
 
-const stylesheet = StyleSheet.create({
+const jssStyles = theme => ({
+    
+    select: {
+        composes: `${globalEditorStyles.largeSelect} ${globalEditorStyles.imageSelect} ${theme.ide ? 'button-background-color' : ''}`
+    },
     title: {
+        composes: theme.ide ? 'text-color' : '',
         padding: 0,
         margin: 0,
         fontSize: '20px',
@@ -21,7 +27,8 @@ const stylesheet = StyleSheet.create({
         lineHeight: '24px'
     },
     description: {
-        padding: '0 20px 0 0',
+        composes: theme.ide ? 'text-color' : '',
+        padding: 0,
         margin: 0,
         fontSize: '14px',
         lineHeight: '16px'
@@ -38,33 +45,19 @@ const stylesheet = StyleSheet.create({
     },
     option: {
         cursor: 'pointer',
-        paddingLeft: '160px',
+        margin: 0,
+        padding: '0 20px',
         border: 'solid 3px transparent',
-        margin: 0
-    },
-    selected: {
-        border: 'solid 3px ' + themeColors.darkerGreen,
-        color: themeColors.darkerGreen,
+
+        '&.selected': {
+            border: 'solid 3px ' + themeColors.darkerGreen,
+
+            '& *': {
+                color: themeColors.darkerGreen,
+            }
+        }
     }
 });
-
-const styles = {
-    select: {
-        ide: 'button-background-color',
-        all: [globalEditorStyles.largeSelect, globalEditorStyles.imageSelect]
-    },
-    title: {
-        ide: 'text-color',
-        all: stylesheet.title
-    },
-    description: {
-        ide: 'text-color',
-        all: stylesheet.description
-    },
-    logo: stylesheet.logo,
-    option: stylesheet.option,
-    selected: stylesheet.selected
-};
 
 const catalogBase = 'https://s3-eu-west-1.amazonaws.com/dev.stack.foundation/catalog/';
 
@@ -80,42 +73,54 @@ class ImageOption implements select.Option {
     }
 }
 
-function valueRenderer(option: ImageOption) {
-    return (
-        <CenteredContent container={false}>
-            <div className={classes(styles.title)}>{option.image.title}</div>
-            <div className={classes(styles.description)}>{option.image.description}</div>
-            <div className={classes(styles.logo)} style={
-                { backgroundImage: 'url(' + catalogBase + option.image.name + '.png)' }
-            }>
-            </div>
-        </CenteredContent>
-    );
+interface CatalogSelectProps { 
+    onChange: (value: CatalogImage) => void, 
+    value: string, 
+    catalog: CatalogImage[]
+    classes?: any
 }
 
-function optionRenderer(options: VirtualizedOptionRenderOptions<ImageOption>) {
-    let option = options.option;
-    return (
-        <CenteredContent
-            className={options.focusedOption == option ? classes([styles.option, styles.selected]) : classes(styles.option)}
-            key={options.key}
-            onClick={() => options.selectValue(option)}
-            onMouseOver={() => options.focusOption(option)}
-            style={options.style}>
-            <div className={classes(styles.title)}>{option.image.title}</div>
-            <div className={classes(styles.description)}>{option.image.description}</div>
-            <div className={classes(styles.logo)} style={
-                { backgroundImage: 'url(' + catalogBase + option.image.name + '.png)' }
-            }>
-            </div>
-        </CenteredContent>
-    );
-}
-
+@injectSheet(jssStyles)
 @observer
-export class CatalogSelect extends React.Component<{ onChange: (value: CatalogImage) => void, value: string, catalog: CatalogImage[] }, {}> {
-    constructor(props: { value: string, onChange: (value: CatalogImage) => void, catalog: CatalogImage[] }) {
+export class CatalogSelect extends React.Component<CatalogSelectProps, {}> {
+    constructor(props: CatalogSelectProps) {
         super(props);
+    }
+
+    private valueRenderer = (option: ImageOption) => {
+        const classes = this.props.classes || {};
+
+        return (
+            <CenteredContent container={false}>
+                <div className={classes.title}>{option.image.title}</div>
+                <div className={classes.description}>{option.image.description}</div>
+                <div className={classes.logo} style={
+                    { backgroundImage: 'url(' + catalogBase + option.image.name + '.png)' }
+                }>
+                </div>
+            </CenteredContent>
+        );
+    }
+
+    private optionRenderer = (options: VirtualizedOptionRenderOptions<ImageOption>) => {
+        let option = options.option;
+        const classes = this.props.classes || {};
+
+        return (
+            <CenteredContent
+                className={options.focusedOption == option ? `${classes.option} ${classes.selected}` : classes.option}
+                key={options.key}
+                onClick={() => options.selectValue(option)}
+                onMouseOver={() => options.focusOption(option)}
+                style={options.style}>
+                <div className={classes.title}>{option.image.title}</div>
+                <div className={classes.description}>{option.image.description}</div>
+                <div className={classes.logo} style={
+                    { backgroundImage: 'url(' + catalogBase + option.image.name + '.png)' }
+                }>
+                </div>
+            </CenteredContent>
+        );
     }
 
     @computed private get options() {
@@ -131,15 +136,17 @@ export class CatalogSelect extends React.Component<{ onChange: (value: CatalogIm
     }
 
     public render() {
+        const classes = this.props.classes || {};
+
         return (
             <VirtualizedSelect
-                className={classes(styles.select)}
+                className={classes.select}
                 options={this.options}
-                optionRenderer={optionRenderer}
+                optionRenderer={this.optionRenderer}
                 optionHeight={100}
                 maxHeight={400}
                 clearable={false}
-                valueRenderer={valueRenderer}
+                valueRenderer={this.valueRenderer}
                 onChange={option => this.props.onChange((option as ImageOption).image)}
                 value={this.selectedOption} />
         )

@@ -11,5 +11,3 @@ export const globalEditorStyles = {
     largeSelect: 'select-large',
     imageSelect: 'select-image'
 };
-
-export { StyleSheet, classes } from './styling';
