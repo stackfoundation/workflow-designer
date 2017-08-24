@@ -12,7 +12,7 @@ import { StepImageField } from './step-image-field';
 import { globalEditorStyles, themeColors } from '../../style';
 import { CatalogImage } from "../../models/catalog";
 
-import injectSheet from 'react-jss';
+let injectSheet = require('react-jss').default;
 
 const activeImageSource = {
     fontWeight: 'bold',
@@ -28,7 +28,7 @@ const activeSelectedImageSource = {
     background: 'none'
 };
 
-const styles = theme => {
+const styles = (theme: any) => {
     if (theme.ide) {
         return {
             imageSource: {

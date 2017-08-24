@@ -16,11 +16,11 @@ import * as mobx from "mobx";
 import { observer } from "mobx-react";
 import { IWorkflow } from "../../../workflow";
 
-import injectSheet from 'react-jss';
+let injectSheet = require('react-jss').default;
 
-const styles = theme => ({
+const styles = (theme: any) => ({
     editor: {
-        composes: 'pure-g workflow-editor'
+        composes: `pure-g workflow-editor ${theme.ide ? 'base-ide-style' : 'base-web-style'}`
     },
     list: {
         composes: `pure-u-1-4 ${theme.ide ? 'block': ''}`

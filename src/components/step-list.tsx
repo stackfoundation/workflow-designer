@@ -8,7 +8,7 @@ const Plus = require('react-icons/lib/go/plus');
 
 import { themeColors } from '../style';
 
-import injectSheet from 'react-jss';
+let injectSheet = require('react-jss').default;
 
 import { Workflow, WorkflowStep, WorkflowStepCompound, WorkflowStepSimple } from '../models/workflow';
 import { EditorState } from '../models/state';
@@ -23,7 +23,7 @@ declare global {
 
 const stepListClass = 'step-list';
 
-const styles = theme => {
+const styles = (theme: any) => {
 
     let ide = {
         step: {

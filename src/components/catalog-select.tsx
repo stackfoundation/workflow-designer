@@ -11,12 +11,21 @@ import { CenteredContent } from '../util/centered-content';
 import { CatalogImage } from '../models/catalog';
 import { EditorState } from '../models/state';
 import { WorkflowStepSimple } from '../models/workflow';
-import injectSheet from 'react-jss';
 
-const jssStyles = theme => ({
+let injectSheet = require('react-jss').default;
+
+const jssStyles = (theme: any) => ({
     
     select: {
-        composes: `${globalEditorStyles.largeSelect} ${globalEditorStyles.imageSelect} ${theme.ide ? 'button-background-color' : ''}`
+        composes: `${globalEditorStyles.largeSelect} ${globalEditorStyles.imageSelect} ${theme.ide ? 'button-background-color' : ''}`,
+        
+        '& .Select-control .Select-value': {
+            paddingLeft: '160px'
+        },
+
+        '& .Select-menu-outer $option': {
+            paddingLeft: '160px'
+        }
     },
     title: {
         composes: theme.ide ? 'text-color' : '',
@@ -47,15 +56,12 @@ const jssStyles = theme => ({
         cursor: 'pointer',
         margin: 0,
         padding: '0 20px',
-        border: 'solid 3px transparent',
-
-        '&.selected': {
-            border: 'solid 3px ' + themeColors.darkerGreen,
-
-            '& *': {
-                color: themeColors.darkerGreen,
-            }
-        }
+    },
+    selected: {
+        composes: 'selected',
+    },
+    focused: {
+        composes: 'focused',
     }
 });
 
@@ -104,11 +110,13 @@ export class CatalogSelect extends React.Component<CatalogSelectProps, {}> {
 
     private optionRenderer = (options: VirtualizedOptionRenderOptions<ImageOption>) => {
         let option = options.option;
-        const classes = this.props.classes || {};
+        const classes = this.props.classes || {},
+            focused = options.focusedOption == option,
+            selected = options.valueArray.indexOf(option) > -1;
 
         return (
             <CenteredContent
-                className={options.focusedOption == option ? `${classes.option} ${classes.selected}` : classes.option}
+                className={`${classes.option} ${focused ? classes.focused : ''} ${selected ? classes.selected : ''}`}
                 key={options.key}
                 onClick={() => options.selectValue(option)}
                 onMouseOver={() => options.focusOption(option)}
@@ -143,6 +151,7 @@ export class CatalogSelect extends React.Component<CatalogSelectProps, {}> {
                 className={classes.select}
                 options={this.options}
                 optionRenderer={this.optionRenderer}
+                searchable={false}
                 optionHeight={100}
                 maxHeight={400}
                 clearable={false}

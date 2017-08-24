@@ -23,9 +23,9 @@ import { translate } from "../../util/translation-service";
 const atom = require('atom');
 import { globalEditorStyles, themeColors } from '../../style';
 
-import injectSheet from 'react-jss';
+let injectSheet = require('react-jss').default;
 
-const styles = theme => ({
+const styles = (theme: any) => ({
     select: {
         composes: `${globalEditorStyles.largeSelect} ${theme.ide ? 'button-background-color' : ''}`
     },
@@ -47,16 +47,13 @@ const styles = theme => ({
     option: {
         cursor: 'pointer',
         margin: 0,
-        padding: '0 20px',
-        border: 'solid 3px transparent',
-
-        '&.selected': {
-            border: 'solid 3px ' + themeColors.darkerGreen,
-
-            '& *': {
-                color: themeColors.darkerGreen,
-            }
-        }
+        padding: '0 20px'
+    },
+    selected: {
+        composes: 'selected',
+    },
+    focused: {
+        composes: 'focused',
     }
 });
 
@@ -134,11 +131,13 @@ export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}>
 
     private optionRenderer = (options: VirtualizedOptionRenderOptions<Option>) => {
         let option = options.option;
-        const classes = this.props.classes || {};
+        const classes = this.props.classes || {},
+            focused = options.focusedOption == option,
+            selected = options.valueArray.indexOf(option) > -1;
 
         return (
             <CenteredContent
-                className={`${classes.option} ${options.focusedOption == option ? 'selected' : ''}`}
+                className={`${classes.option} ${focused ? classes.focused : ''} ${selected ? classes.selected : ''}`}
                 key={options.key}
                 onClick={() => options.selectValue(option)}
                 onMouseOver={() => options.focusOption(option)}
@@ -166,6 +165,7 @@ export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}>
                         <VirtualizedSelect
                             className={classes.select}
                             clearable={false}
+                            searchable={false}
                             options={this.stepRunOptions}
                             optionRenderer={this.optionRenderer}
                             valueRenderer={this.valueRenderer}

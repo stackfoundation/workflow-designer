@@ -9,10 +9,25 @@ import { CatalogImage } from '../../models/catalog';
 import { WorkflowStepSimple, Workflow } from '../../models/workflow';
 
 import { CatalogSelect } from '../catalog-select';
+import { CenteredContent } from '../../util/centered-content';
 
+let injectSheet = require('react-jss').default;
+
+const jssStyles = (theme: any) => ({
+    title: {
+        composes: theme.ide ? 'text-color' : '',
+        padding: 0,
+        margin: 0,
+        fontSize: '20px',
+        fontWeight: 'bold',
+        lineHeight: '24px'
+    }
+});
+
+@injectSheet(jssStyles)
 @observer
-export class CatalogImageField extends React.Component<{ catalog: CatalogImage[], workflow: Workflow, step: WorkflowStepSimple }, {}> {
-    constructor(props: { catalog: CatalogImage[], workflow: Workflow, step: WorkflowStepSimple }) {
+export class CatalogImageField extends React.Component<{ catalog: CatalogImage[], workflow: Workflow, step: WorkflowStepSimple, classes?: any }, {}> {
+    constructor(props: { catalog: CatalogImage[], workflow: Workflow, step: WorkflowStepSimple, classes?: any }) {
         super(props);
     }
 
@@ -46,6 +61,14 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
         (this.props.step as WorkflowStepSimple).tag = tag;
     }
 
+    private valueRenderer = (option: Option) => {
+        return (
+            <CenteredContent container={false}>
+                <div className={this.props.classes.title}>{option.value}</div>
+            </CenteredContent>
+        );
+    }
+
     public render() {
         return (
             <div className="pure-g">
@@ -60,8 +83,10 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
                     <VirtualizedSelect
                         className={globalEditorStyles.largeSelect}
                         clearable={false}
+                        valueRenderer={this.valueRenderer}
+                        searchable={false}
                         options={this.tags}
-                        optionHeight={100}
+                        optionHeight={40}
                         maxHeight={400}
                         onChange={option => this.onTagChange((option as Option).value as string)}
                         value={this.tag} />

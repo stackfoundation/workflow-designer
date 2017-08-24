@@ -9,5 +9,6 @@ export const themeColors = {
 
 export const globalEditorStyles = {
     largeSelect: 'select-large',
+    mediumSelect: 'select-medium',
     imageSelect: 'select-image'
 };

@@ -25,6 +25,7 @@ export class StepImageField extends React.Component<{ workflow: Workflow, step: 
                     <VirtualizedSelect
                         className={globalEditorStyles.largeSelect}
                         clearable={false}
+                        searchable={false}
                         options={this.props.workflow.stepsBefore(this.props.step)}
                         optionHeight={100}
                         maxHeight={400}

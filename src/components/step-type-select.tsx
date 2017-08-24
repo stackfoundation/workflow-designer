@@ -9,11 +9,11 @@ import { CenteredContent } from '../util/centered-content';
 
 import { WorkflowTypes } from '../models/workflow';
 
-import injectSheet from 'react-jss';
+let injectSheet = require('react-jss').default;
 
-const styles = theme => ({
+const styles = (theme: any) => ({
     select: {
-        composes: `${globalEditorStyles.largeSelect} ${theme.ide ? 'button-background-color': ''}`,
+        composes: `${globalEditorStyles.mediumSelect} ${theme.ide ? 'button-background-color': ''}`,
     },
     title: {
         composes: theme.ide ? 'text-color': '',
@@ -33,12 +33,13 @@ const styles = theme => ({
     option: {
         cursor: 'pointer',
         margin: 0,
-        padding: '0 20px',
-        border: 'solid 3px transparent',
+        padding: '0 20px'
     },
     selected: {
-        border: 'solid 3px ' + themeColors.darkerGreen,
-        color: themeColors.darkerGreen,
+        composes: 'selected',
+    },
+    focused: {
+        composes: 'focused',
     }
 });
 
@@ -73,10 +74,12 @@ export class StepTypeSelect extends React.Component<StepTypeSelectProps, {}> {
 
     private optionRenderer = (options: VirtualizedOptionRenderOptions<Option>) => {
         let option = options.option,
-            classes = this.props.classes || {};
+            classes = this.props.classes || {},
+            focused = options.focusedOption == option,
+            selected = options.valueArray.indexOf(option) > -1;
         return (
             <CenteredContent
-                className={`${classes.option} ${options.focusedOption == option ? classes.selected : ''}`}
+                className={`${classes.option} ${focused ? classes.focused : ''} ${selected ? classes.selected : ''}`}
                 key={options.key}
                 onClick={() => options.selectValue(option)}
                 onMouseOver={() => options.focusOption(option)}
@@ -100,7 +103,8 @@ export class StepTypeSelect extends React.Component<StepTypeSelectProps, {}> {
                 clearable={false}
                 options={typeOptions}
                 optionRenderer={this.optionRenderer}
-                optionHeight={100}
+                searchable={false}
+                optionHeight={70}
                 maxHeight={400}
                 valueRenderer={this.valueRenderer}
                 onChange={option => this.props.onChange((option as Option).value as string)}

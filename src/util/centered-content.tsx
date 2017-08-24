@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import injectSheet from 'react-jss';
+let injectSheet = require('react-jss').default;
 
-const styles = theme => ({
+const styles = (theme: any) => ({
     container: {
         '&:before': {
             content: "''",
