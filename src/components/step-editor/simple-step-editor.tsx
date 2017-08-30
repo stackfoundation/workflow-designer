@@ -20,7 +20,7 @@ import { Option } from "react-select";
 import { CenteredContent } from "../../util/centered-content";
 import { translate } from "../../util/translation-service";
 
-const atom = require('atom');
+// const atom = require('atom');
 import { globalEditorStyles, themeColors } from '../../style';
 
 let injectSheet = require('react-jss').default;
