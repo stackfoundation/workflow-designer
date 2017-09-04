@@ -187,12 +187,12 @@ export abstract class WorkflowStepBase implements IWorkflowStepBase {
 export class TransientState {
     @observable healthCheckType?: HealthCheckType;
     @observable action?: ActionType;
-    @observable healthConfigured?: boolean;
-    @observable sourceOptions?: boolean;
-    @observable failureOptions?: boolean;
-    @observable environmentConfigured?: boolean;
-    @observable volumesConfigured?: boolean;
-    @observable portsConfigured?: boolean;
+    @observable healthConfigured: boolean;
+    @observable sourceOptions: boolean;
+    @observable failureOptions: boolean;
+    @observable environmentConfigured: boolean;
+    @observable volumesConfigured: boolean;
+    @observable portsConfigured: boolean;
 }
 
 export class Health implements IHealth {
@@ -216,7 +216,6 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
     @observable imageSource?: ImageSource = 'catalog';
     @observable transient?: TransientState = new TransientState();
     @observable image?: string = '';
-    @observable tag?: string = '';
     @observable dockerfile?: string = '';
     @observable target?: string = '';
     @observable generator?: string = '';

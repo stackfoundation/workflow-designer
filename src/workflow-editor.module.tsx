@@ -3,13 +3,12 @@ import * as ReactDOM from 'react-dom';
 
 import { observable, action, toJS, spy, reaction } from 'mobx';
 
-import { EditorState } from './models/state'
+import { EditorState, ScriptEditorFactory } from './models/state'
 import { Workflow, WorkflowStepSimple, WorkflowStepCompound } from './models/workflow'
 import { WorkflowEditor } from './components/workflow-editor'
 
 import { WorkflowService } from './services/workflow_service'
 import { IWorkflow } from "../../workflow";
-import { CustomInputIO, CustomInputFactory } from "./models/custom-input";
 
 let jss: any = require('react-jss').jss,
     JssProvider: any = require('react-jss').JssProvider,
@@ -73,7 +72,7 @@ export function bootstrap(
     element: Element, 
     ide: boolean, 
     workflow: IWorkflow, 
-    textEditorFactory: CustomInputFactory<string>): IWorkFlowEditorIO {
+    scriptEditorFactory: ScriptEditorFactory): IWorkFlowEditorIO {
 
     let state = new EditorState();
     new WorkflowService().getWorkflowImagesCatalog()
@@ -81,7 +80,7 @@ export function bootstrap(
 
     state.workflow = Workflow.apply(workflow) || new Workflow();
     state.ide = ide;
-    state.textEditorFactory = textEditorFactory;
+    state.scriptEditorFactory = scriptEditorFactory;
     
     if (ide) {
         (window as any).ide = ide;

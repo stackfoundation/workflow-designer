@@ -19,14 +19,18 @@ interface EnvironmentOptionsProps {
 
 class EditorState {
     constructor(
-        private environment: EnvironmentSource[],
+        private step: WorkflowStepSimple,
         private source: EnvironmentSource,
         public committed: boolean) {
     }
 
     commitIfNecessary() {
         if (!this.committed) {
-            this.environment.push(this.source);
+            if (!this.step.environment) {
+                this.step.environment = [];
+            }
+
+            this.step.environment.push(this.source);
             this.committed = true;
         }
     }
@@ -66,7 +70,7 @@ export class EnvironmentOptions extends React.Component<EnvironmentOptionsProps,
     }
 
     private sourceEditor(source: EnvironmentSource, key: number, committed: boolean) {
-        let state = new EditorState(this.environment, source, committed);
+        let state = new EditorState(this.props.step, source, committed);
         let editor = (<EnvironmentSourceEditor
             source={source}
             sourceType={state.committed ? (source.file ? 'file' : 'pair') : this.state.sourceType}
@@ -84,18 +88,22 @@ export class EnvironmentOptions extends React.Component<EnvironmentOptionsProps,
     private sourceEditors() {
         let editors = [];
 
-        for (let i = 0; i <= this.environment.length; i++) {
-            let source = undefined;
-            let committed = false;
+        if (this.environment) {
+            for (let i = 0; i <= this.environment.length; i++) {
+                let source = undefined;
+                let committed = false;
 
-            if (i < this.environment.length) {
-                source = this.environment[i];
-                committed = true;
-            } else {
-                source = new EditorEnvironmentSource();
-            }
+                if (i < this.environment.length) {
+                    source = this.environment[i];
+                    committed = true;
+                } else {
+                    source = new EditorEnvironmentSource();
+                }
 
-            editors.push(this.sourceEditor(source, i, committed));
+                editors.push(this.sourceEditor(source, i, committed));
+            } 
+        } else {
+            editors.push(this.sourceEditor(new EditorEnvironmentSource, 0, false));
         }
 
         return editors;

@@ -64,14 +64,23 @@ const styles = (theme: any) => ({
 export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
     constructor(props: AdvancedOptionsProps) {
         super(props);
+    }
 
+    @action
+    private initializeTransient() {
+        this.props.step.transient = new TransientState();
+    }
+
+    private get transient() {
         if (!this.props.step.transient) {
-            this.props.step.transient = new TransientState();
+            this.initializeTransient();
         }
+
+        return this.props.step.transient;
     }
 
     private get healthConfigured() {
-        if (this.props.step.transient.healthConfigured) {
+        if (this.transient.healthConfigured) {
             return true;
         }
 
@@ -87,7 +96,7 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
     }
 
     private get environmentConfigured() {
-        if (this.props.step.transient.environmentConfigured) {
+        if (this.transient.environmentConfigured) {
             return true;
         }
 
@@ -95,7 +104,7 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
     }
 
     private get volumesConfigured() {
-        if (this.props.step.transient.volumesConfigured) {
+        if (this.transient.volumesConfigured) {
             return true;
         }
 
@@ -103,7 +112,7 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
     }
 
     private get portsConfigured() {
-        if (this.props.step.transient.portsConfigured) {
+        if (this.transient.portsConfigured) {
             return true;
         }
 
@@ -111,7 +120,7 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
     }
 
     private get sourceOptions() {
-        if (this.props.step.transient.sourceOptions) {
+        if (this.transient.sourceOptions) {
             return true;
         }
 
@@ -121,7 +130,7 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
     }
 
     private get failureOptions() {
-        if (this.props.step.transient.failureOptions) {
+        if (this.transient.failureOptions) {
             return true;
         }
 
@@ -165,32 +174,32 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
 
         if (!this.healthConfigured) {
             items.push(this.button(translate('CONFIGURE_HEALTH'),
-                () => this.props.step.transient.healthConfigured = true));
+                () => this.transient.healthConfigured = true));
         }
 
         if (!this.environmentConfigured) {
             items.push(this.button(translate('CONFIGURE_ENVIRONMENT'),
-                () => this.props.step.transient.environmentConfigured = true));
+                () => this.transient.environmentConfigured = true));
         }
 
         if (!this.portsConfigured) {
             items.push(this.button(translate('CONFIGURE_PORTS'),
-                () => this.props.step.transient.portsConfigured = true));
+                () => this.transient.portsConfigured = true));
         }
 
         if (!this.volumesConfigured) {
             items.push(this.button(translate('CONFIGURE_VOLUMES'),
-                () => this.props.step.transient.volumesConfigured = true));
+                () => this.transient.volumesConfigured = true));
         }
 
         if (!this.sourceOptions) {
             items.push(this.button(translate('CONFIGURE_SOURCE'),
-                () => this.props.step.transient.sourceOptions = true));
+                () => this.transient.sourceOptions = true));
         }
 
         if (!this.failureOptions) {
             items.push(this.button(translate('CONFIGURE_FAILURE'),
-                () => this.props.step.transient.failureOptions = true));
+                () => this.transient.failureOptions = true));
         }
 
         return (<div className={classes.advanced}>

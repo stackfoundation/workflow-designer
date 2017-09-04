@@ -19,14 +19,18 @@ interface EnvironmentOptionsProps {
 
 class EditorState {
     constructor(
-        private volumes: Volume[],
+        private step: WorkflowStepSimple,
         private volume: Volume,
         public committed: boolean) {
     }
 
     commitIfNecessary() {
         if (!this.committed) {
-            this.volumes.push(this.volume);
+            if (!this.step.volumes) {
+                this.step.volumes = [];
+            }
+
+            this.step.volumes.push(this.volume);
             this.committed = true;
         }
     }
@@ -53,7 +57,7 @@ export class VolumeOptions extends React.Component<EnvironmentOptionsProps, {}> 
     }
 
     private volumeEditor(volume: Volume, key: number, committed: boolean) {
-        let state = new EditorState(this.volumes, volume, committed);
+        let state = new EditorState(this.props.step, volume, committed);
         let editor = (<VolumeEditor
             volume={volume}
             onChange={() => state.commitIfNecessary()} />);
@@ -69,18 +73,22 @@ export class VolumeOptions extends React.Component<EnvironmentOptionsProps, {}> 
     private sourceEditors() {
         let editors = [];
 
-        for (let i = 0; i <= this.volumes.length; i++) {
-            let volume = undefined;
-            let committed = false;
+        if (this.volumes) {
+            for (let i = 0; i <= this.volumes.length; i++) {
+                let volume = undefined;
+                let committed = false;
 
-            if (i < this.volumes.length) {
-                volume = this.volumes[i];
-                committed = true;
-            } else {
-                volume = new EditorVolume();
+                if (i < this.volumes.length) {
+                    volume = this.volumes[i];
+                    committed = true;
+                } else {
+                    volume = new EditorVolume();
+                }
+
+                editors.push(this.volumeEditor(volume, i, committed));
             }
-
-            editors.push(this.volumeEditor(volume, i, committed));
+        } else {
+            editors.push(this.volumeEditor(new EditorVolume(), 0, false));
         }
 
         return editors;

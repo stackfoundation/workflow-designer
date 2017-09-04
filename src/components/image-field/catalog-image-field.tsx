@@ -26,6 +26,16 @@ const jssStyles = (theme: any) => ({
     }
 });
 
+function extractImage(image: string) {
+    let tagSeparator = image.lastIndexOf(':');
+    if (tagSeparator > 0) {
+        return image.substring(0, tagSeparator);
+    }
+
+    return image;
+}
+
+
 @injectSheet(jssStyles)
 @observer
 export class CatalogImageField extends React.Component<{ catalog: CatalogImage[], workflow: Workflow, step: WorkflowStepSimple, classes?: any }, {}> {
@@ -38,7 +48,8 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
         let currentStep = this.props.step as WorkflowStepSimple;
 
         if (currentStep && currentStep.image && this.props.catalog) {
-            let image = this.props.catalog.find(image => image.name === currentStep.image);
+            let currentImage = extractImage(currentStep.image);
+            let image = this.props.catalog.find(image => image.name === currentImage);
             if (image) {
                 return image.tags.map(tag => ({ label: tag, value: tag }));
             }
@@ -47,9 +58,26 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
         return [];
     }
 
+    private get image() {
+        if (this.props.step && (this.props.step as WorkflowStepSimple).image) {
+            let image = (this.props.step as WorkflowStepSimple).image;
+            return extractImage(image);
+        }
+
+        return '';
+    }
+
     private get tag() {
-        if (this.props.step && (this.props.step as WorkflowStepSimple).tag) {
-            return (this.props.step as WorkflowStepSimple).tag;
+        if (this.props.step && (this.props.step as WorkflowStepSimple).image) {
+            let image = (this.props.step as WorkflowStepSimple).image;
+            let tag = 'latest';
+
+            let tagSeparator = image.lastIndexOf(':');
+            if (tagSeparator > 0) {
+                tag = image.substring(tagSeparator + 1);
+            }
+
+            return tag;
         }
 
         return '';
@@ -62,7 +90,17 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
 
     @action
     private onTagChange = (tag: string) => {
-        (this.props.step as WorkflowStepSimple).tag = tag;
+        let image = (this.props.step as WorkflowStepSimple).image;
+
+        if (image) {
+            image = extractImage(image);
+            
+            if (!tag || tag === '') {
+                tag = 'latest';
+            }
+
+            (this.props.step as WorkflowStepSimple).image = image + ':' + tag;
+        }
     }
 
     private valueRenderer = (option: Option) => {
@@ -86,7 +124,7 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
                 <div className="pure-u-3-4">
                     <CatalogSelect
                         catalog={this.props.catalog}
-                        value={this.props.step.image}
+                        value={this.image}
                         onChange={this.onImageChange}>
                     </CatalogSelect>
                 </div>

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { action } from 'mobx';
 import { observer } from 'mobx-react';
 
 import { EditorState } from '../../models/state';
@@ -10,7 +11,8 @@ export class ManualImageField extends React.Component<{ step: WorkflowStepSimple
         super(props);
     }
 
-    private onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    @action
+    private onImageChange(event: React.ChangeEvent<HTMLInputElement>) {
         this.props.step.image = event.target.value;
     }
 
@@ -23,7 +25,7 @@ export class ManualImageField extends React.Component<{ step: WorkflowStepSimple
                         className="pure-u-1 native-key-bindings" 
                         name="image" 
                         value={this.props.step.image || ''}
-                        onChange={this.onImageChange}/>
+                        onChange={e => this.onImageChange(e)}/>
                 </div>
             </div>);
     }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Option } from 'react-select';
 import VirtualizedSelect from 'react-virtualized-select'
-import { computed } from 'mobx';
+import { computed, action } from 'mobx';
 import { observer } from 'mobx-react';
 
 import { editorStyles } from '../../style';
@@ -14,6 +14,7 @@ export class StepImageField extends React.Component<{ workflow: Workflow, step: 
         super(props);
     }
 
+    @action
     private onImageChange(image: string) {
         this.props.step.image = image;
     }

@@ -115,7 +115,8 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
         return this.props.state.workflow;
     }
 
-    private addStep = () => {
+    @action
+    private addStep() {
         this.props.state.workflow.addStep();
     }
 
@@ -293,7 +294,7 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
                     <div></div>
                 </div>
                 <div className={this.state.dragging ? classes.hidden : ''}
-                    onClick={this.addStep}>
+                    onClick={_ => this.addStep()}>
                     <Plus /> Add Step...
                 </div>
             </div>)
