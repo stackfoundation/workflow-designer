@@ -4,20 +4,19 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import VirtualizedSelect from 'react-virtualized-select'
 import { VirtualizedOptionRenderOptions } from 'react-virtualized-select'
-
-import { globalEditorStyles, themeColors } from '../style';
-import { CenteredContent } from '../util/centered-content';
-
-import { CatalogImage } from '../models/catalog';
-import { EditorState } from '../models/state';
-import { WorkflowStepSimple } from '../models/workflow';
-
 let injectSheet = require('react-jss').default;
 
+import { translate } from '../../../../../translation-service';
+import { editorStyles, themeColors } from '../../style';
+import { CenteredContent } from '../../util/centered-content';
+import { CatalogImage } from '../../models/catalog';
+import { EditorState } from '../../models/state';
+import { WorkflowStepSimple } from '../../models/workflow';
+
+
 const jssStyles = (theme: any) => ({
-    
     select: {
-        composes: `${globalEditorStyles.largeSelect} ${globalEditorStyles.imageSelect} ${theme.ide ? 'button-background-color' : ''}`,
+        composes: `${editorStyles.largeSelect} ${editorStyles.imageSelect} ${theme.ide ? 'button-background-color' : ''}`,
         
         '& .Select-control .Select-value': {
             paddingLeft: '160px'
@@ -25,7 +24,9 @@ const jssStyles = (theme: any) => ({
 
         '& .Select-menu-outer $option': {
             paddingLeft: '160px'
-        }
+        },
+
+        marginRight: '5px'
     },
     title: {
         composes: theme.ide ? 'text-color' : '',
@@ -143,6 +144,12 @@ export class CatalogSelect extends React.Component<CatalogSelectProps, {}> {
         return this.options.find(el => el.image.name === this.props.value);
     }
 
+    private placeholder() {
+        return (<CenteredContent>
+            {translate('PLACEHOLDER_IMAGE')}
+        </CenteredContent>);
+    }
+
     public render() {
         const classes = this.props.classes || {};
 
@@ -153,6 +160,7 @@ export class CatalogSelect extends React.Component<CatalogSelectProps, {}> {
                 optionRenderer={this.optionRenderer}
                 searchable={false}
                 optionHeight={100}
+                placeholder={this.placeholder()}
                 maxHeight={400}
                 clearable={false}
                 valueRenderer={this.valueRenderer}

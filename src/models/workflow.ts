@@ -1,5 +1,6 @@
 import { observable, computed } from "mobx";
-import { IWorkflow, IWorkflowStepBase, IWorkflowStepSimple, IWorkflowStepCompound, StepType, StepRunType, isStepRunType } from '../../../workflow';
+import { IWorkflow, IWorkflowStepBase, IWorkflowStepSimple, IWorkflowStepCompound, IHealth, EnvironmentSource, StepType, Volume }
+    from '../../../workflow';
 
 export interface WorkflowStepPos {
     parent: Workflow | WorkflowStepCompound;
@@ -17,7 +18,7 @@ export class Workflow implements IWorkflow {
             newStep = new WorkflowStepCompound({ name: '' });
         }
 
-        if (newStepType === WorkflowStepSimple.name && step.getType() === WorkflowStepSimple.name) {
+        if (newStepType === WorkflowStepSimple.name && step.type !== 'compound') {
             Object.assign(newStep as WorkflowStepSimple, step as WorkflowStepSimple);
         }
 
@@ -42,9 +43,9 @@ export class Workflow implements IWorkflow {
         if (stepPos) {
             stepPos.parent.steps.splice(stepPos.index, 1);
 
-            if (step.getType() === WorkflowStepCompound.name && !deleteChildren) {
+            if (step.type === 'compound' && !deleteChildren) {
                 let steps = (step as WorkflowStepCompound).steps;
-                
+
                 stepPos.parent.steps.splice(stepPos.index, 0, ...(steps.map(a => a)));
             }
         }
@@ -69,16 +70,16 @@ export class Workflow implements IWorkflow {
     }
 
     @computed
-    get flattenedStepsSimple () {
+    get flattenedStepsSimple() {
         return this.getFlattenedSteps(false);
     }
 
     @computed
-    get flattenedStepsAll () {
+    get flattenedStepsAll() {
         return this.getFlattenedSteps(false);
     }
 
-    stepsBefore (step: WorkflowStepBase) {
+    stepsBefore(step: WorkflowStepBase) {
         if (step) {
             let previousSteps = [];
             let steps = this.flattenedStepsSimple;
@@ -101,17 +102,17 @@ export class Workflow implements IWorkflow {
         return this.flattenSteps(this.steps, includeCompoundSteps);
     }
 
-    moveStep (step: WorkflowStep, index: number, parent: WorkflowStepCompound | Workflow = this) {
+    moveStep(step: WorkflowStep, index: number, parent: WorkflowStepCompound | Workflow = this) {
         let targetEnd: WorkflowStep = index < parent.steps.length && parent.steps[index];
 
         this.deleteStep(step, null, true);
 
         let targetIndex = targetEnd ? parent.steps.indexOf(targetEnd) : parent.steps.length;
-        
+
         parent.steps.splice(targetIndex, 0, step);
     }
 
-    addStep () {
+    addStep() {
         let steps = this.flattenedStepsAll,
             name = 'New step',
             nameCount = 1;
@@ -121,7 +122,7 @@ export class Workflow implements IWorkflow {
             name = 'New step (' + nameCount + ')';
         }
 
-        this.steps.push(new WorkflowStepSimple({name}));
+        this.steps.push(new WorkflowStepSimple({ name }));
     }
 
     private flattenSteps(steps: WorkflowStep[], includeCompoundSteps: boolean = false) {
@@ -129,7 +130,7 @@ export class Workflow implements IWorkflow {
 
         for (var i = 0; i < steps.length; i++) {
             var step = steps[i];
-            if (step.getType() === WorkflowStepCompound.name) {
+            if (step.type === 'compound') {
                 if (includeCompoundSteps) {
                     flatSteps.push(step);
                 }
@@ -155,10 +156,10 @@ export class Workflow implements IWorkflow {
         }
     }
 
-    static apply (source: IWorkflow): Workflow {
+    static apply(source: IWorkflow): Workflow {
         return Object.assign(Object.create(Workflow.prototype), source, {
             steps: source.steps.map(step => {
-                if (step.type === 'compound') return WorkflowStepCompound.apply(step  as IWorkflowStepCompound);
+                if (step.type === 'compound') return WorkflowStepCompound.apply(step as IWorkflowStepCompound);
                 else return WorkflowStepSimple.apply(step as IWorkflowStepSimple);
             })
         });
@@ -167,6 +168,8 @@ export class Workflow implements IWorkflow {
 
 export type WorkflowStep = WorkflowStepSimple | WorkflowStepCompound;
 export type ImageSource = 'catalog' | 'manual' | 'step';
+export type ActionType = 'script' | 'call' | 'generated' | 'dockerfile';
+export type HealthCheckType = 'script' | 'tcp' | 'http';
 
 export abstract class WorkflowStepBase implements IWorkflowStepBase {
     @observable name: string = '';
@@ -176,49 +179,58 @@ export abstract class WorkflowStepBase implements IWorkflowStepBase {
         this.name = step.name;
     }
 
-    getType() {
-        if (this instanceof WorkflowStepSimple) {
-            return WorkflowStepSimple.name;
-        }
-        else if (this instanceof WorkflowStepCompound) {
-            return WorkflowStepCompound.name;
-        }
-        else if (this instanceof WorkflowStepBase) {
-            return WorkflowStepBase.name;
-        }
-
-        return '';
-    }
-
-    static apply (source: IWorkflowStepBase): WorkflowStepBase {
+    static apply(source: IWorkflowStepBase): WorkflowStepBase {
         return Object.assign(Object.create(WorkflowStepBase.prototype), source);
     }
 }
 
+export class TransientState {
+    @observable healthCheckType?: HealthCheckType;
+    @observable action?: ActionType;
+    @observable healthConfigured?: boolean;
+    @observable sourceOptions?: boolean;
+    @observable failureOptions?: boolean;
+    @observable environmentConfigured?: boolean;
+    @observable volumesConfigured?: boolean;
+    @observable portsConfigured?: boolean;
+}
+
+export class Health implements IHealth {
+    @observable script?: string;
+    @observable tcp?: string;
+    @observable http?: string;
+    @observable interval?: number;
+    @observable timeout?: number;
+    @observable retries?: number;
+    @observable grace?: number;
+}
+
 export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowStepSimple {
-    readonly type: StepType = 'simple';
+    type: StepType = 'sequential';
 
     constructor(step: Partial<WorkflowStepSimple>) {
         super(step);
+        Object.assign(this, step);
     }
 
-    @observable runType: StepRunType = 'sequential';
-
     @observable imageSource?: ImageSource = 'catalog';
+    @observable transient?: TransientState = new TransientState();
     @observable image?: string = '';
     @observable tag?: string = '';
+    @observable dockerfile?: string = '';
+    @observable target?: string = '';
+    @observable generator?: string = '';
     @observable script?: string = '';
-    @observable healthCheck?: string = '';
-    @observable envVariables?: { name: string, value: string }[] = [];
+    @observable omitSource?: boolean = false;
+    @observable ignoreFailure?: boolean = false;
+    @observable sourceLocation?: string = '';
+    @observable health?: IHealth = new Health();
+    @observable environment?: EnvironmentSource[] = [];
     @observable ports?: string[] = [];
+    @observable volumes?: Volume[] = [];
 
-    static apply (source: IWorkflowStepSimple): WorkflowStepSimple {
-        let step: WorkflowStepSimple = Object.assign(Object.create(WorkflowStepSimple.prototype), source, {type: 'simple'});
-
-        if (!isStepRunType(step.runType)) {
-            step.runType = 'sequential';
-        }
-
+    static apply(source: IWorkflowStepSimple): WorkflowStepSimple {
+        let step: WorkflowStepSimple = Object.assign(Object.create(WorkflowStepSimple.prototype), source);
         return step;
     }
 }
@@ -233,7 +245,7 @@ export class WorkflowStepCompound extends WorkflowStepBase implements IWorkflowS
 
     @observable steps?: WorkflowStep[] = [];
 
-    static apply (source: IWorkflowStepCompound): WorkflowStepCompound {
+    static apply(source: IWorkflowStepCompound): WorkflowStepCompound {
         return Object.assign(Object.create(WorkflowStepCompound.prototype), source, {
             type: 'compound',
             steps: source.steps.map(step => {
@@ -243,8 +255,3 @@ export class WorkflowStepCompound extends WorkflowStepBase implements IWorkflowS
         });
     }
 }
-
-export const WorkflowTypes = [
-    WorkflowStepSimple.name,
-    WorkflowStepCompound.name
-];

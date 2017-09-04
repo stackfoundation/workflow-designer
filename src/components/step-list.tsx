@@ -42,7 +42,7 @@ const styles = (theme: any) => {
             fontSize: '16px',
             color: '#000',
             fontWeight: 'normal',
-            cursor: 'pointer'
+            cursor: 'pointer',
         },
         selected: {
             fontWeight: 'bold',
@@ -52,7 +52,16 @@ const styles = (theme: any) => {
 
     return {
         stepList: {
-            composes: `${stepListClass} ${theme.ide ? 'list-tree' : ''}`
+            composes: `${stepListClass} ${theme.ide ? 'list-tree' : ''}`,
+            padding: '0 0 0 8px',
+            marginLeft: theme.ide ? '0' : '6px',
+            borderLeft: theme.ide ? 'none' : 'solid 17px #eee'
+        },
+        rootList: {
+            composes: '$stepList',
+            padding: '5px',
+            marginLeft: '0',
+            borderLeft: 'none'
         },
         subList: {
             composes: theme.ide ? 'list-nested-item' : ''
@@ -119,20 +128,20 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
         if (index === 0) {
             return '';
         }
-        else if (parentList[index - 1].type === "simple") {
+        else if (parentList[index - 1].type === "sequential") {
             let step = parentList[index - 1] as WorkflowStepSimple;
             
-            if (step.runType === 'sequential') {
+            if (step.type === 'sequential') {
                 return 'Then';
             }
-            else if (step.runType === 'parallel') {
+            else if (step.type === 'parallel') {
                 return 'And';
             }
-            else if (step.runType === 'service') {
+            else if (step.type === 'service') {
                 return 'After ready';
             }
         }
-        else if (parentList[index - 1].getType() === WorkflowStepCompound.name) {
+        else if (parentList[index - 1].type === 'compound') {
             let compoundStep = parentList[index - 1] as WorkflowStepCompound;
             if (compoundStep.steps.length > 0) {
                 return this.stepPrefix(compoundStep.steps, compoundStep.steps.length);
@@ -220,7 +229,7 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
         try {
             return classes.step +
                 (this.currentStep === step ? ' ' + classes.selected : '') +
-                (step.getType() == WorkflowStepCompound.name ? ' ' + classes.subList : '');
+                (step.type == 'compound' ? ' ' + classes.subList : '');
         }
         catch(e) {
             throw(e);   
@@ -246,9 +255,10 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
     private subSteps(parent: WorkflowStep | Workflow): JSX.Element {
         let classes = this.props.classes || {};
 
+        let rootList = parent instanceof Workflow;
         if (parent instanceof WorkflowStepCompound || parent instanceof Workflow) {
             return (
-                <ul className={classes.stepList} ref={el => el && ((el as any).parentStep = parent)}>
+                <ul className={rootList ? classes.rootList : classes.stepList} ref={el => el && ((el as any).parentStep = parent)}>
                     {parent.steps.map((step, i) => (
                         <li 
                             className={this.stepClasses(step)} 

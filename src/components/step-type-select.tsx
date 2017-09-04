@@ -3,17 +3,17 @@ import { Option } from 'react-select';
 import VirtualizedSelect from 'react-virtualized-select'
 import { VirtualizedOptionRenderOptions } from 'react-virtualized-select'
 
-import { translate } from '../util/translation-service';
-import { globalEditorStyles, themeColors } from '../style';
+import { translate } from '../../../../translation-service';
+import { editorStyles, themeColors } from '../style';
 import { CenteredContent } from '../util/centered-content';
 
-import { WorkflowTypes } from '../models/workflow';
+import { StepTypes } from '../../../workflow';
 
 let injectSheet = require('react-jss').default;
 
 const styles = (theme: any) => ({
     select: {
-        composes: `${globalEditorStyles.mediumSelect} ${theme.ide ? 'button-background-color': ''}`,
+        composes: `${editorStyles.mediumSelect} ${theme.ide ? 'button-background-color': ''}`,
     },
     title: {
         composes: theme.ide ? 'text-color': '',
@@ -43,7 +43,7 @@ const styles = (theme: any) => ({
     }
 });
 
-const typeOptions = WorkflowTypes.map(type => ({ value: type }));
+const typeOptions = StepTypes.map(type => ({ value: type }));
 
 interface StepTypeSelectProps {
     type: string;
@@ -63,10 +63,10 @@ export class StepTypeSelect extends React.Component<StepTypeSelectProps, {}> {
         return (
             <CenteredContent container={false}>
                 <div className={classes.title}>
-                    {translate('NAME_' + (option.value as string).toUpperCase())}
+                    {translate('TYPE_NAME_' + (option.value as string).toUpperCase())}
                     </div>
                 <div className={classes.description}>
-                    {translate('DESCRIPTION_' + (option.value as string).toUpperCase())}
+                    {translate('TYPE_DESCRIPTION_' + (option.value as string).toUpperCase())}
                     </div>
             </CenteredContent>
         );
@@ -85,13 +85,19 @@ export class StepTypeSelect extends React.Component<StepTypeSelectProps, {}> {
                 onMouseOver={() => options.focusOption(option)}
                 style={options.style}>
                 <div className={classes.title}>
-                    {translate('NAME_' + (option.value as string).toUpperCase())}
+                    {translate('TYPE_NAME_' + (option.value as string).toUpperCase())}
                     </div>
                 <div className={classes.description}>
-                    {translate('DESCRIPTION_' + (option.value as string).toUpperCase())}
+                    {translate('TYPE_DESCRIPTION_' + (option.value as string).toUpperCase())}
                     </div>
             </CenteredContent>
         );
+    }
+
+    private placeholder() {
+        return (<CenteredContent>
+            {translate('PLACEHOLDER_TYPE')}
+        </CenteredContent>);
     }
 
     public render() {
@@ -106,6 +112,7 @@ export class StepTypeSelect extends React.Component<StepTypeSelectProps, {}> {
                 searchable={false}
                 optionHeight={70}
                 maxHeight={400}
+                placeholder={this.placeholder()}
                 valueRenderer={this.valueRenderer}
                 onChange={option => this.props.onChange((option as Option).value as string)}
                 value={this.props.type} />

@@ -2,16 +2,15 @@ import { observable, action } from 'mobx';
 
 import {CatalogImage} from './catalog';
 import {Workflow, WorkflowStep, WorkflowStepSimple, ImageSource} from './workflow';
-import {CustomInputIO} from '../models/custom-input';
 
-export type TextEditorFactory = (el: HTMLElement, initialContent: string) => CustomInputIO<string>;
+export type ScriptEditorFactory = (step: WorkflowStepSimple) => JSX.Element;
 
 export class EditorState {
     ide: boolean;
     @observable workflow: Workflow;
     @observable currentStep?: WorkflowStep;
     @observable catalog: CatalogImage[];
-    textEditorFactory: TextEditorFactory;
+    scriptEditorFactory: ScriptEditorFactory;
 
     @action setCatalog(catalog: CatalogImage[]) {
         this.catalog = catalog;

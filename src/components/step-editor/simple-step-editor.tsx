@@ -1,187 +1,99 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { action } from 'mobx';
+import { observer } from 'mobx-react';
 
-// import { AceEditor } from '../ace-editor';
-
-import { ImageField } from '../image-field/image-field';
-import { WorkflowStep, WorkflowStepSimple, Workflow } from '../../models/workflow';
-
-// import 'brace/theme/monokai';
-// import 'brace/mode/sh';
-import VirtualizedSelect, { VirtualizedOptionRenderOptions } from 'react-virtualized-select';
-
-import { observer } from "mobx-react";
-import { CustomInputIO } from "../../models/custom-input";
-import { autorun } from "mobx";
+import { translate } from '../../../../../translation-service';
+import { EditorState } from '../../models/state';
+import { Options } from '../options';
+import { WorkflowStepSimple, Workflow, ActionType } from '../../models/workflow';
+import { ScriptStepEditor } from './script-step-editor';
+import { ScriptEditorFactory } from "../../models/state";
+import { editorStyles, themeColors } from '../../style';
 import { CatalogImage } from "../../models/catalog";
-import { TextEditorFactory } from "../../models/state";
-import { stepRunTypeValues, StepRunType } from "../../../../workflow";
-import { Option } from "react-select";
-import { CenteredContent } from "../../util/centered-content";
-import { translate } from "../../util/translation-service";
 
-// const atom = require('atom');
-import { globalEditorStyles, themeColors } from '../../style';
-
-let injectSheet = require('react-jss').default;
-
-const styles = (theme: any) => ({
-    select: {
-        composes: `${globalEditorStyles.largeSelect} ${theme.ide ? 'button-background-color' : ''}`
-    },
-    title: {
-        composes: theme.ide ? 'text-color' : '',
-        padding: 0,
-        margin: 0,
-        fontSize: '20px',
-        fontWeight: 'bold',
-        lineHeight: '24px'
-    },
-    description: {
-        composes: theme.ide ? 'text-color' : '',
-        padding: 0,
-        margin: 0,
-        fontSize: '14px',
-        lineHeight: '16px'
-    },
-    option: {
-        cursor: 'pointer',
-        margin: 0,
-        padding: '0 20px'
-    },
-    selected: {
-        composes: 'selected',
-    },
-    focused: {
-        composes: 'focused',
-    }
-});
-
-interface SimpleStepEditorProps { 
-    step: WorkflowStepSimple, 
-    workflow: Workflow, 
-    ide: boolean, 
-    catalog: CatalogImage[], 
-    textEditorFactory: TextEditorFactory,
+interface SimpleStepEditorProps {
+    step: WorkflowStepSimple,
+    workflow: Workflow,
+    ide: boolean,
+    catalog: CatalogImage[],
+    scriptEditorFactory: ScriptEditorFactory,
     classes?: any
 }
 
-@injectSheet(styles)
 @observer
 export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}> {
-    private editorDiv: HTMLElement;
-    private editorIO: CustomInputIO<string>;
-    private stepScriptDisposer: Function;
-
-    private stepRunOptions = Object.keys(stepRunTypeValues).map(key => ({value: key}));
-
     constructor(props: SimpleStepEditorProps) {
         super(props);
     }
 
-    private setEditorElement(el: HTMLElement) {
-        if (el) {
-            if (el !== this.editorDiv) {
-                this.editorDiv = el;
-
-                if (this.props.textEditorFactory) {
-                    this.editorIO = this.props.textEditorFactory(el, this.props.step.script);
-                    this.editorIO.onChange(() => {
-                        this.props.step.script = this.editorIO.getValue();
-                    })
-                    this.editorDiv.appendChild(this.editorIO.element);
-                }
-
-
-                this.stepScriptDisposer = autorun(() => {
-                    if (this.editorIO && this.editorIO.getValue() !== this.props.step.script) {
-                        this.editorIO.setValue(this.props.step.script);
-                    }
-                });
-            }
-            else {
-                this.editorIO.setValue(this.props.step.script);
+    private get action() {
+        if (this.props.step) {
+            if (this.props.step.transient && this.props.step.transient.action) {
+                return this.props.step.transient.action;
+            } else if (this.props.step.dockerfile) {
+                return 'dockerfile';
+            } else if (this.props.step.target) {
+                return 'call';
+            } else if (this.props.step.generator) {
+                return 'generated';
             }
         }
+
+        return 'script';
     }
 
-    componentWillUnmount () {
-        if (this.editorIO) {
-            this.editorIO.dispose();
+    @action
+    private setAction(action: ActionType) {
+        if (!this.props.step.transient) {
+            this.props.step.transient = {};
         }
-        if (this.stepScriptDisposer) {
-            this.stepScriptDisposer();
+
+        this.props.step.transient.action = action;
+    }
+
+    private actionOption(action: ActionType) {
+        return {
+            value: action,
+            display: (<span>{translate('RUN_' + action.toUpperCase())}</span>)
+        };
+    }
+
+    private options() {
+        return this.props.ide ?
+            [
+                this.actionOption('script'),
+                this.actionOption('call'),
+                this.actionOption('generated'),
+                this.actionOption('dockerfile')
+            ] :
+            [
+                this.actionOption('script'),
+                this.actionOption('dockerfile')
+            ]
+    }
+
+    private selectedEditor() {
+        if (this.action == 'script') {
+            return (<ScriptStepEditor
+                scriptEditorFactory={this.props.scriptEditorFactory}
+                workflow={this.props.workflow}
+                ide={this.props.ide}
+                catalog={this.props.catalog}
+                step={this.props.step as WorkflowStepSimple}>
+            </ScriptStepEditor>);
         }
-    }
-
-    private valueRenderer = (option: Option) => {
-        const classes = this.props.classes || {};
-
-        return (
-            <CenteredContent container={false}>
-                <div className={classes.title}>
-                    {translate('NAME_STEP_RUN_TYPE_' + (option.value as string).toUpperCase())}
-                    </div>
-                <div className={classes.description}>
-                    {translate('DESCRIPTION_STEP_RUN_TYPE_' + (option.value as string).toUpperCase())}
-                    </div>
-            </CenteredContent>
-        );
-    }
-
-    private optionRenderer = (options: VirtualizedOptionRenderOptions<Option>) => {
-        let option = options.option;
-        const classes = this.props.classes || {},
-            focused = options.focusedOption == option,
-            selected = options.valueArray.indexOf(option) > -1;
-
-        return (
-            <CenteredContent
-                className={`${classes.option} ${focused ? classes.focused : ''} ${selected ? classes.selected : ''}`}
-                key={options.key}
-                onClick={() => options.selectValue(option)}
-                onMouseOver={() => options.focusOption(option)}
-                style={options.style}>
-                <div className={classes.title}>
-                    {translate('NAME_STEP_RUN_TYPE_' + (option.value as string).toUpperCase())}
-                    </div>
-                <div className={classes.description}>
-                    {translate('DESCRIPTION_STEP_RUN_TYPE_' + (option.value as string).toUpperCase())}
-                    </div>
-            </CenteredContent>
-        );
     }
 
     public render() {
-        const classes = this.props.classes || {};
-
-        return this.props.step ? 
-            <div className="pure-u-1">
-                <div className="pure-g">
-                    <div className="pure-u-1-12">
-                        Run:
-                    </div>
-                    <div className="pure-u-11-12">
-                        <VirtualizedSelect
-                            className={classes.select}
-                            clearable={false}
-                            searchable={false}
-                            options={this.stepRunOptions}
-                            optionRenderer={this.optionRenderer}
-                            valueRenderer={this.valueRenderer}
-                            optionHeight={100}
-                            maxHeight={400}
-                            onChange={option => this.props.step.runType = ((option as Option).value as StepRunType)}
-                            value={this.props.step.runType || ''} />
-                    </div>
-                </div>
-                <ImageField 
-                    catalog={this.props.catalog}
-                    ide={this.props.ide} 
-                    workflow={this.props.workflow} 
-                    step={this.props.step}></ImageField>
-                <div ref={el => this.setEditorElement(el)}></div>
-            </div>
-        : null;
+        let classes = this.props.classes || {};
+        return (
+            <div>
+                <Options
+                    ide={this.props.ide}
+                    options={this.options()} 
+                    onChange={a => this.setAction(a.value)} 
+                    selected={this.action} />
+                {this.selectedEditor()}
+            </div>);
     }
 }

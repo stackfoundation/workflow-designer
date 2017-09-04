@@ -1,22 +1,18 @@
 import * as React from 'react';
-
-import '../util/translations.ts';
-
-import { EditorState } from '../models/state';
-import { StepEditor } from './step-editor/step-editor';
-import { StepList } from './step-list';
-
+let injectSheet = require('react-jss').default;
+import * as mobx from "mobx";
+import { observer } from "mobx-react";
 import 'purecss/build/pure.css';
 import 'purecss/build/grids-responsive.css';
 import 'react-select/dist/react-select.css';
 import 'react-virtualized/styles.css';
 import 'react-virtualized-select/styles.css';
 
-import * as mobx from "mobx";
-import { observer } from "mobx-react";
+import { EditorState } from '../models/state';
+import { StepEditor } from './step-editor/step-editor';
+import { StepList } from './step-list';
 import { IWorkflow } from "../../../workflow";
-
-let injectSheet = require('react-jss').default;
+import '../util/translations.ts';
 
 const styles = (theme: any) => ({
     editor: {
@@ -44,12 +40,13 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, classe
             <div className={classes.editor}>
                 <div className={classes.list}>
                     <StepList state={this.props.state}></StepList>
+                    {this.props.children}
                 </div>
                 <div className={classes.stepEditor}>
                     <StepEditor 
                         state={this.props.state}
                         ide={this.props.state.ide}
-                        textEditorFactory={this.props.state.textEditorFactory}
+                        scriptEditorFactory={this.props.state.scriptEditorFactory}
                         catalog={this.props.state.catalog}
                         workflow={this.props.state.workflow}
                         step={this.props.state.currentStep}>

@@ -1,19 +1,21 @@
 import * as React from 'react';
 import { Option } from 'react-select';
 import VirtualizedSelect from 'react-virtualized-select'
-import { computed } from 'mobx';
+import { computed, action } from 'mobx';
 import { observer } from 'mobx-react';
-
-import { globalEditorStyles } from '../../style';
-import { CatalogImage } from '../../models/catalog';
-import { WorkflowStepSimple, Workflow } from '../../models/workflow';
-
-import { CatalogSelect } from '../catalog-select';
-import { CenteredContent } from '../../util/centered-content';
-
 let injectSheet = require('react-jss').default;
 
+import { translate } from '../../../../../translation-service';
+import { editorStyles } from '../../style';
+import { CatalogImage } from '../../models/catalog';
+import { WorkflowStepSimple, Workflow } from '../../models/workflow';
+import { CatalogSelect } from './catalog-select';
+import { CenteredContent } from '../../util/centered-content';
+
 const jssStyles = (theme: any) => ({
+    editor: {
+        composes: 'pure-u-g'
+    },
     title: {
         composes: theme.ide ? 'text-color' : '',
         padding: 0,
@@ -53,10 +55,12 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
         return '';
     }
 
+    @action
     private onImageChange = (image: CatalogImage) => {
         this.props.step.image = image.name;
     }
 
+    @action
     private onTagChange = (tag: string) => {
         (this.props.step as WorkflowStepSimple).tag = tag;
     }
@@ -69,24 +73,32 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
         );
     }
 
+    private placeholder() {
+        return (<CenteredContent>
+            {translate('PLACEHOLDER_VERSION')}
+        </CenteredContent>);
+    }
+
     public render() {
+        let classes = this.props.classes || {};
         return (
-            <div className="pure-g">
+            <div className={classes.editor}>
                 <div className="pure-u-3-4">
-                    <CatalogSelect 
-                        catalog={this.props.catalog} 
-                        value={this.props.step.image} 
+                    <CatalogSelect
+                        catalog={this.props.catalog}
+                        value={this.props.step.image}
                         onChange={this.onImageChange}>
                     </CatalogSelect>
                 </div>
                 <div className="pure-u-1-4">
                     <VirtualizedSelect
-                        className={globalEditorStyles.largeSelect}
+                        className={editorStyles.largeSelect}
                         clearable={false}
                         valueRenderer={this.valueRenderer}
                         searchable={false}
                         options={this.tags}
                         optionHeight={40}
+                        placeholder={this.placeholder()}
                         maxHeight={400}
                         onChange={option => this.onTagChange((option as Option).value as string)}
                         value={this.tag} />

@@ -4,6 +4,7 @@ let injectSheet = require('react-jss').default;
 
 const styles = (theme: any) => ({
     container: {
+        height: '100%',
         '&:before': {
             content: "''",
             display: 'inline-block',
