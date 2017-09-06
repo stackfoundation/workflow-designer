@@ -13,7 +13,7 @@ import { StepImageField } from './step-image-field';
 import { editorStyles, themeColors } from '../../style';
 import { CatalogImage } from "../../models/catalog";
 
-let injectSheet = require('react-jss').default;
+let injectSheet = require('@tiagoroldao/react-jss').default;
 
 const styles = (theme: any) => ({
     editor: {

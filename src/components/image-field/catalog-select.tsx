@@ -4,7 +4,7 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import VirtualizedSelect from 'react-virtualized-select'
 import { VirtualizedOptionRenderOptions } from 'react-virtualized-select'
-let injectSheet = require('react-jss').default;
+let injectSheet = require('@tiagoroldao/react-jss').default;
 
 import { translate } from '../../../../../translation-service';
 import { editorStyles, themeColors } from '../../style';

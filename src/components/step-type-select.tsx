@@ -9,7 +9,7 @@ import { CenteredContent } from '../util/centered-content';
 
 import { StepTypes } from '../../../workflow';
 
-let injectSheet = require('react-jss').default;
+let injectSheet = require('@tiagoroldao/react-jss').default;
 
 const styles = (theme: any) => ({
     select: {

@@ -1,5 +1,5 @@
 import * as React from 'react';
-let injectSheet = require('react-jss').default;
+let injectSheet = require('@tiagoroldao/react-jss').default;
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import { Volume } from '../../../../workflow';

@@ -3,7 +3,7 @@ import { Option } from 'react-select';
 import VirtualizedSelect from 'react-virtualized-select'
 import { computed, action } from 'mobx';
 import { observer } from 'mobx-react';
-let injectSheet = require('react-jss').default;
+let injectSheet = require('@tiagoroldao/react-jss').default;
 
 import { translate } from '../../../../../translation-service';
 import { editorStyles } from '../../style';

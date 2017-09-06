@@ -8,7 +8,7 @@ const Plus = require('react-icons/lib/go/plus');
 
 import { themeColors } from '../style';
 
-let injectSheet = require('react-jss').default;
+let injectSheet = require('@tiagoroldao/react-jss').default;
 
 import { Workflow, WorkflowStep, WorkflowStepCompound, WorkflowStepSimple } from '../models/workflow';
 import { EditorState } from '../models/state';
