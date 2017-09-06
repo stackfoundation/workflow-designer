@@ -216,6 +216,7 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
     @observable imageSource?: ImageSource = 'catalog';
     @observable transient?: TransientState = new TransientState();
     @observable image?: string = '';
+    @observable tag?: string = '';
     @observable dockerfile?: string = '';
     @observable target?: string = '';
     @observable generator?: string = '';
