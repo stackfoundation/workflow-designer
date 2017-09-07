@@ -65,17 +65,22 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
     constructor(props: AdvancedOptionsProps) {
         super(props);
     }
+    
+    componentWillMount () {
+        this.setup(this.props);
+    }
 
-    @action
-    private initializeTransient() {
-        this.props.step.transient = new TransientState();
+    componentWillReceiveProps (nextProps: AdvancedOptionsProps) {
+        this.setup(nextProps);
+    }
+
+    private setup (props: AdvancedOptionsProps) {
+        if (!props.step.transient) {
+            props.step.transient = new TransientState();
+        }
     }
 
     private get transient() {
-        if (!this.props.step.transient) {
-            this.initializeTransient();
-        }
-
         return this.props.step.transient;
     }
 

@@ -8,7 +8,7 @@ const Remove = require('react-icons/lib/fa/times-circle');
 
 import { editorStyles } from '../../style';
 import { Options } from '../options';
-import { WorkflowStepSimple, HealthCheckType } from '../../models/workflow';
+import { WorkflowStepSimple, HealthCheckType, Health } from '../../models/workflow';
 import { CenteredContent } from '../../util/centered-content'
 import { translate } from '../../../../../translation-service';
 import { Creatable, Option, OptionValues } from 'react-select';
@@ -39,6 +39,20 @@ const styles = (theme: any) => ({
 export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
     constructor(props: HealthOptionsProps) {
         super(props);
+    }
+    
+    componentWillMount () {
+        this.setup(this.props);
+    }
+
+    componentWillReceiveProps (nextProps: HealthOptionsProps) {
+        this.setup(nextProps);
+    }
+
+    private setup (props: HealthOptionsProps) {
+        if (!props.step.health) {
+            props.step.health = new Health();
+        };
     }
 
     private get health() {
