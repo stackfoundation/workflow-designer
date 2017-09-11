@@ -19,7 +19,7 @@ const styles = (theme: any) => ({
         paddingRight: '5px'
     },
     input: {
-        composes: 'pure-input-1 code input-text native-key-bindings'
+        composes: 'pure-input-1 code input-text'
     }
 });
 
@@ -64,6 +64,7 @@ export class VolumeEditor extends React.Component<VolumeEditorProps> {
                 </label>
                 <div className="pure-u-1-3">
                     <input className={classes.input}
+                        
                         type="text"
                         value={this.props.volume.mountPath}
                         onChange={e => this.setMountPath(e.target.value)} />
@@ -75,6 +76,7 @@ export class VolumeEditor extends React.Component<VolumeEditorProps> {
                 </label>
                 <div className="pure-u-1-3">
                     <input className={classes.input}
+                        
                         type="text"
                         value={this.props.volume.hostPath}
                         onChange={e => this.setHostPath(e.target.value)} />

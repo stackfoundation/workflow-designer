@@ -88,7 +88,7 @@ export class EnvironmentOptions extends React.Component<EnvironmentOptionsProps,
             onChange={() => state.commitIfNecessary()} />);
 
         return (<div className="pure-g" key={key}>
-            <div className="pure-u-5-6">{editor}</div>
+            <div className="pure-u-5-6 block">{editor}</div>
             <div className={this.props.classes.optionSettings}>
                 {committed && <div onClick={_ => this.remove(source)}><Remove /></div>}
                 {!committed && this.sourceTypeEditor()}

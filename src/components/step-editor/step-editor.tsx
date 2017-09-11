@@ -41,7 +41,7 @@ const styles = (theme: any) => ({
         composes: theme.ide ? '' : 'pure-form pure-form-stacked',
     },
     stepNameInput: {
-        composes: 'pure-u-1 input-text native-key-bindings',
+        composes: 'pure-u-1 input-text',
         height: '100%',
         margin: '0 !important',
         'border-right': 'none',
@@ -92,6 +92,7 @@ export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
                         <div className="pure-u-11-12 pure-u-md-1-2">
                             <input type="text"
                                 className={this.props.classes.stepNameInput}
+                                
                                 name="name"
                                 value={this.nameField.fieldVal || ''} onChange={e => this.onNameChange(e)} />
                         </div>

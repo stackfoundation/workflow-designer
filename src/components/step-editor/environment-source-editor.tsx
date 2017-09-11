@@ -60,7 +60,7 @@ export class EnvironmentSourceEditor extends React.Component<SourceEditorProps> 
     public render() {
         let classes = this.props.classes || {};
         return this.props.sourceType === 'pair' ?
-            (<div className="pure-g block">
+            (<div className="pure-g">
                 <label className={classes.labelContainer}>
                     <CenteredContent>
                         <span className={classes.label}>{translate('LABEL_NAME')}</span>
@@ -68,6 +68,7 @@ export class EnvironmentSourceEditor extends React.Component<SourceEditorProps> 
                 </label>
                 <div className="pure-u-3-8">
                     <input className={classes.input}
+                        
                         type="text"
                         value={this.props.source.name}
                         onChange={e => this.setName(e.target.value)} />
@@ -79,13 +80,14 @@ export class EnvironmentSourceEditor extends React.Component<SourceEditorProps> 
                 </label>
                 <div className="pure-u-3-8">
                     <input className={classes.input}
+                        
                         type="text"
                         value={this.props.source.value}
                         onChange={e => this.setValue(e.target.value)} />
                 </div>
             </div>) :
             (this.props.sourceType === 'file' &&
-                <div className="pure-g block">
+                <div className="pure-g">
                     <label className={classes.labelContainer}>
                         <CenteredContent>
                             <span className={classes.label}>{translate('LABEL_FILE')}</span>
@@ -93,6 +95,7 @@ export class EnvironmentSourceEditor extends React.Component<SourceEditorProps> 
                     </label>
                     <div className="pure-u-7-8">
                         <input className={classes.input}
+                            
                             type="text"
                             value={this.props.source.file}
                             onChange={e => this.setFile(e.target.value)} />

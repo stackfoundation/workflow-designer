@@ -80,7 +80,8 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
                 </CenteredContent>
             </label>
             <div className="pure-u-5-6">
-                <input className="pure-input-1 input-text native-key-bindings"
+                <input className="pure-input-1 input-text"
+                    
                     type="text"
                     value={this.health.script || ""}
                     onChange={e => this.setHealthCheckProperty(
@@ -98,7 +99,8 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
                 </CenteredContent>
             </label>
             <div className={checkType === "tcp" ? "pure-u-5-6" : "pure-u-1-3"}>
-                <input className="pure-input-1 input-text native-key-bindings"
+                <input className="pure-input-1 input-text"
+                    
                     type="text"
                     value={this.health.port || ""}
                     onChange={e => this.setHealthCheckProperty(
@@ -112,7 +114,8 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
                 </label>)}
             {checkType !== "tcp" &&
                 (<div className="pure-u-1-3">
-                    <input className="pure-input-1 input-text native-key-bindings"
+                    <input className="pure-input-1 input-text"
+                    
                     type="text"
                     value={this.health.path}
                     onChange={e => this.setHealthCheckProperty(
@@ -159,6 +162,7 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
                     <input
                         type="text"
                         className="pure-input-1 input-text"
+                        
                         value={(this.health as any)[property] || ""}
                         onChange={e => this.setHealthCheckProperty(
                             () => (this.health as any)[property] = parseInt(e.target.value))} />

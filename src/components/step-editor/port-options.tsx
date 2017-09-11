@@ -54,9 +54,7 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
         this.ports.forEach(port => portsArray.push({ label: port, value: port }));
 
         return (<div>
-            <input type="text" className="native-key-bindings" onKeyDown={e => this.log(e)} tabIndex={-1}/> 
             <Creatable
-                inputProps={({'className':'native-key-bindings'})}
                 className={editorStyles.normalSelect}
                 multi={true}
                 clearable={true}

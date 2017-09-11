@@ -50,7 +50,9 @@ const jssStyles = (theme: any) => ({
         width: '120px',
         backgroundSize: 'contain',
         backgroundRepeat: 'no-repeat',
-        backgroundPosition: '50%'
+        backgroundPosition: '50%',
+        backgroundColor: 'white',
+        border: '3px solid white',
     },
     option: {
         cursor: 'pointer',
