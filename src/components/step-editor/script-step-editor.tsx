@@ -21,40 +21,47 @@ import { CenteredContent } from "../../util/centered-content";
 import { translate } from '../../../../../translation-service';
 import { AdvancedOptions } from './advanced-options';
 // const atom = require('atom');
-import { editorStyles, themeColors } from '../../style';
+import { editorStyles, themeColors, sectionStyles } from '../../style';
 
 
-const styles = (theme: any) => ({
-    select: {
-        composes: `${editorStyles.largeSelect}`
-    },
-    title: {
-        composes: theme.ide ? 'text-color' : '',
-        padding: 0,
-        margin: 0,
-        fontSize: '20px',
-        fontWeight: 'bold',
-        lineHeight: '24px'
-    },
-    description: {
-        composes: theme.ide ? 'text-color' : '',
-        padding: 0,
-        margin: 0,
-        fontSize: '14px',
-        lineHeight: '16px'
-    },
-    option: {
-        cursor: 'pointer',
-        margin: 0,
-        padding: '0 20px'
-    },
-    selected: {
-        composes: 'selected',
-    },
-    focused: {
-        composes: 'focused',
+const styles = (theme: any) => {
+    let section = sectionStyles(theme);
+
+    return {
+        select: {
+            composes: `${editorStyles.largeSelect}`
+        },
+        title: {
+            composes: theme.ide ? 'text-color' : '',
+            padding: 0,
+            margin: 0,
+            fontSize: '20px',
+            fontWeight: 'bold',
+            lineHeight: '24px'
+        },
+        description: {
+            composes: theme.ide ? 'text-color' : '',
+            padding: 0,
+            margin: 0,
+            fontSize: '14px',
+            lineHeight: '16px'
+        },
+        option: {
+            cursor: 'pointer',
+            margin: 0,
+            padding: '0 20px'
+        },
+        selected: {
+            composes: 'selected',
+        },
+        focused: {
+            composes: 'focused',
+        },
+        section: section.section,
+        sectionBody: section.bodyTight,
+        sectionTitle: section.title,
     }
-});
+};
 
 interface ScriptStepEditorProps {
     step: WorkflowStepSimple,
@@ -91,7 +98,12 @@ export class ScriptStepEditor extends React.Component<ScriptStepEditorProps, {}>
                     ide={this.props.ide}
                     step={this.props.step} />
                 <div className="pure-u-1">
-                    {this.props.scriptEditorFactory(this.props.step)}
+                    <div className={classes.section}>
+                        <div className={classes.sectionTitle}>Script:</div>
+                        <div className={classes.sectionBody}>
+                            {this.props.scriptEditorFactory(this.props.step)}
+                        </div>
+                    </div>
                 </div>
             </div>
             : null;

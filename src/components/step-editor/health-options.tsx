@@ -80,7 +80,7 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
                 </CenteredContent>
             </label>
             <div className="pure-u-5-6">
-                <input className="pure-input-1 input-text"
+                <input className="pure-input-1 input-text native-key-bindings"
                     
                     type="text"
                     value={this.health.script || ""}
@@ -99,7 +99,7 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
                 </CenteredContent>
             </label>
             <div className={checkType === "tcp" ? "pure-u-5-6" : "pure-u-1-3"}>
-                <input className="pure-input-1 input-text"
+                <input className="pure-input-1 input-text native-key-bindings"
                     
                     type="text"
                     value={this.health.port || ""}
@@ -114,7 +114,7 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
                 </label>)}
             {checkType !== "tcp" &&
                 (<div className="pure-u-1-3">
-                    <input className="pure-input-1 input-text"
+                    <input className="pure-input-1 input-text native-key-bindings"
                     
                     type="text"
                     value={this.health.path}
@@ -161,7 +161,7 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
                 <div className="pure-u-1-6">
                     <input
                         type="text"
-                        className="pure-input-1 input-text"
+                        className="pure-input-1 input-text native-key-bindings"
                         
                         value={(this.health as any)[property] || ""}
                         onChange={e => this.setHealthCheckProperty(

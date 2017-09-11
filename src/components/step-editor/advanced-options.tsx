@@ -12,6 +12,7 @@ import { PortOptions } from './port-options';
 import { HealthOptions } from './health-options';
 import { DropDownMenu } from '../drop-down-menu';
 import { translate } from '../../../../../translation-service';
+import { sectionStyles } from '../../style';
 
 interface AdvancedOptionsProps {
     step: WorkflowStepSimple,
@@ -19,45 +20,31 @@ interface AdvancedOptionsProps {
     classes?: any
 }
 
-const styles = (theme: any) => ({
-    advanced: {
-        composes: 'pure-u-1',
-        marginTop: '16px'
-    },
-    section: theme.ide ?
-        {
-            composes: 'inset-panel block'
-        } :
-        {
-            composes: 'pure-u-1',
-            margin: '0',
-            padding: '10px 0',
-            borderTop: 'solid 1px #ddd'
+const styles = (theme: any) => {
+    let section = sectionStyles(theme);
+
+    return {
+        advanced: {
+            composes: 'pure-u-1 block',
+            marginTop: '16px'
         },
-    title: theme.ide ?
-        {
-            composes: 'panel-heading'
-        } :
-        {
+        section: section.section,
+        title: section.title,
+        body: section.body,
+        link: {
+            color: '#4E73BD',
             fontWeight: '700',
-            margin: '0 0 4px 0'
-        },
-    body: theme.ide ?
-        { composes: 'panel-body padded' } :
-        {},
-    link: {
-        color: '#4E73BD',
-        fontWeight: '700',
-        textDecoration: 'none',
-        '&:hover': {
-            color: '#34518b',
-            textDecoration: 'none'
-        },
-        '&:visited': {
-            textDecoration: 'none'
+            textDecoration: 'none',
+            '&:hover': {
+                color: '#34518b',
+                textDecoration: 'none'
+            },
+            '&:visited': {
+                textDecoration: 'none'
+            }
         }
     }
-});
+};
 
 @injectSheet(styles)
 @observer

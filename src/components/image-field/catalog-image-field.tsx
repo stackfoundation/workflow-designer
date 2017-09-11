@@ -34,7 +34,7 @@ const jssStyles = (theme: any) => ({
         }
     },
     tagSelect: {
-        composes: editorStyles.largeSelect,
+        composes: editorStyles.largeSelect + ' VirtualizedSelect',
 
         '& .Select-control': {
             'border-top-left-radius': '0',

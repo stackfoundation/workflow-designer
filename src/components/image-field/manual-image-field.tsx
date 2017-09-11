@@ -22,7 +22,7 @@ export class ManualImageField extends React.Component<{ step: WorkflowStepSimple
                 <div className="pure-u-1 native-key-bindings">
                     <input 
                         type="text" 
-                        className="pure-input-1 input-text" 
+                        className="pure-input-1 input-text native-key-bindings" 
                         
                         name="image" 
                         value={this.props.step.image || ''}

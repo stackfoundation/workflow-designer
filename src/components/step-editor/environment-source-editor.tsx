@@ -15,7 +15,7 @@ const styles = (theme: any) => ({
         paddingRight: '5px'
     },
     input: {
-        composes: `code pure-input-1 input-text`
+        composes: `code pure-input-1 input-text native-key-bindings`
     }
 });
 

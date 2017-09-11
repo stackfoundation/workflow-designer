@@ -13,7 +13,7 @@ let injectSheet = require('@tiagoroldao/react-jss').default;
 
 const styles = (theme: any) => ({
     select: {
-        composes: `${editorStyles.mediumSelect}`,
+        composes: `${editorStyles.mediumSelect} native-key-bindings`,
     },
     title: {
         composes: theme.ide ? 'text-color': '',

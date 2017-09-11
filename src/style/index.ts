@@ -13,3 +13,32 @@ export const editorStyles = {
     imageSelect: 'select-image',
     normalSelect: 'select-normal'
 };
+
+export function sectionStyles (theme: any): {section:any, title: any, body: any, bodyTight: any} {
+    return {
+        section: theme.ide ?
+            {
+                composes: 'inset-panel block'
+            } :
+            {
+                composes: 'pure-u-1',
+                margin: '0',
+                padding: '10px 0',
+                borderTop: 'solid 1px #ddd'
+            },
+        title: theme.ide ?
+            {
+                composes: 'panel-heading'
+            } :
+            {
+                fontWeight: '700',
+                margin: '0 0 4px 0'
+            },
+        body: theme.ide ?
+            { composes: 'panel-body padded' } :
+            {},
+        bodyTight: theme.ide ?
+        { composes: 'panel-body' } :
+        {},
+    }
+}

@@ -24,7 +24,7 @@ export class StepImageField extends React.Component<{ workflow: Workflow, step: 
             <div className="pure-g">
                 <div className="pure-u-1">
                     <VirtualizedSelect
-                        className={editorStyles.largeSelect}
+                        className={`${editorStyles.largeSelect} native-key-bindings`}
                         clearable={false}
                         searchable={false}
                         options={this.props.workflow.stepsBefore(this.props.step)}

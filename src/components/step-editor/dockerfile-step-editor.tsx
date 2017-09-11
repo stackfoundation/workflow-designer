@@ -26,7 +26,7 @@ export class DockerfileStepEditor extends React.Component<{ step: WorkflowStepSi
                 <div className="pure-u-5-6">
                     <input
                         type="text"
-                        className="pure-input-1 input-text"
+                        className="pure-input-1 input-text native-key-bindings"
                         
                         name="image"
                         value={this.props.step.dockerfile || ''}

@@ -36,11 +36,11 @@ const jssStyles = (theme: any) => ({
     },
     description: {
         composes: theme.ide ? 'text-color' : '',
-        padding: 0,
+        paddingRight: '20px',
         margin: 0,
         fontSize: '14px',
         lineHeight: '16px',
-        'white-space': 'wrap'
+        whiteSpace: 'normal'
     },
     logo: {
         position: 'absolute',
@@ -157,7 +157,7 @@ export class CatalogSelect extends React.Component<CatalogSelectProps, {}> {
 
         return (
             <VirtualizedSelect
-                className={`${classes.select} ${this.props.className || ''}`}
+                className={`native-key-bindings ${classes.select} ${this.props.className || ''}`}
                 options={this.options}
                 optionRenderer={this.optionRenderer}
                 searchable={false}

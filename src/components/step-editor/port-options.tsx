@@ -55,7 +55,7 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
 
         return (<div>
             <Creatable
-                className={editorStyles.normalSelect}
+                className={`${editorStyles.normalSelect} native-key-bindings`}
                 multi={true}
                 clearable={true}
                 value={portsArray} 

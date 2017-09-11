@@ -40,16 +40,25 @@ const styles = (theme: any) => ({
     form: {
         composes: theme.ide ? '' : 'pure-form pure-form-stacked',
     },
+    stepLabel: {
+        composes: 'pure-u-1-6 text-right',
+        fontSize: '2em',
+        paddingRight: '10px'
+    },
+    stepNameInputDiv: {
+        composes: 'pure-u-5-6 pure-u-lg-5-12',
+    },
     stepNameInput: {
-        composes: 'pure-u-1 input-text',
+        composes: 'pure-u-1 input-text native-key-bindings',
         height: '100%',
         margin: '0 !important',
+        fontSize: '2em',
         'border-right': 'none',
         'border-top-right-radius': '0',
         'border-bottom-right-radius': '0',
     },
     stepTypeInputDiv: {
-        composes: 'pure-u-1 pure-u-md-5-12 step-type-input',
+        composes: 'pure-u-1 pure-u-lg-5-12 step-type-input',
 
         '& .Select-control': {
             'border-top-left-radius': '0',
@@ -82,21 +91,22 @@ export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
     }
 
     public render() {
+        let classes = this.props.classes;
         return (
-            <form className={this.props.classes.form}>
+            <form className={classes.form}>
                 <fieldset>
                     <div className="pure-g block">
-                        <label className="pure-u-1-12 text-right">
+                        <label className={classes.stepLabel}>
                             <CenteredContent>Step:</CenteredContent>
                         </label>
-                        <div className="pure-u-11-12 pure-u-md-1-2">
+                        <div className={classes.stepNameInputDiv}>
                             <input type="text"
-                                className={this.props.classes.stepNameInput}
+                                className={classes.stepNameInput}
                                 
                                 name="name"
                                 value={this.nameField.fieldVal || ''} onChange={e => this.onNameChange(e)} />
                         </div>
-                        <div className={this.props.classes.stepTypeInputDiv}>
+                        <div className={classes.stepTypeInputDiv}>
                             <StepTypeSelect
                                 type={(this.props.step && this.props.step.type || WorkflowStepSimple.name)}
                                 onChange={this.onTypeChange}></StepTypeSelect>

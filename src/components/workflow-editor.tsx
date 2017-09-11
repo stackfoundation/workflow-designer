@@ -16,7 +16,7 @@ import '../util/translations.ts';
 
 const styles = (theme: any) => ({
     editor: {
-        composes: `pure-g padded workflow-editor ${theme.ide ? 'base-ide-style native-key-bindings' : 'base-web-style'}`
+        composes: `pure-g padded workflow-editor ${theme.ide ? 'base-ide-style' : 'base-web-style'}`
     },
     list: {
         composes: `pure-u-1-4 ${theme.ide ? 'block': ''}`

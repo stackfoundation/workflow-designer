@@ -108,7 +108,7 @@ export class DropDownMenu extends React.Component<DropDownMenuProps, {}> {
     private item(item: Item, key: number) {
         let classes = this.props.classes || {};
         return this.props.ide ?
-            (<button key={key} className={classes.item} onClick={e => this.handleClick(e, item)}>
+            (<button key={key} className={classes.button} onClick={e => this.handleClick(e, item)}>
                 {item.display}
             </button>) :
             (<li key={key} className="pure-menu-item" onClick={e => this.handleClick(e, item)}>
@@ -121,11 +121,14 @@ export class DropDownMenu extends React.Component<DropDownMenuProps, {}> {
     public render() {
         let classes = this.props.classes || {};
         return this.props.ide ?
-            (<div className={classes.container}>
-                <div className={classes.menuContainer}>
+            (<div>
+                <h3>{this.props.label}:</h3>
+                <div className="block">
+                    <div className="btn-group">
                     {this.props.items && this.props.items.map((b, i) => this.item(b, i))}
+                    </div>
                 </div>
-            </div>) :
+            </div>):
             (<ul className={classes.menuLabelContainer}>
                 <li className={classes.menuLabel}>
                     <a className={classes.labelLink}>{this.props.label} <span className="Select-arrow"></span></a>
