@@ -29,7 +29,7 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
 
     @action
     private add(ports: Option<OptionValues>) {
-        if (ports.length) {
+        if (ports) {
             let newPorts: string[] = [];
             for (let i = 0; i < ports.length; i++) {
                 newPorts.push(ports[i].value as string);
@@ -43,6 +43,10 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
         this.ports.splice(this.ports.indexOf(port), 1);
     }
 
+    private log(event: React.KeyboardEvent<HTMLInputElement>) {
+        console.log(event);
+    }
+
     public render() {
         let classes = this.props.classes || {};
         let portsArray: Option[] = [];
@@ -50,10 +54,12 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
         this.ports.forEach(port => portsArray.push({ label: port, value: port }));
 
         return (<div>
+            <input type="text" className="native-key-bindings" onKeyDown={e => this.log(e)} tabIndex={-1}/> 
             <Creatable
+                inputProps={({'className':'native-key-bindings'})}
                 className={editorStyles.normalSelect}
                 multi={true}
-                clearable={false}
+                clearable={true}
                 value={portsArray} 
                 onChange={p => this.add(p)} />
         </div>);

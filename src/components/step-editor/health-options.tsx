@@ -8,10 +8,11 @@ const Remove = require('react-icons/lib/fa/times-circle');
 
 import { editorStyles } from '../../style';
 import { Options } from '../options';
-import { WorkflowStepSimple, HealthCheckType, Health } from '../../models/workflow';
+import { WorkflowStepSimple} from '../../models/workflow';
 import { CenteredContent } from '../../util/centered-content'
 import { translate } from '../../../../../translation-service';
 import { Creatable, Option, OptionValues } from 'react-select';
+import { HealthType, HealthTypes } from "../../../../workflow";
 
 interface HealthOptionsProps {
     step: WorkflowStepSimple;
@@ -40,20 +41,6 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
     constructor(props: HealthOptionsProps) {
         super(props);
     }
-    
-    componentWillMount () {
-        this.setup(this.props);
-    }
-
-    componentWillReceiveProps (nextProps: HealthOptionsProps) {
-        this.setup(nextProps);
-    }
-
-    private setup (props: HealthOptionsProps) {
-        if (!props.step.health) {
-            props.step.health = new Health();
-        };
-    }
 
     private get health() {
         return this.props.step.health;
@@ -63,60 +50,82 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
         if (this.props.step) {
             if (this.props.step.transient.healthCheckType) {
                 return this.props.step.transient.healthCheckType;
-            } else if (this.props.step.health) {
-                if (this.props.step.health.tcp) {
-                    return 'tcp';
-                } else if (this.props.step.health.http) {
-                    return 'http';
-                }
+            } else if (this.props.step.health && this.props.step.health.type) {
+                return this.props.step.health.type;
             }
+            
         }
 
         return 'script';
     }
 
     @action
-    private setHealthCheckType(checkType: HealthCheckType) {
+    private setHealthCheckType(checkType: HealthType) {
         this.props.step.transient.healthCheckType = checkType;
     }
 
-    private healthCheckType(checkType: HealthCheckType) {
-        return {
-            value: checkType,
-            display: (<span>{translate('OPTION_' + checkType.toUpperCase())}</span>)
-        };
-    }
-
     private healthCheckTypes() {
-        return [
-            this.healthCheckType('script'),
-            this.healthCheckType('tcp'),
-            this.healthCheckType('http')
-        ]
+        return HealthTypes.map(type => ({
+            value: type,
+            display: (<span>{translate('OPTION_' + type.toUpperCase())}</span>)
+        }));
     }
 
-    private typeSpecificEditor(checkType: HealthCheckType) {
+    private scriptTypeEditor() {
         let classes = this.props.classes || {};
         return (<div className="pure-g">
             <label className={classes.smallLabelContainer}>
                 <CenteredContent>
-                    <span className={classes.label}>{translate('LABEL_' + checkType.toUpperCase())}</span>
+                    <span className={classes.label}>{translate('LABEL_SCRIPT')}</span>
                 </CenteredContent>
             </label>
-            <input className="pure-u-5-6"
-                type="text"
-                value={(this.health as any)[checkType]}
-                onChange={e => this.setHealthCheckProperty(
-                    () => (this.health as any)[checkType] = e.target.value)} />
+            <div className="pure-u-5-6">
+                <input className="pure-input-1 input-text native-key-bindings"
+                    type="text"
+                    value={this.health.script || ""}
+                    onChange={e => this.setHealthCheckProperty(
+                        () => this.health.script = e.target.value)} />
+            </div>
+        </div>);
+    }
+
+    private requestTypeEditor(checkType: HealthType) {
+        let classes = this.props.classes || {};
+        return (<div className="pure-g">
+            <label className={classes.smallLabelContainer}>
+                <CenteredContent>
+                    <span className={classes.label}>{translate('LABEL_PORT')}</span>
+                </CenteredContent>
+            </label>
+            <div className={checkType === "tcp" ? "pure-u-5-6" : "pure-u-1-3"}>
+                <input className="pure-input-1 input-text native-key-bindings"
+                    type="text"
+                    value={this.health.port || ""}
+                    onChange={e => this.setHealthCheckProperty(
+                        () => this.health.port = e.target.value)} />
+            </div>
+            {checkType !== "tcp" &&
+                (<label className={classes.smallLabelContainer}>
+                    <CenteredContent>
+                        <span className={classes.label}>{translate('LABEL_PATH')}</span>
+                    </CenteredContent>
+                </label>)}
+            {checkType !== "tcp" &&
+                (<div className="pure-u-1-3">
+                    <input className="pure-input-1 input-text native-key-bindings"
+                    type="text"
+                    value={this.health.path}
+                    onChange={e => this.setHealthCheckProperty(
+                        () => this.health.path = e.target.value)} />
+                </div>)}
         </div>);
     }
 
     private selectedEditor() {
         let classes = this.props.classes || {};
-        return (<div className="pure-u-1" >
-            {this.currentHealthCheckType === 'script' && this.typeSpecificEditor('script')}
-            {this.currentHealthCheckType === 'tcp' && this.typeSpecificEditor('tcp')}
-            {this.currentHealthCheckType === 'http' && this.typeSpecificEditor('http')}
+        let type = this.currentHealthCheckType;
+        return (<div className="pure-u-1 block" >
+            {type && (type === 'script' ? this.scriptTypeEditor() : this.requestTypeEditor(type))}
         </div >);
     }
 
@@ -127,18 +136,33 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
 
     private healthCheckNumberProperty(property: string) {
         let classes = this.props.classes || {};
-        return (<div className="pure-u-1-2">
+
+        let onNumberChange = (property: string, e: React.ChangeEvent<HTMLInputElement>) => {
+            this.setHealthCheckProperty(() => {
+                let value = parseInt(e.target.value);
+                if (!isNaN(value)) {
+                    let stringVal = value;
+                    (this.health as any)[property] = value
+                }
+                
+            })
+        }
+
+        return (<div className="pure-u-1-2 block">
             <div className="pure-g">
                 <label className={classes.largeLabelContainer}>
                     <CenteredContent>
                         <span className={classes.label}>{translate('LABEL_' + property.toUpperCase())}</span>
                     </CenteredContent>
                 </label>
-                <input className="pure-u-1-6"
-                    type="text"
-                    value={(this.health as any)[property]}
-                    onChange={e => this.setHealthCheckProperty(
-                        () => (this.health as any)[property] = parseInt(e.target.value))} />
+                <div className="pure-u-1-6">
+                    <input
+                        type="text"
+                        className="pure-input-1 input-text"
+                        value={(this.health as any)[property] || ""}
+                        onChange={e => this.setHealthCheckProperty(
+                            () => (this.health as any)[property] = parseInt(e.target.value))} />
+                </div>
             </div>
         </div>);
     }
@@ -146,7 +170,7 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
     public render() {
         let classes = this.props.classes || {};
         return (<div className="pure-g">
-            <div className="pure-u-1">
+            <div className="pure-u-1 block">
                 <Options
                     ide={this.props.ide}
                     options={this.healthCheckTypes()}

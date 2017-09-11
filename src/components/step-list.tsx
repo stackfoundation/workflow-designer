@@ -64,7 +64,18 @@ const styles = (theme: any) => {
             borderLeft: 'none'
         },
         subList: {
-            composes: theme.ide ? 'list-nested-item' : ''
+            composes: theme.ide ? 'list-nested-item' : '',
+
+            '& > span': {
+                'line-height': '2em'
+            },
+
+            '& > $stepList': {
+                position: 'relative',
+                top: '-10px',
+                'padding-top': '10px',
+                'margin-bottom': '-10px',
+            },
         },
         step: theme.ide ? ide.step : web.step,
         selected: theme.ide ? ide.selected : web.selected,
@@ -267,7 +278,7 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
                             ref={el => this.setStep(el, parent, step)}
                             onClick={e => this.selectStep(step, e)}>
                             {this.stepTitle(parent.steps, step, i)}
-                            {parent instanceof Workflow && this.subSteps(step)}
+                            {step instanceof WorkflowStepCompound && this.subSteps(step)}
                         </li>))}
             </ul>);
         }
@@ -302,11 +313,11 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
 
     public render() {
         return this.props.state.ide ?
-            (<atom-panel class="padded">
+            (<div className="padded">
                 <div className="inset-panel padded">
                     {this.content()}
                 </div>
-            </atom-panel>) :
+            </div>) :
             (<div>
                 {this.content()}
             </div>);

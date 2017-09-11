@@ -52,7 +52,7 @@ export class WorkFlowEditorIO implements IWorkFlowEditorIO {
     }
 
     public getWorkflow (): IWorkflow {
-        return toJS(this.editorState.workflow) as IWorkflow;
+        return this.editorState.workflow.toJS();
     };
 
     public onDirty (callback: Function) {

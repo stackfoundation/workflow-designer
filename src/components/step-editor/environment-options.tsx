@@ -11,6 +11,16 @@ import { EnvironmentSource, EnvironmentSourceType } from '../../../../workflow';
 import { translate } from '../../../../../translation-service';
 import { EnvironmentSourceEditor } from './environment-source-editor';
 
+let injectSheet = require('@tiagoroldao/react-jss').default;
+
+const jssStyles = (theme: any) => ({
+    optionSettings: {
+        composes: 'pure-u-1-6',
+
+        'text-align': 'right'
+    }
+});
+
 interface EnvironmentOptionsProps {
     step: WorkflowStepSimple;
     ide: boolean;
@@ -42,6 +52,7 @@ class EditorEnvironmentSource implements EnvironmentSource {
     @observable value?: string = '';
 }
 
+@injectSheet(jssStyles)
 @observer
 export class EnvironmentOptions extends React.Component<EnvironmentOptionsProps, { sourceType: EnvironmentSourceType }> {
     constructor(props: EnvironmentOptionsProps) {
@@ -78,7 +89,7 @@ export class EnvironmentOptions extends React.Component<EnvironmentOptionsProps,
 
         return (<div className="pure-g" key={key}>
             <div className="pure-u-5-6">{editor}</div>
-            <div className="pure-u-1-6">
+            <div className={this.props.classes.optionSettings}>
                 {committed && <div onClick={_ => this.remove(source)}><Remove /></div>}
                 {!committed && this.sourceTypeEditor()}
             </div>

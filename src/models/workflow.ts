@@ -1,5 +1,5 @@
-import { observable, computed } from "mobx";
-import { IWorkflow, IWorkflowStepBase, IWorkflowStepSimple, IWorkflowStepCompound, IHealth, EnvironmentSource, StepType, Volume }
+import { observable, computed, toJS } from "mobx";
+import { IWorkflow, IWorkflowStepBase, IWorkflowStepSimple, IWorkflowStepCompound, IHealth, EnvironmentSource, StepType, Volume, HealthType }
     from '../../../workflow';
 
 export interface WorkflowStepPos {
@@ -10,16 +10,18 @@ export interface WorkflowStepPos {
 export class Workflow implements IWorkflow {
     @observable steps: WorkflowStep[] = [];
 
-    changeStepType(step: WorkflowStep, newStepType: string): WorkflowStep {
+    changeStepType(step: WorkflowStep, newStepType: StepType): WorkflowStep {
+        let simpleStepTypes: StepType[] = ['sequential', 'service', 'parallel'];
         let newStep: WorkflowStepSimple | WorkflowStepCompound | undefined = undefined;
-        if (newStepType === WorkflowStepSimple.name) {
+
+        if (simpleStepTypes.indexOf(newStepType) > -1) {
             newStep = new WorkflowStepSimple({ name: '' });
-        } else if (newStepType === WorkflowStepCompound.name) {
+        } else if (newStepType === 'compound') {
             newStep = new WorkflowStepCompound({ name: '' });
         }
 
-        if (newStepType === WorkflowStepSimple.name && step.type !== 'compound') {
-            Object.assign(newStep as WorkflowStepSimple, step as WorkflowStepSimple);
+        if (simpleStepTypes.indexOf(newStepType) > -1 && step.type !== 'compound') {
+            Object.assign(newStep as WorkflowStepSimple, step as WorkflowStepSimple, {type: newStepType});
         }
 
         if (newStep) {
@@ -164,12 +166,17 @@ export class Workflow implements IWorkflow {
             })
         });
     }
+
+    toJS (): IWorkflow {
+        return {
+            steps: this.steps.map(step => step.toJS())
+        };
+    }
 }
 
 export type WorkflowStep = WorkflowStepSimple | WorkflowStepCompound;
 export type ImageSource = 'catalog' | 'manual' | 'step';
 export type ActionType = 'script' | 'call' | 'generated' | 'dockerfile';
-export type HealthCheckType = 'script' | 'tcp' | 'http';
 
 export abstract class WorkflowStepBase implements IWorkflowStepBase {
     @observable name: string = '';
@@ -177,6 +184,7 @@ export abstract class WorkflowStepBase implements IWorkflowStepBase {
 
     constructor(step: Partial<WorkflowStepBase>) {
         this.name = step.name;
+        Object.assign(this, step);
     }
 
     static apply(source: IWorkflowStepBase): WorkflowStepBase {
@@ -185,7 +193,7 @@ export abstract class WorkflowStepBase implements IWorkflowStepBase {
 }
 
 export class TransientState {
-    @observable healthCheckType?: HealthCheckType;
+    @observable healthCheckType?: HealthType;
     @observable action?: ActionType;
     @observable healthConfigured: boolean;
     @observable sourceOptions: boolean;
@@ -196,13 +204,34 @@ export class TransientState {
 }
 
 export class Health implements IHealth {
+    @observable type: HealthType;
     @observable script?: string;
-    @observable tcp?: string;
-    @observable http?: string;
+    @observable port?: string;
+    @observable path?: string;
     @observable interval?: number;
     @observable timeout?: number;
     @observable retries?: number;
     @observable grace?: number;
+
+    constructor(health: Partial<Health>) {
+        Object.assign(this, health);
+    }
+
+    filled(): boolean {
+        let keys = Object.keys(this);
+
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i] !== 'type' && (this as any)[keys[i]] !== undefined) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    toJS(): IHealth {
+        return this.filled() ? toJS(this) : undefined;
+    }
 }
 
 export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowStepSimple {
@@ -213,6 +242,7 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
         Object.assign(this, step);
     }
 
+    @observable serviceName?: string = '';
     @observable imageSource?: ImageSource = 'catalog';
     @observable transient?: TransientState = new TransientState();
     @observable image?: string = '';
@@ -224,14 +254,21 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
     @observable omitSource?: boolean = false;
     @observable ignoreFailure?: boolean = false;
     @observable sourceLocation?: string = '';
-    @observable health?: IHealth = new Health();
+    @observable health?: Health = new Health({});
     @observable environment?: EnvironmentSource[] = [];
     @observable ports?: string[] = [];
     @observable volumes?: Volume[] = [];
 
     static apply(source: IWorkflowStepSimple): WorkflowStepSimple {
-        let step: WorkflowStepSimple = Object.assign(Object.create(WorkflowStepSimple.prototype), source);
+        let step: WorkflowStepSimple = Object.assign(new WorkflowStepSimple({}), source, {health: new Health(source.health)});
         return step;
+    }
+
+    toJS(): IWorkflowStepSimple {
+        this.health.toJS();
+        let out = toJS(this);
+        delete out.transient;
+        return out;
     }
 }
 
@@ -253,5 +290,10 @@ export class WorkflowStepCompound extends WorkflowStepBase implements IWorkflowS
                 else return WorkflowStepSimple.apply(step as WorkflowStepSimple);
             })
         });
+    }
+
+    toJS(): IWorkflowStepCompound {
+        let out = toJS(this);
+        return out;
     }
 }

@@ -14,11 +14,8 @@ const styles = (theme: any) => ({
     label: {
         paddingRight: '5px'
     },
-    halfInput: {
-        composes: 'pure-u-3-8 code'
-    },
-    fullInput: {
-        composes: 'pure-u-7-8 code'
+    input: {
+        composes: `code pure-input-1 input-text`
     }
 });
 
@@ -63,37 +60,43 @@ export class EnvironmentSourceEditor extends React.Component<SourceEditorProps> 
     public render() {
         let classes = this.props.classes || {};
         return this.props.sourceType === 'pair' ?
-            (<div className="pure-g">
+            (<div className="pure-g block">
                 <label className={classes.labelContainer}>
                     <CenteredContent>
                         <span className={classes.label}>{translate('LABEL_NAME')}</span>
                     </CenteredContent>
                 </label>
-                <input className={classes.halfInput}
-                    type="text"
-                    value={this.props.source.name}
-                    onChange={e => this.setName(e.target.value)} />
+                <div className="pure-u-3-8">
+                    <input className={classes.input}
+                        type="text"
+                        value={this.props.source.name}
+                        onChange={e => this.setName(e.target.value)} />
+                </div>
                 <label className={classes.labelContainer}>
                     <CenteredContent>
                         <span className={classes.label}>{translate('LABEL_VALUE')}</span>
                     </CenteredContent>
                 </label>
-                <input className={classes.halfInput}
-                    type="text"
-                    value={this.props.source.value}
-                    onChange={e => this.setValue(e.target.value)} />
+                <div className="pure-u-3-8">
+                    <input className={classes.input}
+                        type="text"
+                        value={this.props.source.value}
+                        onChange={e => this.setValue(e.target.value)} />
+                </div>
             </div>) :
             (this.props.sourceType === 'file' &&
-                <div className="pure-g">
+                <div className="pure-g block">
                     <label className={classes.labelContainer}>
                         <CenteredContent>
                             <span className={classes.label}>{translate('LABEL_FILE')}</span>
                         </CenteredContent>
                     </label>
-                    <input className={classes.fullInput}
-                        type="text"
-                        value={this.props.source.file}
-                        onChange={e => this.setFile(e.target.value)} />
+                    <div className="pure-u-7-8">
+                        <input className={classes.input}
+                            type="text"
+                            value={this.props.source.file}
+                            onChange={e => this.setFile(e.target.value)} />
+                    </div>
                 </div>);
     }
 }

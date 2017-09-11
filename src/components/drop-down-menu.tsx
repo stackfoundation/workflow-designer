@@ -51,7 +51,7 @@ const styles = (theme: any) => {
             labelLink: {
                 color: '#444',
                 textDecoration: 'none',
-                '&:hover': hoverLabel,
+                '&:hover': Object.assign({cursor: "pointer"}, hoverLabel),
                 '&:focus': hoverLabel
             },
             menuContainer: {
@@ -128,7 +128,7 @@ export class DropDownMenu extends React.Component<DropDownMenuProps, {}> {
             </div>) :
             (<ul className={classes.menuLabelContainer}>
                 <li className={classes.menuLabel}>
-                    <a href="#" className={classes.labelLink}>{this.props.label} <span className="Select-arrow"></span></a>
+                    <a className={classes.labelLink}>{this.props.label} <span className="Select-arrow"></span></a>
                     <ul className={classes.menuContainer}>
                         {this.props.items && this.props.items.map((b, i) => this.item(b, i))}
                     </ul>

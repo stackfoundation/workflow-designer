@@ -23,6 +23,23 @@ const jssStyles = (theme: any) => ({
         fontSize: '20px',
         fontWeight: 'bold',
         lineHeight: '24px'
+    },
+    catalogSelect: {
+        composes: editorStyles.largeSelect,
+
+        '& .Select-control': {
+            'border-right': 'none',
+            'border-top-right-radius': '0',
+            'border-bottom-right-radius': '0',
+        }
+    },
+    tagSelect: {
+        composes: editorStyles.largeSelect,
+
+        '& .Select-control': {
+            'border-top-left-radius': '0',
+            'border-bottom-left-radius': '0',
+        }
     }
 });
 
@@ -123,6 +140,7 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
             <div className={classes.editor}>
                 <div className="pure-u-3-4">
                     <CatalogSelect
+                        className={classes.catalogSelect}
                         catalog={this.props.catalog}
                         value={this.image}
                         onChange={this.onImageChange}>
@@ -130,7 +148,7 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
                 </div>
                 <div className="pure-u-1-4">
                     <VirtualizedSelect
-                        className={editorStyles.largeSelect}
+                        className={classes.tagSelect}
                         clearable={false}
                         valueRenderer={this.valueRenderer}
                         searchable={false}

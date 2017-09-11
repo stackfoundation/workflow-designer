@@ -19,7 +19,7 @@ const styles = (theme: any) => ({
         paddingRight: '5px'
     },
     input: {
-        composes: 'pure-u-1-3 code'
+        composes: 'pure-input-1 code input-text native-key-bindings'
     }
 });
 
@@ -62,19 +62,23 @@ export class VolumeEditor extends React.Component<VolumeEditorProps> {
                         <span className={classes.label}>{translate('LABEL_MOUNT_PATH')}</span>
                     </CenteredContent>
                 </label>
-                <input className={classes.input}
-                    type="text"
-                    value={this.props.volume.mountPath}
-                    onChange={e => this.setMountPath(e.target.value)} />
+                <div className="pure-u-1-3">
+                    <input className={classes.input}
+                        type="text"
+                        value={this.props.volume.mountPath}
+                        onChange={e => this.setMountPath(e.target.value)} />
+                </div>
                 <label className={classes.hostPath}>
                     <CenteredContent>
                         <span className={classes.label}>{translate('LABEL_HOST_PATH')}</span>
                     </CenteredContent>
                 </label>
-                <input className={classes.input}
-                    type="text"
-                    value={this.props.volume.hostPath}
-                    onChange={e => this.setHostPath(e.target.value)} />
+                <div className="pure-u-1-3">
+                    <input className={classes.input}
+                        type="text"
+                        value={this.props.volume.hostPath}
+                        onChange={e => this.setHostPath(e.target.value)} />
+                </div>
             </div>);
     }
 }

@@ -13,7 +13,7 @@ let injectSheet = require('@tiagoroldao/react-jss').default;
 
 const styles = (theme: any) => ({
     select: {
-        composes: `${editorStyles.mediumSelect} ${theme.ide ? 'button-background-color': ''}`,
+        composes: `${editorStyles.mediumSelect}`,
     },
     title: {
         composes: theme.ide ? 'text-color': '',

@@ -26,7 +26,7 @@ import { editorStyles, themeColors } from '../../style';
 
 const styles = (theme: any) => ({
     select: {
-        composes: `${editorStyles.largeSelect} ${theme.ide ? 'button-background-color' : ''}`
+        composes: `${editorStyles.largeSelect}`
     },
     title: {
         composes: theme.ide ? 'text-color' : '',

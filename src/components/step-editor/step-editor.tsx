@@ -2,6 +2,7 @@ import { setTimeout } from 'timers';
 import * as React from 'react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
+let injectSheet = require('@tiagoroldao/react-jss').default;
 
 import { CatalogImage } from '../../models/catalog';
 import {
@@ -18,6 +19,7 @@ import { CenteredContent } from '../../util/centered-content';
 import { ChangeEvent } from 'react';
 import { FormReactComponent } from '../../../../../react-forms/validating-react-component';
 import { Field } from "../../../../../react-forms/field";
+import { StepType } from "../../../../workflow";
 
 export interface WorkflowStepTypeChangeEvent {
     step: WorkflowStep;
@@ -30,9 +32,33 @@ interface StepEditorProps {
     step: WorkflowStep,
     workflow: Workflow,
     catalog: CatalogImage[],
-    scriptEditorFactory: ScriptEditorFactory
+    scriptEditorFactory: ScriptEditorFactory,
+    classes?: any
 }
 
+const styles = (theme: any) => ({
+    form: {
+        composes: theme.ide ? '' : 'pure-form pure-form-stacked',
+    },
+    stepNameInput: {
+        composes: 'pure-u-1 input-text native-key-bindings',
+        height: '100%',
+        margin: '0 !important',
+        'border-right': 'none',
+        'border-top-right-radius': '0',
+        'border-bottom-right-radius': '0',
+    },
+    stepTypeInputDiv: {
+        composes: 'pure-u-1 pure-u-md-5-12 step-type-input',
+
+        '& .Select-control': {
+            'border-top-left-radius': '0',
+            'border-bottom-left-radius': '0',
+        }
+    }
+});
+
+@injectSheet(styles)
 @observer
 export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
     private nameField: Field;
@@ -57,17 +83,19 @@ export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
 
     public render() {
         return (
-            <form className="pure-form pure-form-stacked">
+            <form className={this.props.classes.form}>
                 <fieldset>
-                    <div className="pure-g">
+                    <div className="pure-g block">
                         <label className="pure-u-1-12 text-right">
                             <CenteredContent>Step:</CenteredContent>
                         </label>
-                        <input type="text"
-                            className="pure-u-11-12 pure-u-md-1-2 native-key-bindings"
-                            name="name"
-                            value={this.nameField.fieldVal || ''} onChange={e => this.onNameChange(e)} />
-                        <div className="pure-u-1 pure-u-md-5-12 step-type-input">
+                        <div className="pure-u-11-12 pure-u-md-1-2">
+                            <input type="text"
+                                className={this.props.classes.stepNameInput}
+                                name="name"
+                                value={this.nameField.fieldVal || ''} onChange={e => this.onNameChange(e)} />
+                        </div>
+                        <div className={this.props.classes.stepTypeInputDiv}>
                             <StepTypeSelect
                                 type={(this.props.step && this.props.step.type || WorkflowStepSimple.name)}
                                 onChange={this.onTypeChange}></StepTypeSelect>
@@ -86,7 +114,7 @@ export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
             </form>);
     }
 
-    private onTypeChange = (type: string) => {
+    private onTypeChange = (type: StepType) => {
         this.props.state.changeCurrentStepType(type);
     }
 

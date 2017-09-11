@@ -26,7 +26,7 @@ const styles = (theme: any) => ({
     },
     section: theme.ide ?
         {
-            composes: 'inset-panel'
+            composes: 'inset-panel block'
         } :
         {
             composes: 'pure-u-1',
@@ -43,7 +43,7 @@ const styles = (theme: any) => ({
             margin: '0 0 4px 0'
         },
     body: theme.ide ?
-        { composes: 'panel-body' } :
+        { composes: 'panel-body padded' } :
         {},
     link: {
         color: '#4E73BD',
@@ -65,19 +65,18 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
     constructor(props: AdvancedOptionsProps) {
         super(props);
     }
-    
+
+    @action
+    private setup (props: AdvancedOptionsProps) {
+        props.step.transient.healthConfigured = props.step.health.filled();
+    }
+
     componentWillMount () {
         this.setup(this.props);
     }
 
-    componentWillReceiveProps (nextProps: AdvancedOptionsProps) {
-        this.setup(nextProps);
-    }
-
-    private setup (props: AdvancedOptionsProps) {
-        if (!props.step.transient) {
-            props.step.transient = new TransientState();
-        }
+    componentWillReceiveProps (newProps: AdvancedOptionsProps) {
+        this.setup(newProps);
     }
 
     private get transient() {
@@ -90,11 +89,7 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
         }
 
         if (this.props.step.health) {
-            for (let property in this.props.step.health) {
-                if ((this.props.step.health as any)[property]) {
-                    return true;
-                }
-            }
+            return this.props.step.health.filled();
         }
 
         return false;

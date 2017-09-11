@@ -16,7 +16,7 @@ import { WorkflowStepSimple } from '../../models/workflow';
 
 const jssStyles = (theme: any) => ({
     select: {
-        composes: `${editorStyles.largeSelect} ${editorStyles.imageSelect} ${theme.ide ? 'button-background-color' : ''}`,
+        composes: `${editorStyles.largeSelect} ${editorStyles.imageSelect}`,
         
         '& .Select-control .Select-value': {
             paddingLeft: '160px'
@@ -25,8 +25,6 @@ const jssStyles = (theme: any) => ({
         '& .Select-menu-outer $option': {
             paddingLeft: '160px'
         },
-
-        marginRight: '5px'
     },
     title: {
         composes: theme.ide ? 'text-color' : '',
@@ -41,7 +39,8 @@ const jssStyles = (theme: any) => ({
         padding: 0,
         margin: 0,
         fontSize: '14px',
-        lineHeight: '16px'
+        lineHeight: '16px',
+        'white-space': 'wrap'
     },
     logo: {
         position: 'absolute',
@@ -80,7 +79,8 @@ class ImageOption implements select.Option {
     }
 }
 
-interface CatalogSelectProps { 
+interface CatalogSelectProps {
+    className?: string,
     onChange: (value: CatalogImage) => void, 
     value: string, 
     catalog: CatalogImage[]
@@ -155,7 +155,7 @@ export class CatalogSelect extends React.Component<CatalogSelectProps, {}> {
 
         return (
             <VirtualizedSelect
-                className={classes.select}
+                className={`${classes.select} ${this.props.className || ''}`}
                 options={this.options}
                 optionRenderer={this.optionRenderer}
                 searchable={false}

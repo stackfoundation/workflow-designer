@@ -70,6 +70,7 @@ export interface Option {
 
 export interface OptionsProps {
     ide: boolean;
+    className?: string;
     options: Option[];
     selected?: any;
     onChange?: (option: Option) => void;
@@ -111,12 +112,12 @@ export class Options extends React.Component<OptionsProps, {}> {
     public render() {
         let classes = this.props.classes || {};
         return this.props.ide ?
-            (<div className="block padded">
+            (<div className={`block ${this.props.className || ''}`}>
                 <div className={classes.optionsList}>
                     {this.props.options && this.props.options.map((o, i) => this.option(o, i))}
                 </div>
             </div>) :
-            (<div className="pure-menu pure-menu-horizontal">
+            (<div className={`pure-menu pure-menu-horizontal ${this.props.className || ''}`}>
                 <ul className={classes.optionsList}>
                     {this.props.options && this.props.options.map((o, i) => this.option(o, i))}
                 </ul>
