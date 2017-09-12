@@ -30,6 +30,15 @@ const styles = (theme: any) => ({
     largeLabelContainer: {
         composes: '$labelContainer pure-u-5-6'
     },
+    healthNumberPropDiv: {
+        composes: 'pure-u-1 pure-u-lg-1-2 block'
+    },
+    healthNumberPropFieldDiv: {
+        composes: 'pure-u-1-6'
+    },
+    healthNumberPropField : {
+        composes: 'pure-input-1 input-text native-key-bindings'
+    },
     label: {
         paddingRight: '5px'
     }
@@ -151,18 +160,17 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
             })
         }
 
-        return (<div className="pure-u-1-2 block">
+        return (<div className={classes.healthNumberPropDiv}>
             <div className="pure-g">
                 <label className={classes.largeLabelContainer}>
                     <CenteredContent>
                         <span className={classes.label}>{translate('LABEL_' + property.toUpperCase())}</span>
                     </CenteredContent>
                 </label>
-                <div className="pure-u-1-6">
+                <div className={classes.healthNumberPropFieldDiv}>
                     <input
                         type="text"
-                        className="pure-input-1 input-text native-key-bindings"
-                        
+                        className={classes.healthNumberPropField}
                         value={(this.health as any)[property] || ""}
                         onChange={e => this.setHealthCheckProperty(
                             () => (this.health as any)[property] = parseInt(e.target.value))} />

@@ -6,9 +6,19 @@ import { translate } from '../../../../../translation-service';
 import { observer } from 'mobx-react';
 import { action } from 'mobx';
 
+let injectSheet = require('@tiagoroldao/react-jss').default;
+
+const styles = (theme: any) => ({
+    label: {
+        composes: 'pure-u-1-6 text-right',
+        paddingRight: '5px'
+    }
+});
+
+@injectSheet(styles)
 @observer
-export class DockerfileStepEditor extends React.Component<{ step: WorkflowStepSimple }, {}> {
-    constructor(props: { step: WorkflowStepSimple }) {
+export class DockerfileStepEditor extends React.Component<{ step: WorkflowStepSimple, classes?: any }, {}> {
+    constructor(props: { step: WorkflowStepSimple, classes?: any }) {
         super(props);
     }
     @action
@@ -18,7 +28,7 @@ export class DockerfileStepEditor extends React.Component<{ step: WorkflowStepSi
     public render() {
         return (
             <div className="pure-g">
-                <div className="pure-u-1-6">
+                <div className={this.props.classes.label}>
                     <CenteredContent>
                         <span>{translate('LABEL_DOCKERFILE')}</span>
                     </CenteredContent>
@@ -27,7 +37,6 @@ export class DockerfileStepEditor extends React.Component<{ step: WorkflowStepSi
                     <input
                         type="text"
                         className="pure-input-1 input-text native-key-bindings"
-                        
                         name="image"
                         value={this.props.step.dockerfile || ''}
                         onChange={e => this.onDockerfileChange(e)} />

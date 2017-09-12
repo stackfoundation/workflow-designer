@@ -6,7 +6,7 @@ import { observer } from 'mobx-react';
 let injectSheet = require('@tiagoroldao/react-jss').default;
 
 import { translate } from '../../../../../translation-service';
-import { editorStyles } from '../../style';
+import { editorStyles, mediaQueries } from '../../style';
 import { CatalogImage } from '../../models/catalog';
 import { WorkflowStepSimple, Workflow } from '../../models/workflow';
 import { CatalogSelect } from './catalog-select';
@@ -24,21 +24,36 @@ const jssStyles = (theme: any) => ({
         fontWeight: 'bold',
         lineHeight: '24px'
     },
+    catalogSelectDiv: {
+        composes: 'pure-u-1 pure-u-lg-3-4'
+    },
     catalogSelect: {
         composes: editorStyles.largeSelect,
-
-        '& .Select-control': {
-            'border-right': 'none',
-            'border-top-right-radius': '0',
-            'border-bottom-right-radius': '0',
+        [mediaQueries.lg]: {
+            '& .Select-control': {
+                'border-right': 'none',
+                'border-top-right-radius': '0',
+                'border-bottom-right-radius': '0',
+            }
         }
+    },
+    tagSelectDiv: {
+        composes: 'pure-u-1 pure-u-lg-1-4'
     },
     tagSelect: {
         composes: editorStyles.largeSelect + ' VirtualizedSelect',
+        '& > .Select-control': {
+            height: '40px',
+            textAlign: 'center'
+        },
 
-        '& .Select-control': {
-            'border-top-left-radius': '0',
-            'border-bottom-left-radius': '0',
+        [mediaQueries.lg]: {
+            '& > .Select-control': {
+                height: '100px',
+                textAlign: 'inherit',
+                'border-top-left-radius': '0',
+                'border-bottom-left-radius': '0',
+            }
         }
     }
 });
@@ -138,7 +153,7 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
         let classes = this.props.classes || {};
         return (
             <div className={classes.editor}>
-                <div className="pure-u-3-4">
+                <div className={classes.catalogSelectDiv}>
                     <CatalogSelect
                         className={classes.catalogSelect}
                         catalog={this.props.catalog}
@@ -146,7 +161,7 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
                         onChange={this.onImageChange}>
                     </CatalogSelect>
                 </div>
-                <div className="pure-u-1-4">
+                <div className={classes.tagSelectDiv}>
                     <VirtualizedSelect
                         className={classes.tagSelect}
                         clearable={false}

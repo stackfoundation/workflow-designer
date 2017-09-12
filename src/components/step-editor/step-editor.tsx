@@ -20,6 +20,7 @@ import { ChangeEvent } from 'react';
 import { FormReactComponent } from '../../../../../react-forms/validating-react-component';
 import { Field } from "../../../../../react-forms/field";
 import { StepType } from "../../../../workflow";
+import { mediaQueries } from '../../style';
 
 export interface WorkflowStepTypeChangeEvent {
     step: WorkflowStep;
@@ -36,36 +37,40 @@ interface StepEditorProps {
     classes?: any
 }
 
-const styles = (theme: any) => ({
-    form: {
-        composes: theme.ide ? '' : 'pure-form pure-form-stacked',
-    },
-    stepLabel: {
-        composes: 'pure-u-1-6 text-right',
-        fontSize: '2em',
-        paddingRight: '10px'
-    },
-    stepNameInputDiv: {
-        composes: 'pure-u-5-6 pure-u-lg-5-12',
-    },
-    stepNameInput: {
-        composes: 'pure-u-1 input-text native-key-bindings',
-        height: '100%',
-        margin: '0 !important',
-        fontSize: '2em',
-        'border-right': 'none',
-        'border-top-right-radius': '0',
-        'border-bottom-right-radius': '0',
-    },
-    stepTypeInputDiv: {
-        composes: 'pure-u-1 pure-u-lg-5-12 step-type-input',
-
-        '& .Select-control': {
-            'border-top-left-radius': '0',
-            'border-bottom-left-radius': '0',
+const styles = (theme: any) => {
+    return {
+        form: {
+            composes: theme.ide ? '' : 'pure-form pure-form-stacked',
+        },
+        stepNameDiv: {
+            composes: 'pure-u-1 pure-u-lg-7-12 block',
+            position: 'relative',
+            [mediaQueries.lg]: {
+                paddingRight: '10px',
+                marginBottom: '0px'
+            }
+        },
+        stepNameLabel: {
+            composes: 'pure-u-1-3 text-right',
+            fontSize: '2em',
+            paddingRight: '10px',
+            height: '100%'
+        },
+        stepNameInputDiv: {
+            composes: 'pure-u-2-3',
+            height: '100%'
+        },
+        stepNameInput: {
+            composes: 'pure-u-1 input-text native-key-bindings',
+            height: '100%',
+            margin: '0 !important',
+            fontSize: '2em',
+        },
+        stepTypeInputDiv: {
+            composes: 'pure-u-1 pure-u-lg-5-12 step-type-input',
         }
-    }
-});
+    };
+};
 
 @injectSheet(styles)
 @observer
@@ -96,15 +101,17 @@ export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
             <form className={classes.form}>
                 <fieldset>
                     <div className="pure-g block">
-                        <label className={classes.stepLabel}>
-                            <CenteredContent>Step:</CenteredContent>
-                        </label>
-                        <div className={classes.stepNameInputDiv}>
-                            <input type="text"
-                                className={classes.stepNameInput}
-                                
-                                name="name"
-                                value={this.nameField.fieldVal || ''} onChange={e => this.onNameChange(e)} />
+                        <div className={classes.stepNameDiv}>
+                            <label className={classes.stepNameLabel}>
+                                <CenteredContent>Step:</CenteredContent>
+                            </label>
+                            <div className={classes.stepNameInputDiv}>
+                                <input type="text"
+                                    className={classes.stepNameInput}
+                                    
+                                    name="name"
+                                    value={this.nameField.fieldVal || ''} onChange={e => this.onNameChange(e)} />
+                            </div>
                         </div>
                         <div className={classes.stepTypeInputDiv}>
                             <StepTypeSelect

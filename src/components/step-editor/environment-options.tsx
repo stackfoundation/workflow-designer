@@ -10,14 +10,55 @@ import { WorkflowStepSimple } from '../../models/workflow';
 import { EnvironmentSource, EnvironmentSourceType } from '../../../../workflow';
 import { translate } from '../../../../../translation-service';
 import { EnvironmentSourceEditor } from './environment-source-editor';
+import { mediaQueries } from '../../style';
 
 let injectSheet = require('@tiagoroldao/react-jss').default;
 
 const jssStyles = (theme: any) => ({
-    optionSettings: {
-        composes: 'pure-u-1-6',
+    fieldBlock: {
+        composes: 'pure-g block base-border-color component-padding-bottom',
+        borderBottomWidth: '1px',
+        borderBottomStyle: 'solid',
 
-        'text-align': 'right'
+        '&:last-child': {
+            borderBottom: 'none',
+            paddingBottom: '0px'
+        },
+
+        [mediaQueries.lg]: {
+            borderBottom: 'none',
+            paddingBottom: '0px'
+        }
+    },
+    editorDiv: {
+        composes: 'pure-u-1 pure-u-lg-5-6'
+    },
+    optionSettings: {
+        composes: 'pure-u-1 pure-u-lg-1-6',
+        textAlign: 'right',
+        paddingLeft: '0px',
+
+        [mediaQueries.lg]: {
+            paddingLeft: '10px'
+        }
+    },
+    options: {
+        '& > .btn-group': {
+            width: '100%',
+
+            '& > button': {
+                width: '50%'
+            }
+        }
+    },
+    deleteButton: {
+        composes: 'btn btn-error btn-block',
+
+        '& > svg': {
+            position: 'relative',
+            display: 'inline-block',
+            top: '-0.10em'
+        }
     }
 });
 
@@ -68,11 +109,18 @@ export class EnvironmentOptions extends React.Component<EnvironmentOptionsProps,
     }
 
     private sourceTypeEditor() {
-        return (<Options
-            selected={this.state && this.state.sourceType}
-            ide={this.props.ide}
-            onChange={a => this.setSourceType(a.value)}
-            options={this.sourceTypes()} />);
+        return <div className="pure-g">
+            <div className="pure-u-1-4 pure-u-lg-0">
+            </div>
+            <div className="pure-u-3-4 pure-u-lg-1">
+                <Options
+                    selected={this.state && this.state.sourceType}
+                    ide={this.props.ide}
+                    className={this.props.classes.options}
+                    onChange={a => this.setSourceType(a.value)}
+                    options={this.sourceTypes()} />
+            </div>
+        </div>;
     }
 
     @action
@@ -87,13 +135,25 @@ export class EnvironmentOptions extends React.Component<EnvironmentOptionsProps,
             sourceType={state.committed ? (source.file ? 'file' : 'pair') : this.state.sourceType}
             onChange={() => state.commitIfNecessary()} />);
 
-        return (<div className="pure-g" key={key}>
-            <div className="pure-u-5-6 block">{editor}</div>
+        return (<div className={this.props.classes.fieldBlock} key={key}>
+            <div className={this.props.classes.editorDiv}>{editor}</div>
             <div className={this.props.classes.optionSettings}>
-                {committed && <div onClick={_ => this.remove(source)}><Remove /></div>}
+                {committed && this.deleteButton(source)}
                 {!committed && this.sourceTypeEditor()}
             </div>
         </div>);
+    }
+
+    private deleteButton (source: EnvironmentSource) {
+        return this.props.ide ? 
+            <div className="pure-g">
+                <div className="pure-u-1-4 pure-u-lg-0">
+                </div>
+                <div className="pure-u-3-4 pure-u-lg-1">
+                    <button className={this.props.classes.deleteButton} onClick={_ => this.remove(source)}><Remove /> Remove</button>
+                </div>
+            </div> : 
+            <div onClick={_ => this.remove(source)}><Remove /></div>;
     }
 
     private sourceEditors() {

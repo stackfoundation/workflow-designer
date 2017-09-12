@@ -33,8 +33,8 @@ export class FailureOptions extends React.Component<SourceOptionsProps, {}> {
     public render() {
         let classes = this.props.classes || {}
         return (<div className="pure-u-1">
-            <label>
-                <input type="checkbox" checked={this.failureIgnored} onChange={e => this.ignoreFailure(e)} />{' '}
+            <label className="input-label">
+                <input className="input-checkbox" type="checkbox" checked={this.failureIgnored} onChange={e => this.ignoreFailure(e)} />{' '}
                 {translate('OPTION_FAILURE')}
             </label>
         </div>);

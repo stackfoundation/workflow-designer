@@ -33,8 +33,8 @@ export class SourceOptions extends React.Component<SourceOptionsProps, {}> {
     public render() {
         let classes = this.props.classes || {}
         return (<div className="pure-u-1">
-            <label>
-                <input type="checkbox" checked={this.soureOmitted} onChange={e => this.omitSource(e)} />{' '}
+            <label className="input-label">
+                <input className="input-checkbox" type="checkbox" checked={this.soureOmitted} onChange={e => this.omitSource(e)} />{' '}
                 {translate('OPTION_OMIT_SOURCE')}
             </label>
         </div>);
