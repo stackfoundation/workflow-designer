@@ -40,10 +40,10 @@ interface StepEditorProps {
 const styles = (theme: any) => {
     return {
         form: {
-            composes: theme.ide ? '' : 'pure-form pure-form-stacked',
+            composes: theme.ide ? '' : 'pure-form',
         },
         stepNameDiv: {
-            composes: 'pure-u-1 pure-u-lg-7-12 block',
+            composes: 'pure-g pure-u-1 pure-u-lg-7-12 block-md',
             position: 'relative',
             [mediaQueries.lg]: {
                 paddingRight: '10px',
@@ -51,10 +51,15 @@ const styles = (theme: any) => {
             }
         },
         stepNameLabel: {
-            composes: 'pure-u-1-3 text-right',
-            fontSize: '2em',
+            composes: 'pure-u-1-3',
+            fontSize: theme.ide ? '2em' : '26px',
             paddingRight: '10px',
-            height: '100%'
+            height: '100%',
+            textAlign: 'right',
+
+            '& > label': {
+                height: '100%'
+            }
         },
         stepNameInputDiv: {
             composes: 'pure-u-2-3',
@@ -64,7 +69,7 @@ const styles = (theme: any) => {
             composes: 'pure-u-1 input-text native-key-bindings',
             height: '100%',
             margin: '0 !important',
-            fontSize: '2em',
+            fontSize: theme.ide ? '2em' : '26px',
         },
         stepTypeInputDiv: {
             composes: 'pure-u-1 pure-u-lg-5-12 step-type-input',
@@ -102,9 +107,9 @@ export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
                 <fieldset>
                     <div className="pure-g block">
                         <div className={classes.stepNameDiv}>
-                            <label className={classes.stepNameLabel}>
+                            <div className={classes.stepNameLabel}>
                                 <CenteredContent>Step:</CenteredContent>
-                            </label>
+                            </div>
                             <div className={classes.stepNameInputDiv}>
                                 <input type="text"
                                     className={classes.stepNameInput}

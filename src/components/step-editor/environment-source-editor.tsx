@@ -104,20 +104,18 @@ export class EnvironmentSourceEditor extends React.Component<SourceEditorProps> 
                 </div>
             </div>) :
             (this.props.sourceType === 'file' &&
-                <div className="pure-g">
-                    <div className="pure-u-1 block-md">
-                        <label className={classes.doubleLabelContainer}>
-                            <CenteredContent>
-                                <span className={classes.label}>{translate('LABEL_FILE')}</span>
-                            </CenteredContent>
-                        </label>
-                        <div className={classes.doubleFieldContainer}>
-                            <input className={classes.input}
-                                
-                                type="text"
-                                value={this.props.source.file}
-                                onChange={e => this.setFile(e.target.value)} />
-                        </div>
+                <div className="pure-g block-md">
+                    <label className={classes.doubleLabelContainer}>
+                        <CenteredContent>
+                            <span className={classes.label}>{translate('LABEL_FILE')}</span>
+                        </CenteredContent>
+                    </label>
+                    <div className={classes.doubleFieldContainer}>
+                        <input className={classes.input}
+                            
+                            type="text"
+                            value={this.props.source.file}
+                            onChange={e => this.setFile(e.target.value)} />
                     </div>
                 </div>);
     }

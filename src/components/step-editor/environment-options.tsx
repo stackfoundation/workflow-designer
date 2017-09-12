@@ -17,7 +17,7 @@ let injectSheet = require('@tiagoroldao/react-jss').default;
 const jssStyles = (theme: any) => ({
     fieldBlock: {
         composes: 'pure-g block base-border-color component-padding-bottom',
-        borderBottomWidth: '1px',
+        borderBottomWidth: theme.ide ? '1px' : '0px',
         borderBottomStyle: 'solid',
 
         '&:last-child': {
@@ -52,7 +52,9 @@ const jssStyles = (theme: any) => ({
         }
     },
     deleteButton: {
-        composes: 'btn btn-error btn-block',
+        composes: theme.ide ? 'btn btn-error btn-block' : 'pure-button',
+        width: '100%',
+        display: 'block',
 
         '& > svg': {
             position: 'relative',
@@ -145,15 +147,13 @@ export class EnvironmentOptions extends React.Component<EnvironmentOptionsProps,
     }
 
     private deleteButton (source: EnvironmentSource) {
-        return this.props.ide ? 
-            <div className="pure-g">
+        return <div className="pure-g">
                 <div className="pure-u-1-4 pure-u-lg-0">
                 </div>
                 <div className="pure-u-3-4 pure-u-lg-1">
                     <button className={this.props.classes.deleteButton} onClick={_ => this.remove(source)}><Remove /> Remove</button>
                 </div>
-            </div> : 
-            <div onClick={_ => this.remove(source)}><Remove /></div>;
+            </div>;
     }
 
     private sourceEditors() {

@@ -107,11 +107,17 @@
     }
 }
 
-.block-sm {
-    margin-bottom: 10px;
+.block {
+    &:not(:last-child) {
+        margin-bottom: 10px;
+    }
+}
 
-    @media screen and (min-width: 48em) {
-        margin-bottom: 0px;
+.block-sm {
+    @media screen and (max-width: 47.99em) {
+        &:not(:last-child) {
+            margin-bottom: 10px;
+        }
     }
 }
 
@@ -121,4 +127,14 @@
     @media screen and (min-width: 64em) {
         margin-bottom: 0px;
     }
+}
+
+.pure-g > div, .pure-g > label {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.pure-form label {
+    margin: 0px;
 }

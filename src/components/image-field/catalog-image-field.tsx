@@ -25,7 +25,7 @@ const jssStyles = (theme: any) => ({
         lineHeight: '24px'
     },
     catalogSelectDiv: {
-        composes: 'pure-u-1 pure-u-lg-3-4'
+        composes: 'pure-u-1 pure-u-lg-3-4 block-md'
     },
     catalogSelect: {
         composes: editorStyles.largeSelect,

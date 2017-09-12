@@ -10,7 +10,7 @@ const styles = (theme: any) => ({
             display: 'inline-block',
             height: '100%',
             verticalAlign: 'middle',
-            marginRight: '-0.25em'
+            // marginRight: '-0.25em'   
         }
     },
     content: {
