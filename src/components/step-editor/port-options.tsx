@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 const Text = require('react-icons/lib/fa/font');
 const File = require('react-icons/lib/fa/file-text-o');
 const Remove = require('react-icons/lib/fa/times-circle');
+let injectSheet = require('@tiagoroldao/react-jss').default;
 
 import { editorStyles } from '../../style';
 import { Options } from '../options';
@@ -17,6 +18,15 @@ interface PortOptionsProps {
     classes?: any;
 }
 
+const jssStyles = (theme: any) => {
+    return {
+        selectInput: {
+            composes: theme.ide ? 'text-color' : ''
+        }
+    };
+};
+
+@injectSheet(jssStyles)
 @observer
 export class PortOptions extends React.Component<PortOptionsProps, {}> {
     constructor(props: PortOptionsProps) {
@@ -47,6 +57,56 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
         console.log(event);
     }
 
+    private breakPorts (portsString: string): string[] {
+        let out: string[] = [];
+
+        if (portsString.indexOf(':') === portsString.length - 1) {
+            out = [portsString.substr(0, portsString.length - 1)];
+        }
+        else if (portsString.indexOf(':') > -1) {
+            out = portsString.split(':');
+        }
+        else {
+            out = [portsString];
+        }
+
+        return out;
+    }
+
+    private validPort = (arg: { label: string }): boolean => {
+        if (!arg.label || !arg.label.length) {
+            return false;
+        }
+        let portMappings = this.breakPorts(arg.label);
+
+        if (portMappings.length > 2) {
+            return false;
+        }
+
+        try {
+            for (var i = 0; i < portMappings.length; i++) {
+                if (parseInt(portMappings[i]).toString() !== portMappings[i]) {
+                    return false;
+                }
+            }
+        } catch (e) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    private portCreateText = (label: string): string => {
+        let ports = this.breakPorts(label),
+            out = "Create port " + ports[0];
+
+        if (ports.length == 2) {
+            out += " mapped to external port " + ports[1];
+        }
+        
+        return out;
+    }
+
     public render() {
         let classes = this.props.classes || {};
         let portsArray: Option[] = [];
@@ -56,8 +116,12 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
         return (<div>
             <Creatable
                 className={`${editorStyles.normalSelect} native-key-bindings`}
+                inputProps={{className: this.props.classes.selectInput}}
+                isValidNewOption={this.validPort}
                 multi={true}
                 clearable={true}
+                promptTextCreator={this.portCreateText}
+                noResultsText={'Enter a valid port number ( format: internalPort[:externalPort] )'}
                 value={portsArray} 
                 onChange={p => this.add(p)} />
         </div>);

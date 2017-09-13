@@ -1,5 +1,5 @@
 import { observable, action, computed, toJS } from "mobx";
-import { IWorkflow, IWorkflowStepBase, IWorkflowStepSimple, IWorkflowStepCompound, IHealth, EnvironmentSource, StepType, Volume, HealthType }
+import { IWorkflow, IWorkflowStepBase, IWorkflowStepSimple, IWorkflowStepCompound, IHealth, EnvironmentSource, StepType, Volume, HealthType, keysOfIHealth, keysOfIWorkflowStepSimple }
     from '../../../workflow';
 
 export interface WorkflowStepPos {
@@ -234,7 +234,18 @@ export class Health implements IHealth {
     }
 
     toJS(): IHealth {
-        return this.filled() ? toJS(this) : undefined;
+        if (!this.filled()) {
+            return undefined;
+        }
+
+        let out: any = {},
+            asJS = toJS(this);
+
+        for (var i = 0; i < keysOfIHealth.length; i++) {
+            out[keysOfIHealth[i]] = asJS[keysOfIHealth[i]];
+        }
+
+        return out;
     }
 }
 
@@ -274,14 +285,60 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
         return step;
     }
 
-    toJS(): IWorkflowStepSimple {
-        let asJS = toJS(this);
-        delete asJS.transient;
-        let out = asJS as IWorkflowStepSimple;
-        if (out.type === 'service') {
-            out.health = out.type === 'service' ? this.health.toJS() : undefined;
-            out.readiness = out.type === 'service' ? this.readiness.toJS() : undefined;
+    get action() : 'dockerfile' | 'call' | 'generated' | 'script' {
+        if (this.transient && this.transient.action) {
+            return this.transient.action;
+        } else if (this.dockerfile) {
+            return 'dockerfile';
+        } else if (this.target) {
+            return 'call';
+        } else if (this.generator) {
+            return 'generated';
         }
+
+        return 'script';
+    }
+
+    toJS(): IWorkflowStepSimple {
+        let asJS = toJS(this),
+            action = this.action,
+            out: any = {};
+
+        for (var i = 0; i < keysOfIWorkflowStepSimple.length; i++) {
+            out[keysOfIWorkflowStepSimple[i]] = asJS[keysOfIWorkflowStepSimple[i]];
+        }
+
+        if (out.type === 'service') {
+            out.health = this.health.toJS();
+            out.readiness = this.readiness.toJS();
+        } else {
+            delete out.health;
+            delete out.readiness;
+        }
+
+        if (action !== 'script') {
+            delete out.script;
+        }
+        if (action !== 'generated') {
+            delete out.generator;
+        }
+        if (action !== 'dockerfile') {
+            delete out.dockerfile;
+        }
+        if (action !== 'call') {
+            delete out.target;
+        }
+
+        if (out.environment && out.environment.length === 0) {
+            delete out.environment;
+        }
+        if (out.ports && out.ports.length === 0) {
+            delete out.ports;
+        }
+        if (out.volumes && out.volumes.length === 0) {
+            delete out.volumes;
+        }
+        
         return out;
     }
 }
@@ -307,7 +364,10 @@ export class WorkflowStepCompound extends WorkflowStepBase implements IWorkflowS
     }
 
     toJS(): IWorkflowStepCompound {
-        let out = toJS(this);
-        return out;
+        return {
+            name: this.name,
+            type: this.type,
+            steps: this.steps.map(step => step.toJS())
+        };
     }
 }

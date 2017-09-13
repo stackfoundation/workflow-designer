@@ -130,7 +130,7 @@ export class Options extends React.Component<OptionsProps, {}> {
                     {this.props.options && this.props.options.map((o, i) => this.option(o, i))}
                 </div>
             </div>) :
-            (<div className={`pure-menu pure-menu-horizontal ${this.props.className || ''}`}>
+            (<div className={`block pure-menu pure-menu-horizontal ${this.props.className || ''}`}>
                 <ul className={[classes.optionsList, this.props.fill ? classes.fullWidth : ''].join(' ')}>
                     {this.props.options && this.props.options.map((o, i) => this.option(o, i))}
                 </ul>

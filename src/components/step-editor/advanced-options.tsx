@@ -238,7 +238,7 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
             {this.portsConfigured &&
                 this.section(translate('HELP_PORTS'), <PortOptions step={step} ide={this.props.ide} />)}
 
-            {this.additionalAdvancedOptionsAvailable &&
+            {items.length > 0 &&
                 <DropDownMenu
                     ide={this.props.ide}
                     label={translate('CONFIGURE')}

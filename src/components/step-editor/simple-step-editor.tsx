@@ -29,15 +29,7 @@ export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}>
 
     private get action() {
         if (this.props.step) {
-            if (this.props.step.transient && this.props.step.transient.action) {
-                return this.props.step.transient.action;
-            } else if (this.props.step.dockerfile) {
-                return 'dockerfile';
-            } else if (this.props.step.target) {
-                return 'call';
-            } else if (this.props.step.generator) {
-                return 'generated';
-            }
+            return this.props.step.action;
         }
 
         return 'script';
