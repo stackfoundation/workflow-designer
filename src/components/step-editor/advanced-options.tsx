@@ -10,7 +10,7 @@ import { EnvironmentOptions } from './environment-options';
 import { VolumeOptions } from './volume-options';
 import { PortOptions } from './port-options';
 import { HealthOptions } from './health-options';
-import { DropDownMenu } from '../drop-down-menu';
+import { DropDownMenu, Item } from '../drop-down-menu';
 import { translate } from '../../../../../translation-service';
 import { sectionStyles } from '../../style';
 
@@ -82,6 +82,18 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
         return false;
     }
 
+    private get readinessConfigured() {
+        if (this.transient.readinessConfigured) {
+            return true;
+        }
+
+        if (this.props.step.readiness) {
+            return this.props.step.readiness.filled();
+        }
+
+        return false;
+    }
+
     private get environmentConfigured() {
         if (this.transient.environmentConfigured) {
             return true;
@@ -139,7 +151,7 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
         action();
     }
 
-    private button(label: string, handler: () => void) {
+    private button(label: string, handler: () => void): Item {
         return {
             display: <span>{label}</span>,
             onClick: () => this.runAction(handler)
@@ -149,49 +161,72 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
     private get additionalAdvancedOptionsAvailable() {
         return !this.sourceOptions ||
             !this.failureOptions ||
+            !this.healthConfigured ||
             !this.environmentConfigured ||
             !this.volumesConfigured ||
             !this.portsConfigured;
     }
 
-    public render() {
-        let step = this.props.step;
-        const classes = this.props.classes || {};
-        let items = [];
+    private generateOptionItems () {
+        let items: Item[] = [];
+        
+        if (this.props.step.type === 'service') {
+            if (!this.healthConfigured) {
+                items.push(this.button(
+                    translate('CONFIGURE_HEALTH'),
+                    () => this.transient.healthConfigured = true));
+            }
 
-        if (!this.healthConfigured) {
-            items.push(this.button(translate('CONFIGURE_HEALTH'),
-                () => this.transient.healthConfigured = true));
+            if (!this.readinessConfigured) {
+                items.push(this.button(
+                    translate('CONFIGURE_READINESS'),
+                    () => this.transient.readinessConfigured = true));
+            }
         }
 
         if (!this.environmentConfigured) {
-            items.push(this.button(translate('CONFIGURE_ENVIRONMENT'),
+            items.push(this.button(
+                translate('CONFIGURE_ENVIRONMENT'),
                 () => this.transient.environmentConfigured = true));
         }
 
         if (!this.portsConfigured) {
-            items.push(this.button(translate('CONFIGURE_PORTS'),
+            items.push(this.button(
+                translate('CONFIGURE_PORTS'),
                 () => this.transient.portsConfigured = true));
         }
 
         if (!this.volumesConfigured) {
-            items.push(this.button(translate('CONFIGURE_VOLUMES'),
+            items.push(this.button(
+                translate('CONFIGURE_VOLUMES'),
                 () => this.transient.volumesConfigured = true));
         }
 
         if (!this.sourceOptions) {
-            items.push(this.button(translate('CONFIGURE_SOURCE'),
+            items.push(this.button(
+                translate('CONFIGURE_SOURCE'),
                 () => this.transient.sourceOptions = true));
         }
 
         if (!this.failureOptions) {
-            items.push(this.button(translate('CONFIGURE_FAILURE'),
+            items.push(this.button(
+                translate('CONFIGURE_FAILURE'),
                 () => this.transient.failureOptions = true));
         }
 
+        return items;
+    }
+
+    public render() {
+        let step = this.props.step;
+        const classes = this.props.classes || {};
+        let items = this.generateOptionItems();
+
         return (<div className={classes.advanced}>
-            {this.healthConfigured &&
+            {step.type === 'service' && this.healthConfigured &&
                 this.section(translate('HELP_HEALTH'), <HealthOptions step={step} ide={this.props.ide} />)}
+            {step.type === 'service' && this.readinessConfigured &&
+                this.section(translate('HELP_READINESS'), <HealthOptions field="readiness" step={step} ide={this.props.ide} />)}
             {this.sourceOptions &&
                 this.section(translate('HELP_SOURCE'), <SourceOptions step={step} />)}
             {this.failureOptions &&

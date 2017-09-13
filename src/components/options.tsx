@@ -30,7 +30,10 @@ const styles = (theme: any) => {
             },
             selected: {
                 composes: 'btn selected'
-            }
+            },
+            fullWidth: {
+                width: '100%'
+            },
         };
     }
     else {
@@ -38,6 +41,9 @@ const styles = (theme: any) => {
             optionsList: {
                 composes: 'pure-menu-list select-list',
                 margin: '3px 0 0 0'
+            },
+            fullWidth: {
+                width: '100%'
             },
             option: {
                 composes: 'pure-menu-link',
@@ -70,6 +76,7 @@ export interface Option {
 
 export interface OptionsProps {
     ide: boolean;
+    fill?: boolean;
     className?: string;
     options: Option[];
     selected?: any;
@@ -98,11 +105,17 @@ export class Options extends React.Component<OptionsProps, {}> {
     }
 
     private option(option: Option, key: number) {
+        let style: React.CSSProperties = {};
+        if (this.props.fill) {
+            style.textAlign = 'center';
+            style.minWidth = (100 / this.props.options.length).toPrecision(5) + '%';
+        }
+
         return this.props.ide ?
-            (<button key={key} className={this.optionClass(option)} onClick={e => this.setSelected(e, option)}>
+            (<button key={key} className={this.optionClass(option)} onClick={e => this.setSelected(e, option)} style={style}>
                 {option.display}
             </button>) :
-            (<li key={key} className="pure-menu-item" onClick={e => this.setSelected(e, option)}>
+            (<li key={key} className="pure-menu-item" onClick={e => this.setSelected(e, option)} style={style}>
                 <a href="#" className={this.optionClass(option)}>
                     {option.display}
                 </a>
@@ -113,12 +126,12 @@ export class Options extends React.Component<OptionsProps, {}> {
         let classes = this.props.classes || {};
         return this.props.ide ?
             (<div className={`block ${this.props.className || ''}`}>
-                <div className={classes.optionsList}>
+                <div className={[classes.optionsList, this.props.fill ? classes.fullWidth : ''].join(' ')}>
                     {this.props.options && this.props.options.map((o, i) => this.option(o, i))}
                 </div>
             </div>) :
             (<div className={`pure-menu pure-menu-horizontal ${this.props.className || ''}`}>
-                <ul className={classes.optionsList}>
+                <ul className={[classes.optionsList, this.props.fill ? classes.fullWidth : ''].join(' ')}>
                     {this.props.options && this.props.options.map((o, i) => this.option(o, i))}
                 </ul>
             </div>);

@@ -24,6 +24,13 @@ const jssStyles = (theme: any) => ({
         fontWeight: 'bold',
         lineHeight: '24px'
     },
+    placeholder: {
+        composes: theme.ide ? 'text-color' : '',
+        padding: 0,
+        margin: 0,
+        fontSize: '16px',
+        lineHeight: '24px'
+    },
     catalogSelectDiv: {
         composes: 'pure-u-1 pure-u-lg-3-4 block-md'
     },
@@ -145,7 +152,7 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
 
     private placeholder() {
         return (<CenteredContent>
-            {translate('PLACEHOLDER_VERSION')}
+            <div className={this.props.classes.placeholder}>{translate('PLACEHOLDER_VERSION')}</div>
         </CenteredContent>);
     }
 

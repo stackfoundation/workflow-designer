@@ -77,6 +77,16 @@ export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}>
         if (this.action == 'script') {
             return (<ScriptStepEditor
                 scriptEditorFactory={this.props.scriptEditorFactory}
+                scriptField={'script'}
+                workflow={this.props.workflow}
+                ide={this.props.ide}
+                catalog={this.props.catalog}
+                step={this.props.step as WorkflowStepSimple}>
+            </ScriptStepEditor>);
+        } else if (this.action == 'generated') {
+            return (<ScriptStepEditor
+                scriptEditorFactory={this.props.scriptEditorFactory}
+                scriptField={'generator'}
                 workflow={this.props.workflow}
                 ide={this.props.ide}
                 catalog={this.props.catalog}
@@ -93,6 +103,7 @@ export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}>
             <div>
                 <Options
                     ide={this.props.ide}
+                    fill={true}
                     options={this.options()}
                     onChange={a => this.setAction(a.value)}
                     selected={this.action} />

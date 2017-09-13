@@ -82,6 +82,7 @@ export class ImageField extends React.Component<ImageFieldProps, {}> {
             <div>
                 <Options
                     ide={this.props.ide}
+                    fill={true}
                     options={this.options()}
                     onChange={a => this.setImageSource(a.value)}
                     selected={this.imageSource} />

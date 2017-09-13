@@ -4,7 +4,7 @@ import {CatalogImage} from './catalog';
 import {Workflow, WorkflowStep, WorkflowStepSimple, ImageSource} from './workflow';
 import { StepType } from "../../../workflow";
 
-export type ScriptEditorFactory = (step: WorkflowStepSimple) => JSX.Element;
+export type ScriptEditorFactory = (step: WorkflowStepSimple, fieldName: string) => JSX.Element;
 
 export class EditorState {
     ide: boolean;

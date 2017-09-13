@@ -2,8 +2,8 @@ import * as React from 'react';
 import * as select from 'react-select';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
-import VirtualizedSelect from 'react-virtualized-select'
-import { VirtualizedOptionRenderOptions } from 'react-virtualized-select'
+import VirtualizedSelect from 'react-virtualized-select';
+import { VirtualizedOptionRenderOptions } from 'react-virtualized-select';
 let injectSheet = require('@tiagoroldao/react-jss').default;
 
 import { translate } from '../../../../../translation-service';
@@ -32,6 +32,13 @@ const jssStyles = (theme: any) => ({
         margin: 0,
         fontSize: '20px',
         fontWeight: 'bold',
+        lineHeight: '24px'
+    },
+    placeholder: {
+        composes: theme.ide ? 'text-color' : '',
+        padding: 0,
+        margin: 0,
+        fontSize: '16px',
         lineHeight: '24px'
     },
     description: {
@@ -148,7 +155,7 @@ export class CatalogSelect extends React.Component<CatalogSelectProps, {}> {
 
     private placeholder() {
         return (<CenteredContent>
-            {translate('PLACEHOLDER_IMAGE')}
+            <div className={this.props.classes.placeholder}>{translate('PLACEHOLDER_IMAGE')}</div>
         </CenteredContent>);
     }
 

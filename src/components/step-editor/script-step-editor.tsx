@@ -65,6 +65,7 @@ const styles = (theme: any) => {
 
 interface ScriptStepEditorProps {
     step: WorkflowStepSimple,
+    scriptField: string,
     workflow: Workflow,
     ide: boolean,
     catalog: CatalogImage[],
@@ -99,9 +100,9 @@ export class ScriptStepEditor extends React.Component<ScriptStepEditorProps, {}>
                     step={this.props.step} />
                 <div className="pure-u-1">
                     <div className={classes.section}>
-                        <div className={classes.sectionTitle}>Script:</div>
+                        <div className={classes.sectionTitle}>{translate('LABEL_'+this.props.scriptField.toUpperCase())}</div>
                         <div className={classes.sectionBody}>
-                            {this.props.scriptEditorFactory(this.props.step)}
+                            {this.props.scriptEditorFactory(this.props.step, this.props.scriptField)}
                         </div>
                     </div>
                 </div>

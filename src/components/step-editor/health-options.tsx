@@ -8,7 +8,7 @@ const Remove = require('react-icons/lib/fa/times-circle');
 
 import { editorStyles } from '../../style';
 import { Options } from '../options';
-import { WorkflowStepSimple} from '../../models/workflow';
+import { WorkflowStepSimple, Health } from '../../models/workflow';
 import { CenteredContent } from '../../util/centered-content'
 import { translate } from '../../../../../translation-service';
 import { Creatable, Option, OptionValues } from 'react-select';
@@ -16,6 +16,7 @@ import { HealthType, HealthTypes } from "../../../../workflow";
 
 interface HealthOptionsProps {
     step: WorkflowStepSimple;
+    field?: string;
     ide: boolean;
     classes?: any;
 }
@@ -51,16 +52,17 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
         super(props);
     }
 
-    private get health() {
-        return this.props.step.health;
+    private get healthField() {
+        let field = this.props.field || 'health';
+        return (this.props.step as any)[field] as Health;
     }
 
     private get currentHealthCheckType() {
         if (this.props.step) {
             if (this.props.step.transient.healthCheckType) {
                 return this.props.step.transient.healthCheckType;
-            } else if (this.props.step.health && this.props.step.health.type) {
-                return this.props.step.health.type;
+            } else if (this.healthField && this.healthField.type) {
+                return this.healthField.type;
             }
             
         }
@@ -92,9 +94,9 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
                 <input className="pure-input-1 input-text native-key-bindings"
                     
                     type="text"
-                    value={this.health.script || ""}
+                    value={this.healthField.script || ""}
                     onChange={e => this.setHealthCheckProperty(
-                        () => this.health.script = e.target.value)} />
+                        () => this.healthField.script = e.target.value)} />
             </div>
         </div>);
     }
@@ -111,9 +113,9 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
                 <input className="pure-input-1 input-text native-key-bindings"
                     
                     type="text"
-                    value={this.health.port || ""}
+                    value={this.healthField.port || ""}
                     onChange={e => this.setHealthCheckProperty(
-                        () => this.health.port = e.target.value)} />
+                        () => this.healthField.port = e.target.value)} />
             </div>
             {checkType !== "tcp" &&
                 (<label className={classes.smallLabelContainer}>
@@ -126,9 +128,9 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
                     <input className="pure-input-1 input-text native-key-bindings"
                     
                     type="text"
-                    value={this.health.path}
+                    value={this.healthField.path}
                     onChange={e => this.setHealthCheckProperty(
-                        () => this.health.path = e.target.value)} />
+                        () => this.healthField.path = e.target.value)} />
                 </div>)}
         </div>);
     }
@@ -154,7 +156,7 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
                 let value = parseInt(e.target.value);
                 if (!isNaN(value)) {
                     let stringVal = value;
-                    (this.health as any)[property] = value
+                    (this.healthField as any)[property] = value
                 }
                 
             })
@@ -171,9 +173,9 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
                     <input
                         type="text"
                         className={classes.healthNumberPropField}
-                        value={(this.health as any)[property] || ""}
+                        value={(this.healthField as any)[property] || ""}
                         onChange={e => this.setHealthCheckProperty(
-                            () => (this.health as any)[property] = parseInt(e.target.value))} />
+                            () => (this.healthField as any)[property] = parseInt(e.target.value))} />
                 </div>
             </div>
         </div>);
@@ -185,6 +187,7 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
             <div className="pure-u-1 block">
                 <Options
                     ide={this.props.ide}
+                    fill={true}
                     options={this.healthCheckTypes()}
                     onChange={a => this.setHealthCheckType(a.value)}
                     selected={this.currentHealthCheckType} />

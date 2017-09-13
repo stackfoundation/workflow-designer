@@ -5,6 +5,8 @@ import * as classNames from 'classnames';
 import { observable, computed, action } from 'mobx';
 import { observer } from 'mobx-react';
 const Plus = require('react-icons/lib/go/plus');
+const Bars = require('react-icons/lib/fa/bars');
+const Trash = require('react-icons/lib/fa/trash');
 
 import { themeColors } from '../style';
 
@@ -27,7 +29,11 @@ const styles = (theme: any) => {
 
     let ide = {
         step: {
-            composes: 'list-item step'
+            composes: 'list-item step',
+            cursor: 'pointer',
+            position: 'relative',
+            listStyle: 'none',
+            paddingLeft: '10px'
         },
         selected: {
             composes: 'selected'
@@ -43,6 +49,8 @@ const styles = (theme: any) => {
             color: '#000',
             fontWeight: 'normal',
             cursor: 'pointer',
+            position: 'relative',
+            paddingLeft: '10px'
         },
         selected: {
             fontWeight: 'bold',
@@ -55,12 +63,13 @@ const styles = (theme: any) => {
             composes: `${stepListClass} ${theme.ide ? 'list-tree' : ''}`,
             padding: '0 0 0 8px',
             marginLeft: theme.ide ? '0' : '6px',
-            borderLeft: theme.ide ? 'none' : 'solid 17px #eee'
+            borderLeft: theme.ide ? 'none' : 'solid 17px #eee',
         },
         rootList: {
             composes: '$stepList',
-            padding: '5px',
-            marginLeft: '0',
+            padding: '0px',
+            margin: '0',
+            marginBottom: '20px',
             borderLeft: 'none'
         },
         subList: {
@@ -73,15 +82,18 @@ const styles = (theme: any) => {
             '& > $stepList': {
                 position: 'relative',
                 top: '-10px',
-                'padding-top': '10px',
-                'margin-bottom': '-10px',
+                marginTop: '10px',
+                marginBottom: '-10px',
+                minHeight: '20px'
             },
         },
         step: theme.ide ? ide.step : web.step,
         selected: theme.ide ? ide.selected : web.selected,
         deleteStep: {
+            composes: theme.ide ? 'btn btn-error' : 'pure-button',
             display: 'block',
             position: 'relative',
+            marginRight: theme.ide ? '0px' : '20px',
 
             '& > div' : {
                 position: 'absolute',
@@ -90,16 +102,30 @@ const styles = (theme: any) => {
                 left: 0,
                 right: 0
             },
-            
-            '&.deleting': {
-                color: 'red'
-            }
+
+            '& svg' : {
+                position: 'relative',
+                top: '-0.15em',
+            },
+        },
+        deleteStepDeleting: {
+            color: theme.ide ? undefined : 'red'
         },
         stepPrefix: {
             fontWeight: 'bold'
         },
         hidden: {
             display: 'none'
+        },
+        handle: {
+            composes: 'dragula-handle',
+            position: 'absolute !important',
+            top: '0px',
+            right: theme.ide ? '0px' : '25px',
+            cursor: 'move',
+        },
+        handleIcon: {
+            composes: `dragula-handle ${theme.ide ? 'icon icon-grabber' : ''}`,
         }
     }
 };
@@ -197,8 +223,9 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
     }
 
     componentDidMount() {
-        let container = ReactDOM.findDOMNode(this);
-        let list = container.querySelectorAll('.' + stepListClass);
+        let container = ReactDOM.findDOMNode(this),
+            list = container.querySelectorAll('.' + stepListClass),
+            classes = this.props.classes;
         this.drake = Dragula(Array.prototype.slice.call(list), {
             mirrorContainer: container,
             accepts: (el: Element, target: Element, source: Element, sibling: Element) => {
@@ -219,6 +246,9 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
                 }
 
                 return true;
+            },
+            moves: (el: Element, target: Element, handle: Element) => {
+                return handle.classList.contains('dragula-handle');
             },
             isContainer: (el: Element) => {
                 return el.classList.contains(stepListClass);
@@ -249,11 +279,12 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
     }
 
     private stepTitle(parentList: WorkflowStep[], step: WorkflowStep, key: number) {
-        let classes = this.props.classes || {};
+        let classes = this.props.classes || {},
+            prefix = this.stepPrefix(parentList, key);
         return (
             <span>
-                <span className={classes.stepPrefix}>{this.stepPrefix(parentList, key)}</span>
-                &nbsp;{step.name}
+                {prefix.length > 0 && <span className={classes.stepPrefix}>{this.stepPrefix(parentList, key)}&nbsp;</span>}
+                {step.name}
             </span>);
     }
 
@@ -262,6 +293,12 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
             if (parent) {}
             (el as any).relatedStep = step;
         }
+    }
+
+    private StepHandle () {
+        return <div className={this.props.classes.handle}>
+            {this.props.state.ide ? <span className={this.props.classes.handleIcon}></span> : <Bars className={this.props.classes.handleIcon}/>}
+        </div>
     }
 
     private subSteps(parent: WorkflowStep | Workflow): JSX.Element {
@@ -278,6 +315,7 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
                             ref={el => this.setStep(el, parent, step)}
                             onClick={e => this.selectStep(step, e)}>
                             {this.stepTitle(parent.steps, step, i)}
+                            {this.StepHandle ()}
                             {step instanceof WorkflowStepCompound && this.subSteps(step)}
                         </li>))}
             </ul>);
@@ -296,17 +334,14 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
                 <div 
                     ref={(div) => { this.deleteDiv = div; }}
                     className={[
-                        classes.stepList,
+                        stepListClass,
                         classes.deleteStep,
-                        (!this.state.dragging ? classes.hidden : ''),
-                        (this.state.deleting ? 'deleting' : '')].join(' ')
+                        (this.state.deleting ? classes.deleteStepDeleting : '')].join(' ')
                     }>
-                    <i className="glyphicon glyphicon-trash"></i> Delete...
+                    {this.state.dragging ? 
+                        <span><Trash />Delete...</span> :
+                        <span><Plus /> Add Step...</span> }
                     <div></div>
-                </div>
-                <div className={this.state.dragging ? classes.hidden : ''}
-                    onClick={_ => this.addStep()}>
-                    <Plus /> Add Step...
                 </div>
             </div>)
     }

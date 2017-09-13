@@ -1,4 +1,4 @@
-import { observable, computed, toJS } from "mobx";
+import { observable, action, computed, toJS } from "mobx";
 import { IWorkflow, IWorkflowStepBase, IWorkflowStepSimple, IWorkflowStepCompound, IHealth, EnvironmentSource, StepType, Volume, HealthType }
     from '../../../workflow';
 
@@ -104,6 +104,7 @@ export class Workflow implements IWorkflow {
         return this.flattenSteps(this.steps, includeCompoundSteps);
     }
 
+    @action
     moveStep(step: WorkflowStep, index: number, parent: WorkflowStepCompound | Workflow = this) {
         let targetEnd: WorkflowStep = index < parent.steps.length && parent.steps[index];
 
@@ -114,6 +115,7 @@ export class Workflow implements IWorkflow {
         parent.steps.splice(targetIndex, 0, step);
     }
 
+    @action
     addStep() {
         let steps = this.flattenedStepsAll,
             name = 'New step',
@@ -196,6 +198,8 @@ export class TransientState {
     @observable healthCheckType?: HealthType;
     @observable action?: ActionType;
     @observable healthConfigured: boolean;
+    @observable readinessConfigured: boolean;
+    @observable readinessCheckType?: HealthType;
     @observable sourceOptions: boolean;
     @observable failureOptions: boolean;
     @observable environmentConfigured: boolean;
@@ -255,19 +259,29 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
     @observable ignoreFailure?: boolean = false;
     @observable sourceLocation?: string = '';
     @observable health?: Health = new Health({});
+    @observable readiness?: Health = new Health({});
     @observable environment?: EnvironmentSource[] = [];
     @observable ports?: string[] = [];
     @observable volumes?: Volume[] = [];
 
     static apply(source: IWorkflowStepSimple): WorkflowStepSimple {
-        let step: WorkflowStepSimple = Object.assign(new WorkflowStepSimple({}), source, {health: new Health(source.health)});
+        let step: WorkflowStepSimple = Object.assign(
+            new WorkflowStepSimple({}), 
+            source, {
+                health: new Health(source.health),
+                readiness: new Health(source.readiness)
+            });
         return step;
     }
 
     toJS(): IWorkflowStepSimple {
-        this.health.toJS();
-        let out = toJS(this);
-        delete out.transient;
+        let asJS = toJS(this);
+        delete asJS.transient;
+        let out = asJS as IWorkflowStepSimple;
+        if (out.type === 'service') {
+            out.health = out.type === 'service' ? this.health.toJS() : undefined;
+            out.readiness = out.type === 'service' ? this.readiness.toJS() : undefined;
+        }
         return out;
     }
 }
