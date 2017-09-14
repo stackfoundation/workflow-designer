@@ -27,7 +27,7 @@ import { editorStyles, themeColors, sectionStyles } from '../../style';
 const styles = (theme: any) => {
     let section = sectionStyles(theme);
 
-    return {
+    return Object.assign({
         select: {
             composes: `${editorStyles.largeSelect}`
         },
@@ -56,11 +56,8 @@ const styles = (theme: any) => {
         },
         focused: {
             composes: 'focused',
-        },
-        section: section.section,
-        sectionBody: section.bodyTight,
-        sectionTitle: section.title,
-    }
+        }
+    }, section);
 };
 
 interface ScriptStepEditorProps {
@@ -100,8 +97,8 @@ export class ScriptStepEditor extends React.Component<ScriptStepEditorProps, {}>
                     step={this.props.step} />
                 <div className="pure-u-1">
                     <div className={classes.section}>
-                        <div className={classes.sectionTitle}>{translate('LABEL_'+this.props.scriptField.toUpperCase())}</div>
-                        <div className={classes.sectionBody}>
+                        <div className={classes.sectionTitle}>{translate('LABEL_'+this.props.scriptField.toUpperCase())}:</div>
+                        <div className={[classes.sectionBodyTight, classes.sectionBodyBorderless].join(' ')}>
                             {this.props.scriptEditorFactory(this.props.step, this.props.scriptField)}
                         </div>
                     </div>

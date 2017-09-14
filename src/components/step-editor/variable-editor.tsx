@@ -29,7 +29,7 @@ const styles = (theme: any) => ({
     }
 });
 
-interface SourceEditorProps {
+interface VariableEditorProps {
     source: EnvironmentSource;
     sourceType: EnvironmentSourceType;
     onChange: () => void;
@@ -38,8 +38,8 @@ interface SourceEditorProps {
 
 @injectSheet(styles)
 @observer
-export class EnvironmentSourceEditor extends React.Component<SourceEditorProps> {
-    constructor(props: SourceEditorProps) {
+export class VariableEditor extends React.Component<VariableEditorProps> {
+    constructor(props: VariableEditorProps) {
         super(props);
     }
 
@@ -75,7 +75,7 @@ export class EnvironmentSourceEditor extends React.Component<SourceEditorProps> 
                     <div className="pure-g">
                         <label className={classes.labelContainer}>
                             <CenteredContent>
-                                <span className={classes.label}>{translate('LABEL_NAME')}</span>
+                                <span className={classes.label}>{translate('LABEL_NAME')}:</span>
                             </CenteredContent>
                         </label>
                         <div className={classes.fieldContainer}>
@@ -91,7 +91,7 @@ export class EnvironmentSourceEditor extends React.Component<SourceEditorProps> 
                     <div className="pure-g">
                         <label className={classes.labelContainer}>
                             <CenteredContent>
-                                <span className={classes.label}>{translate('LABEL_VALUE')}</span>
+                                <span className={classes.label}>{translate('LABEL_VALUE')}:</span>
                             </CenteredContent>
                         </label>
                         <div className={classes.fieldContainer}>
@@ -107,7 +107,7 @@ export class EnvironmentSourceEditor extends React.Component<SourceEditorProps> 
                 <div className="pure-g block-md">
                     <label className={classes.doubleLabelContainer}>
                         <CenteredContent>
-                            <span className={classes.label}>{translate('LABEL_FILE')}</span>
+                            <span className={classes.label}>{translate('LABEL_FILE')}:</span>
                         </CenteredContent>
                     </label>
                     <div className={classes.doubleFieldContainer}>

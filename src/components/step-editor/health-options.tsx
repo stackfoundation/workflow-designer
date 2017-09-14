@@ -87,7 +87,7 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
         return (<div className="pure-g">
             <label className={classes.smallLabelContainer}>
                 <CenteredContent>
-                    <span className={classes.label}>{translate('LABEL_SCRIPT')}</span>
+                    <span className={classes.label}>{translate('LABEL_SCRIPT')}:</span>
                 </CenteredContent>
             </label>
             <div className="pure-u-5-6">
@@ -106,7 +106,7 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
         return (<div className="pure-g">
             <label className={classes.smallLabelContainer}>
                 <CenteredContent>
-                    <span className={classes.label}>{translate('LABEL_PORT')}</span>
+                    <span className={classes.label}>{translate('LABEL_PORT')}:</span>
                 </CenteredContent>
             </label>
             <div className={checkType === "tcp" ? "pure-u-5-6" : "pure-u-1-3"}>
@@ -120,7 +120,7 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
             {checkType !== "tcp" &&
                 (<label className={classes.smallLabelContainer}>
                     <CenteredContent>
-                        <span className={classes.label}>{translate('LABEL_PATH')}</span>
+                        <span className={classes.label}>{translate('LABEL_PATH')}:</span>
                     </CenteredContent>
                 </label>)}
             {checkType !== "tcp" &&
@@ -166,7 +166,7 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
             <div className="pure-g">
                 <label className={classes.largeLabelContainer}>
                     <CenteredContent>
-                        <span className={classes.label}>{translate('LABEL_' + property.toUpperCase())}</span>
+                        <span className={classes.label}>{translate('LABEL_' + property.toUpperCase())}:</span>
                     </CenteredContent>
                 </label>
                 <div className={classes.healthNumberPropFieldDiv}>

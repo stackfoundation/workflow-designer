@@ -17,10 +17,6 @@ export class EditorState {
         this.catalog = catalog;
     }
 
-    // @action setSelectedImage(image: CatalogImage) {
-    //     (this.currentStep as WorkflowStepSimple).image = image.name;
-    // }
-
     @action selectInitialStep() {
         if (this.workflow && this.workflow.steps && this.workflow.steps.length > 0) {
             this.selectStep(this.workflow.steps[0]);
@@ -29,6 +25,10 @@ export class EditorState {
 
     @action selectStep(step: WorkflowStep) {
         this.currentStep = step;
+    }
+
+    @action clearSelectedStep() {
+        this.currentStep = undefined;
     }
 
     @action deleteStep(step: WorkflowStep) {
@@ -42,10 +42,4 @@ export class EditorState {
     @action changeCurrentStepType(type: StepType) {
         this.currentStep = this.workflow.changeStepType(this.currentStep, type);
     }
-
-    // @action setImageSource(source: ImageSource) {
-    //     if (this.currentStep && (this.currentStep as WorkflowStepSimple).imageSource) {
-    //         (this.currentStep as WorkflowStepSimple).imageSource = source;
-    //     }
-    // }
 }

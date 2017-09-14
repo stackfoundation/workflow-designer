@@ -39,8 +39,7 @@ const styles = (theme: any) => {
     else {
         return {
             optionsList: {
-                composes: 'pure-menu-list select-list',
-                margin: '3px 0 0 0'
+                composes: 'pure-menu-list select-list'
             },
             fullWidth: {
                 width: '100%'

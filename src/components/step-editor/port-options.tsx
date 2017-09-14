@@ -97,14 +97,13 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
     }
 
     private portCreateText = (label: string): string => {
-        let ports = this.breakPorts(label),
-            out = "Create port " + ports[0];
+        let ports = this.breakPorts(label);
 
-        if (ports.length == 2) {
-            out += " mapped to external port " + ports[1];
+        if (ports.length == 1) {
+            ports.push(ports[0]);
         }
-        
-        return out;
+
+        return translate('SELECT_TEXT_CREATE_PORT', ports);
     }
 
     public render() {
@@ -121,7 +120,7 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
                 multi={true}
                 clearable={true}
                 promptTextCreator={this.portCreateText}
-                noResultsText={'Enter a valid port number ( format: internalPort[:externalPort] )'}
+                noResultsText={translate('INSTRUCTION_PORTS')}
                 value={portsArray} 
                 onChange={p => this.add(p)} />
         </div>);

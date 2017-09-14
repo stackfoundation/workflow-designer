@@ -17,20 +17,20 @@ const styles = (theme: any) => ({
 
 @injectSheet(styles)
 @observer
-export class DockerfileStepEditor extends React.Component<{ step: WorkflowStepSimple, classes?: any }, {}> {
+export class ExtWorkflowStepEditor extends React.Component<{ step: WorkflowStepSimple, classes?: any }, {}> {
     constructor(props: { step: WorkflowStepSimple, classes?: any }) {
         super(props);
     }
     @action
-    private onDockerfileChange(event: React.ChangeEvent<HTMLInputElement>) {
-        this.props.step.dockerfile = event.target.value;
+    private onWorkflowChange(event: React.ChangeEvent<HTMLInputElement>) {
+        this.props.step.target = event.target.value;
     }
     public render() {
         return (
             <div className="pure-g">
                 <div className={this.props.classes.label}>
                     <CenteredContent>
-                        <span>{translate('LABEL_DOCKERFILE')}:</span>
+                        <span>{translate('LABEL_WORKFLOW')}:</span>
                     </CenteredContent>
                 </div>
                 <div className="pure-u-5-6">
@@ -38,8 +38,8 @@ export class DockerfileStepEditor extends React.Component<{ step: WorkflowStepSi
                         type="text"
                         className="pure-input-1 input-text native-key-bindings"
                         name="image"
-                        value={this.props.step.dockerfile || ''}
-                        onChange={e => this.onDockerfileChange(e)} />
+                        value={this.props.step.target || ''}
+                        onChange={e => this.onWorkflowChange(e)} />
                 </div>
             </div>);
     }

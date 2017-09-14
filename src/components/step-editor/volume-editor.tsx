@@ -59,7 +59,7 @@ export class VolumeEditor extends React.Component<VolumeEditorProps> {
         return (<div className="pure-g">
                 <label className={classes.mountPath}>
                     <CenteredContent>
-                        <span className={classes.label}>{translate('LABEL_MOUNT_PATH')}</span>
+                        <span className={classes.label}>{translate('LABEL_MOUNT_PATH')}:</span>
                     </CenteredContent>
                 </label>
                 <div className="pure-u-1-3">
@@ -70,7 +70,7 @@ export class VolumeEditor extends React.Component<VolumeEditorProps> {
                 </div>
                 <label className={classes.hostPath}>
                     <CenteredContent>
-                        <span className={classes.label}>{translate('LABEL_HOST_PATH')}</span>
+                        <span className={classes.label}>{translate('LABEL_HOST_PATH')}:</span>
                     </CenteredContent>
                 </label>
                 <div className="pure-u-1-3">

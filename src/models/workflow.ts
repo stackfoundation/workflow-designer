@@ -9,6 +9,13 @@ export interface WorkflowStepPos {
 
 export class Workflow implements IWorkflow {
     @observable steps: WorkflowStep[] = [];
+    @observable workflowVariables: EnvironmentSource[] = [];
+
+    constructor(workflow?: Partial<IWorkflow>) {
+        if (workflow) {
+            Object.assign(this, workflow);
+        }
+    }
 
     changeStepType(step: WorkflowStep, newStepType: StepType): WorkflowStep {
         let simpleStepTypes: StepType[] = ['sequential', 'service', 'parallel'];
@@ -161,7 +168,7 @@ export class Workflow implements IWorkflow {
     }
 
     static apply(source: IWorkflow): Workflow {
-        return Object.assign(Object.create(Workflow.prototype), source, {
+        return Object.assign(new Workflow(), source, {
             steps: source.steps.map(step => {
                 if (step.type === 'compound') return WorkflowStepCompound.apply(step as IWorkflowStepCompound);
                 else return WorkflowStepSimple.apply(step as IWorkflowStepSimple);
@@ -171,7 +178,8 @@ export class Workflow implements IWorkflow {
 
     toJS (): IWorkflow {
         return {
-            steps: this.steps.map(step => step.toJS())
+            steps: this.steps.map(step => step.toJS()),
+            workflowVariables: this.workflowVariables.length ? cleanEnvironmentSources(this.workflowVariables) : undefined
         };
     }
 }
@@ -237,15 +245,7 @@ export class Health implements IHealth {
         if (!this.filled()) {
             return undefined;
         }
-
-        let out: any = {},
-            asJS = toJS(this);
-
-        for (var i = 0; i < keysOfIHealth.length; i++) {
-            out[keysOfIHealth[i]] = asJS[keysOfIHealth[i]];
-        }
-
-        return out;
+        return fillObj(toJS(this), keysOfIHealth);
     }
 }
 
@@ -300,13 +300,7 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
     }
 
     toJS(): IWorkflowStepSimple {
-        let asJS = toJS(this),
-            action = this.action,
-            out: any = {};
-
-        for (var i = 0; i < keysOfIWorkflowStepSimple.length; i++) {
-            out[keysOfIWorkflowStepSimple[i]] = asJS[keysOfIWorkflowStepSimple[i]];
-        }
+        let out: IWorkflowStepSimple = fillObj(toJS(this), keysOfIWorkflowStepSimple);
 
         if (out.type === 'service') {
             out.health = this.health.toJS();
@@ -315,22 +309,27 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
             delete out.health;
             delete out.readiness;
         }
-
-        if (action !== 'script') {
+        if (this.action !== 'script' && this.action !== 'generated') {
+            this.deleteScriptStepFields(out);
+        }
+        if (this.action !== 'script') {
             delete out.script;
         }
-        if (action !== 'generated') {
+        if (this.action !== 'generated') {
             delete out.generator;
         }
-        if (action !== 'dockerfile') {
+        if (this.action !== 'dockerfile') {
             delete out.dockerfile;
         }
-        if (action !== 'call') {
+        if (this.action !== 'call') {
             delete out.target;
         }
 
         if (out.environment && out.environment.length === 0) {
             delete out.environment;
+        }
+        else {
+            out.environment = cleanEnvironmentSources(out.environment);
         }
         if (out.ports && out.ports.length === 0) {
             delete out.ports;
@@ -340,6 +339,19 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
         }
         
         return out;
+    }
+
+    private deleteScriptStepFields (step: IWorkflowStepSimple) {
+        delete step.environment;
+        delete step.generator;
+        delete step.health;
+        delete step.ignoreFailure;
+        delete step.image;
+        delete step.omitSource;
+        delete step.ports;
+        delete step.readiness;
+        delete step.script;
+        delete step.sourceLocation;
     }
 }
 
@@ -370,4 +382,29 @@ export class WorkflowStepCompound extends WorkflowStepBase implements IWorkflowS
             steps: this.steps.map(step => step.toJS())
         };
     }
+}
+
+function fillObj (source: any, keys: string[]): any {
+    let out: any = {};
+
+    for (var i = 0; i < keys.length; i++) {
+        out[keys[i]] = source[keys[i]];
+    }
+
+    return out;
+}
+
+function cleanEnvironmentSources (source: EnvironmentSource[]): EnvironmentSource[] {
+    let out: EnvironmentSource[] = [];
+
+    for (var i = 0; i < source.length; i++) {
+        if (source[i].file) {
+            out.push({file: source[i].file})
+        }
+        else {
+            out.push({name: source[i].name, value: source[i].name})
+        }
+    }
+
+    return out;
 }

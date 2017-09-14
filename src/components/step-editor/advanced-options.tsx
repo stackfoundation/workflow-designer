@@ -6,7 +6,7 @@ let injectSheet = require('@tiagoroldao/react-jss').default;
 import { WorkflowStepSimple, TransientState } from '../../models/workflow';
 import { SourceOptions } from './source-options';
 import { FailureOptions } from './failure-options';
-import { EnvironmentOptions } from './environment-options';
+import { VariablesEditor } from './variables-editor';
 import { VolumeOptions } from './volume-options';
 import { PortOptions } from './port-options';
 import { HealthOptions } from './health-options';
@@ -23,14 +23,11 @@ interface AdvancedOptionsProps {
 const styles = (theme: any) => {
     let section = sectionStyles(theme);
 
-    return {
+    return Object.assign({
         advanced: {
             composes: 'pure-u-1 block',
             marginTop: '16px'
         },
-        section: section.section,
-        title: section.title,
-        body: section.body,
         link: {
             color: '#4E73BD',
             fontWeight: '700',
@@ -43,7 +40,7 @@ const styles = (theme: any) => {
                 textDecoration: 'none'
             }
         }
-    }
+    }, section);
 };
 
 @injectSheet(styles)
@@ -139,8 +136,8 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
     private section(title: string, body: JSX.Element) {
         const classes = this.props.classes || {};
         return (<div className={classes.section}>
-            <div className={classes.title}>{title}</div>
-            <div className={classes.body}>
+            <div className={classes.sectionTitle}>{title}</div>
+            <div className={classes.sectionBody}>
                 {body}
             </div>
         </div>)
@@ -232,7 +229,7 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
             {this.failureOptions &&
                 this.section(translate('HELP_FAILURE'), <FailureOptions step={step} />)}
             {this.environmentConfigured &&
-                this.section(translate('HELP_ENVIRONMENT'), <EnvironmentOptions step={step} ide={this.props.ide} />)}
+                this.section(translate('HELP_ENVIRONMENT'), <VariablesEditor variables={step.environment} ide={this.props.ide} />)}
             {this.volumesConfigured &&
                 this.section(translate('HELP_VOLUMES'), <VolumeOptions step={step} ide={this.props.ide} />)}
             {this.portsConfigured &&

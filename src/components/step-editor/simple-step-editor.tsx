@@ -8,6 +8,7 @@ import { Options } from '../options';
 import { WorkflowStepSimple, Workflow, ActionType, TransientState } from '../../models/workflow';
 import { ScriptStepEditor } from './script-step-editor';
 import { DockerfileStepEditor } from './dockerfile-step-editor';
+import { ExtWorkflowStepEditor } from './ext-workflow-step-editor';
 import { ScriptEditorFactory } from "../../models/state";
 import { editorStyles, themeColors } from '../../style';
 import { CatalogImage } from "../../models/catalog";
@@ -86,6 +87,8 @@ export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}>
             </ScriptStepEditor>);
         } else if (this.action == 'dockerfile') {
             return (<DockerfileStepEditor step={this.props.step as WorkflowStepSimple} />);
+        } else if (this.action == 'call') {
+            return (<ExtWorkflowStepEditor step={this.props.step as WorkflowStepSimple} />);
         }
     }
 

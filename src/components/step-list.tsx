@@ -8,12 +8,13 @@ const Plus = require('react-icons/lib/go/plus');
 const Bars = require('react-icons/lib/fa/bars');
 const Trash = require('react-icons/lib/fa/trash');
 
-import { themeColors } from '../style';
+import { themeColors, listStyles } from '../style';
 
 let injectSheet = require('@tiagoroldao/react-jss').default;
 
 import { Workflow, WorkflowStep, WorkflowStepCompound, WorkflowStepSimple } from '../models/workflow';
 import { EditorState } from '../models/state';
+import { translate } from '../../../../translation-service';
 
 declare global {
     namespace JSX {
@@ -27,70 +28,11 @@ const stepListClass = 'step-list';
 
 const styles = (theme: any) => {
 
-    let ide = {
-        step: {
-            composes: 'list-item step',
-            cursor: 'pointer',
-            position: 'relative',
-            listStyle: 'none',
-            paddingLeft: '10px'
-        },
-        selected: {
-            composes: 'selected'
-        }
-    }
-    
-    let web = {
-        step: {
-            composes: 'step',
-            listStyle: 'none',
-            lineHeight: '2em',
-            fontSize: '16px',
-            color: '#000',
-            fontWeight: 'normal',
-            cursor: 'pointer',
-            position: 'relative',
-            paddingLeft: '10px'
-        },
-        selected: {
-            fontWeight: 'bold',
-            color: themeColors.darkerGreen
-        },
-    }
+    let list = listStyles(theme);
 
-    return {
-        stepList: {
-            composes: `${stepListClass} ${theme.ide ? 'list-tree' : ''}`,
-            padding: '0 0 0 8px',
-            marginLeft: theme.ide ? '0' : '6px',
-            borderLeft: theme.ide ? 'none' : 'solid 17px #eee',
-        },
-        rootList: {
-            composes: '$stepList',
-            padding: '0px',
-            margin: '0',
-            marginBottom: '20px',
-            borderLeft: 'none'
-        },
-        subList: {
-            composes: theme.ide ? 'list-nested-item' : '',
-
-            '& > span': {
-                'line-height': '2em'
-            },
-
-            '& > $stepList': {
-                position: 'relative',
-                top: '-10px',
-                marginTop: '10px',
-                marginBottom: '-10px',
-                minHeight: '20px'
-            },
-        },
-        step: theme.ide ? ide.step : web.step,
-        selected: theme.ide ? ide.selected : web.selected,
-        deleteStep: {
-            composes: theme.ide ? 'btn btn-error' : 'pure-button',
+    let styles = {
+        addButton: {
+            composes: theme.ide ? 'btn' : 'pure-button',
             display: 'block',
             position: 'relative',
             marginRight: theme.ide ? '0px' : '20px',
@@ -107,6 +49,9 @@ const styles = (theme: any) => {
                 position: 'relative',
                 top: '-0.15em',
             },
+        },
+        deleteStep: {
+            composes: theme.ide ? 'btn-error' : '',
         },
         deleteStepDeleting: {
             color: theme.ide ? undefined : 'red'
@@ -128,11 +73,19 @@ const styles = (theme: any) => {
             composes: `dragula-handle ${theme.ide ? 'icon icon-grabber' : ''}`,
         }
     }
+
+    return Object.assign(styles, list);
 };
+
+interface StepListProps {
+    state: EditorState;
+    onStepSelect?: (step: WorkflowStep) => void
+    classes?:any;
+}
 
 @injectSheet(styles)
 @observer
-export class StepList extends React.Component<{ state: EditorState, classes?:any }, {}> {
+export class StepList extends React.Component<StepListProps, {}> {
     private drake: Dragula.Drake;
     public state = {
         dragging: false,
@@ -140,7 +93,7 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
     };
     private deleteDiv: HTMLElement;
 
-    constructor(props: { state: EditorState, classes?:any }) {
+    constructor(props: StepListProps) {
         super(props);
     }
 
@@ -153,12 +106,13 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
     }
 
     @action
-    private addStep() {
+    private addStep = () => {
         this.props.state.workflow.addStep();
     }
 
     private selectStep(step: WorkflowStep, event: React.MouseEvent<HTMLLIElement>) {
         this.props.state.selectStep(step);
+        this.props.onStepSelect && this.props.onStepSelect(step);
         event.stopPropagation();
     }
 
@@ -258,8 +212,6 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
         this.drake.on('drag', this.onDrag);
         this.drake.on('dragend', this.onDragEnd);
         this.drake.on('drop', this.onDrop);
-
-        this.props.state.selectInitialStep();
     }
 
     componentWillUnmount() {
@@ -269,9 +221,9 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
     private stepClasses(step: WorkflowStep) {
         let classes = this.props.classes || {};
         try {
-            return classes.step +
-                (this.currentStep === step ? ' ' + classes.selected : '') +
-                (step.type == 'compound' ? ' ' + classes.subList : '');
+            return classes.listItem +
+                (this.currentStep === step ? ' ' + classes.listItemSelected : '') +
+                (step.type == 'compound' ? ' ' + classes.listItemSubList : '');
         }
         catch(e) {
             throw(e);   
@@ -282,10 +234,10 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
         let classes = this.props.classes || {},
             prefix = this.stepPrefix(parentList, key);
         return (
-            <span>
+            <div>
                 {prefix.length > 0 && <span className={classes.stepPrefix}>{this.stepPrefix(parentList, key)}&nbsp;</span>}
                 {step.name}
-            </span>);
+            </div>);
     }
 
     setStep = (el: HTMLLIElement, parent: any, step: any) => {
@@ -307,7 +259,7 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
         let rootList = parent instanceof Workflow;
         if (parent instanceof WorkflowStepCompound || parent instanceof Workflow) {
             return (
-                <ul className={rootList ? classes.rootList : classes.stepList} ref={el => el && ((el as any).parentStep = parent)}>
+                <ul className={`${stepListClass} ${rootList ? classes.rootListTree : classes.listTree}`} ref={el => el && ((el as any).parentStep = parent)}>
                     {parent.steps.map((step, i) => (
                         <li 
                             className={this.stepClasses(step)} 
@@ -318,43 +270,32 @@ export class StepList extends React.Component<{ state: EditorState, classes?:any
                             {this.StepHandle ()}
                             {step instanceof WorkflowStepCompound && this.subSteps(step)}
                         </li>))}
-            </ul>);
+                </ul>);
         }
 
         return null;
     }
 
-    private content = () => {
+    public render () {
         const classes = this.props.classes || {};
         
         return (
             <div>
-                <h3 className="title">Steps:</h3>
                 {this.subSteps(this.props.state.workflow)}
                 <div 
                     ref={(div) => { this.deleteDiv = div; }}
+                    onClick={this.addStep}
                     className={[
                         stepListClass,
-                        classes.deleteStep,
+                        classes.addButton,
+                        (this.state.dragging ? classes.deleteStep : ''),
                         (this.state.deleting ? classes.deleteStepDeleting : '')].join(' ')
                     }>
                     {this.state.dragging ? 
-                        <span><Trash />Delete...</span> :
-                        <span><Plus /> Add Step...</span> }
+                        <span><Trash />{translate('DELETE')}...</span> :
+                        <span><Plus /> {translate('ADD_STEP')}...</span> }
                     <div></div>
                 </div>
             </div>)
-    }
-
-    public render() {
-        return this.props.state.ide ?
-            (<div className="padded">
-                <div className="inset-panel padded">
-                    {this.content()}
-                </div>
-            </div>) :
-            (<div>
-                {this.content()}
-            </div>);
     }
 }

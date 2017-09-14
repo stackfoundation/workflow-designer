@@ -9,7 +9,7 @@ import { Options } from '../options';
 import { WorkflowStepSimple } from '../../models/workflow';
 import { EnvironmentSource, EnvironmentSourceType } from '../../../../workflow';
 import { translate } from '../../../../../translation-service';
-import { EnvironmentSourceEditor } from './environment-source-editor';
+import { VariableEditor } from './variable-editor';
 import { mediaQueries } from '../../style';
 
 let injectSheet = require('@tiagoroldao/react-jss').default;
@@ -64,26 +64,22 @@ const jssStyles = (theme: any) => ({
     }
 });
 
-interface EnvironmentOptionsProps {
-    step: WorkflowStepSimple;
+interface VariablesEditorProps {
+    variables: EnvironmentSource[];
     ide: boolean;
     classes?: any;
 }
 
 class EditorState {
     constructor(
-        private step: WorkflowStepSimple,
+        private variables: EnvironmentSource[],
         private source: EnvironmentSource,
         public committed: boolean) {
     }
 
     commitIfNecessary() {
         if (!this.committed) {
-            if (!this.step.environment) {
-                this.step.environment = [];
-            }
-
-            this.step.environment.push(this.source);
+            this.variables.push(this.source);
             this.committed = true;
         }
     }
@@ -97,8 +93,8 @@ class EditorEnvironmentSource implements EnvironmentSource {
 
 @injectSheet(jssStyles)
 @observer
-export class EnvironmentOptions extends React.Component<EnvironmentOptionsProps, { sourceType: EnvironmentSourceType }> {
-    constructor(props: EnvironmentOptionsProps) {
+export class VariablesEditor extends React.Component<VariablesEditorProps, { sourceType: EnvironmentSourceType }> {
+    constructor(props: VariablesEditorProps) {
         super(props);
     }
 
@@ -106,8 +102,8 @@ export class EnvironmentOptions extends React.Component<EnvironmentOptionsProps,
         this.setState({ sourceType: 'pair' });
     }
 
-    private get environment() {
-        return this.props.step.environment;
+    private get variables(): EnvironmentSource[] {
+        return this.props.variables;
     }
 
     private sourceTypeEditor() {
@@ -127,12 +123,12 @@ export class EnvironmentOptions extends React.Component<EnvironmentOptionsProps,
 
     @action
     private remove(source: EnvironmentSource) {
-        this.environment.splice(this.environment.indexOf(source), 1);
+        this.variables.splice(this.variables.indexOf(source), 1);
     }
 
     private sourceEditor(source: EnvironmentSource, key: number, committed: boolean) {
-        let state = new EditorState(this.props.step, source, committed);
-        let editor = (<EnvironmentSourceEditor
+        let state = new EditorState(this.variables, source, committed);
+        let editor = (<VariableEditor
             source={source}
             sourceType={state.committed ? (source.file ? 'file' : 'pair') : this.state.sourceType}
             onChange={() => state.commitIfNecessary()} />);
@@ -159,13 +155,13 @@ export class EnvironmentOptions extends React.Component<EnvironmentOptionsProps,
     private sourceEditors() {
         let editors = [];
 
-        if (this.environment) {
-            for (let i = 0; i <= this.environment.length; i++) {
+        if (this.variables) {
+            for (let i = 0; i <= this.variables.length; i++) {
                 let source = undefined;
                 let committed = false;
 
-                if (i < this.environment.length) {
-                    source = this.environment[i];
+                if (i < this.variables.length) {
+                    source = this.variables[i];
                     committed = true;
                 } else {
                     source = new EditorEnvironmentSource();
