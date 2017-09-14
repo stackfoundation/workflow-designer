@@ -16,7 +16,7 @@ let injectSheet = require('@tiagoroldao/react-jss').default;
 
 const jssStyles = (theme: any) => ({
     fieldBlock: {
-        composes: 'pure-g block base-border-color component-padding-bottom',
+        composes: 'pure-g block-force base-border-color component-padding-bottom',
         borderBottomWidth: theme.ide ? '1px' : '0px',
         borderBottomStyle: 'solid',
 

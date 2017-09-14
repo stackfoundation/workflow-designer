@@ -116,7 +116,7 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, classe
                         </StepEditor>}
                     {this.state.section === 'workflowVars' && 
                         <form className={classes.form}>
-                            <div className={classes.section}>
+                            <div className={[classes.section, workflowVarCount.toString()].join(' ')}>
                                 <div className={classes.sectionTitleLarge}>Workflow Variables</div>
                                 <div className={classes.sectionBody}>
                                     <VariablesEditor
@@ -125,7 +125,6 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, classe
                                     </VariablesEditor>
                                 </div>
                             </div>
-                            <div className="block"></div>
                         </form>}
                 </div>
             </div>
