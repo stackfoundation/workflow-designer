@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { translate } from '../../../../../translation-service';
 import { EditorState } from '../../models/state';
 import { Options } from '../options';
-import { WorkflowStepSimple, Workflow, ActionType, TransientState } from '../../models/workflow';
+import { WorkflowStepSimple, Workflow, ActionType, StepTransientState } from '../../models/workflow';
 import { ScriptStepEditor } from './script-step-editor';
 import { DockerfileStepEditor } from './dockerfile-step-editor';
 import { ExtWorkflowStepEditor } from './ext-workflow-step-editor';
@@ -39,7 +39,7 @@ export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}>
     @action
     private setAction(action: ActionType) {
         if (!this.props.step.transient) {
-            this.props.step.transient = new TransientState();
+            this.props.step.transient = new StepTransientState();
         }
 
         this.props.step.transient.action = action;

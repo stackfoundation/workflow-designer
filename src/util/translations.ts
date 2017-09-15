@@ -52,6 +52,7 @@
     TITLE_STEPS: 'Steps',
     TITLE_WORKFLOW: 'Workflow',
     TITLE_WORKFLOW_VARIABLES: 'Workflow Variables',
+    STEP_HAS_ERRORS: 'This step had errors in the workflow definition in the following fields: {}.',
     TYPE_DESCRIPTION_COMPOUND: 'Wait for all sub-steps to complete or be healthy',
     TYPE_DESCRIPTION_SEQUENTIAL: 'Workflow will wait for the step to complete',
     TYPE_DESCRIPTION_PARALLEL: 'Workflow will not wait for this step to complete',

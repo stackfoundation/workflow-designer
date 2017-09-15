@@ -3,7 +3,7 @@ import { action } from 'mobx';
 import { observer } from 'mobx-react';
 let injectSheet = require('@tiagoroldao/react-jss').default;
 
-import { WorkflowStepSimple, TransientState } from '../../models/workflow';
+import { WorkflowStepSimple, StepTransientState } from '../../models/workflow';
 import { SourceOptions } from './source-options';
 import { FailureOptions } from './failure-options';
 import { VariablesEditor } from './variables-editor';

@@ -21,6 +21,10 @@ import { FormReactComponent } from '../../../../../react-forms/validating-react-
 import { Field } from "../../../../../react-forms/field";
 import { StepType } from "../../../../workflow";
 import { mediaQueries } from '../../style';
+import { translate } from '../../../../../translation-service';
+import { ErrorPanel } from '../../components/error-panel';
+
+const CloseIcon = require('react-icons/lib/go/x');
 
 export interface WorkflowStepTypeChangeEvent {
     step: WorkflowStep;
@@ -105,6 +109,12 @@ export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
         return (
             <form className={classes.form}>
                 <fieldset>
+                    {
+                        this.props.step.transient.parseError.length > 0 && !this.props.step.transient.errorsDismissed && 
+                        <ErrorPanel 
+                            message={translate('STEP_HAS_ERRORS', this.props.step.transient.parseError.join(', '))}
+                            onClose={() => this.props.step.transient.errorsDismissed = true}/>
+                    }
                     <div className="pure-g block">
                         <div className={classes.stepNameDiv}>
                             <div className={classes.stepNameLabel}>

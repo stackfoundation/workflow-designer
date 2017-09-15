@@ -4,7 +4,8 @@ import './style.less';
 export const themeColors = {
     darkerGreen: '#33A626',
     darkestGreen: '#23731A',
-    fadedGreen: '#95CC8F'
+    fadedGreen: '#95CC8F',
+    darkerRed: '#d13b2e',
 }
 
 export const editorStyles = {
@@ -135,4 +136,38 @@ export function listStyles (theme: any): {listTitle: any, rootListTree: any, lis
             },
         },
     }
+}
+
+export function errorStyles (theme: any): {errorPanel: any, errorPanelClose: any} {
+    return {
+        errorPanel: theme.ide ?
+            {
+                composes: 'pure-u-1 inset-panel padded background-error',
+                
+                color: 'white',
+                fontWeight: 'bold'
+            } : {
+                composes: 'pure-u-1',
+
+                color: 'white',
+                fontWeight: 'bold',
+                background: themeColors.darkerRed,
+                padding: '16px',
+                position: 'relative',
+                borderRadius: '5px',
+            },
+        errorPanelClose: {
+            composes: theme.ide ? 'text-error': '',
+            position: 'absolute',
+            right: '0.2em',
+            top: '0.2em',
+            fontSize: '2em',
+            lineHeight: '1em',
+
+            '&:hover': {
+                color: 'white',
+                cursor: 'pointer'
+            }
+        }
+    };
 }

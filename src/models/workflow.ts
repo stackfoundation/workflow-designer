@@ -1,5 +1,5 @@
-import { observable, action, computed, toJS } from "mobx";
-import { IWorkflow, IWorkflowStepBase, IWorkflowStepSimple, IWorkflowStepCompound, IHealth, EnvironmentSource, StepType, Volume, HealthType, keysOfIHealth, keysOfIWorkflowStepSimple }
+import { observable, action, computed, toJS, isObservableArray } from "mobx";
+import { IWorkflow, IWorkflowStepBase, IWorkflowStepSimple, IWorkflowStepCompound, IHealth, EnvironmentSource, StepType, Volume, HealthType, keysOfIHealth, keysOfIWorkflowStepSimple, StepTypes, ImageSource, ImageSources }
     from '../../../workflow';
 
 export interface WorkflowStepPos {
@@ -7,9 +7,12 @@ export interface WorkflowStepPos {
     index: number;
 }
 
+export {ImageSource} from '../../../workflow';
+
 export class Workflow implements IWorkflow {
     @observable steps: WorkflowStep[] = [];
     @observable workflowVariables: EnvironmentSource[] = [];
+    @observable transient: WorkFlowTransientState = new WorkFlowTransientState();
 
     constructor(workflow?: Partial<IWorkflow>) {
         if (workflow) {
@@ -168,12 +171,18 @@ export class Workflow implements IWorkflow {
     }
 
     static apply(source: IWorkflow): Workflow {
-        return Object.assign(new Workflow(), source, {
+        let out = Object.assign(new Workflow(), {
             steps: source.steps.map(step => {
                 if (step.type === 'compound') return WorkflowStepCompound.apply(step as IWorkflowStepCompound);
                 else return WorkflowStepSimple.apply(step as IWorkflowStepSimple);
             })
         });
+
+        tryApply(out, 'workflowVariables', 
+            () => out.workflowVariables = cleanEnvironmentSources(source.workflowVariables), 
+            () => out.workflowVariables = []);
+
+        return out;
     }
 
     toJS (): IWorkflow {
@@ -184,12 +193,20 @@ export class Workflow implements IWorkflow {
     }
 }
 
+export class TransientState {
+    @observable parseError: string[] = [];
+    @observable errorsDismissed: boolean = false;
+}
+
+export class WorkFlowTransientState extends TransientState {
+}
+
 export type WorkflowStep = WorkflowStepSimple | WorkflowStepCompound;
-export type ImageSource = 'catalog' | 'manual' | 'step';
 export type ActionType = 'script' | 'call' | 'generated' | 'dockerfile';
 
 export abstract class WorkflowStepBase implements IWorkflowStepBase {
     @observable name: string = '';
+    @observable transient: TransientState = new TransientState();
     readonly type: StepType;
 
     constructor(step: Partial<WorkflowStepBase>) {
@@ -202,7 +219,7 @@ export abstract class WorkflowStepBase implements IWorkflowStepBase {
     }
 }
 
-export class TransientState {
+export class StepTransientState extends TransientState {
     @observable healthCheckType?: HealthType;
     @observable action?: ActionType;
     @observable healthConfigured: boolean;
@@ -257,11 +274,10 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
         Object.assign(this, step);
     }
 
+    @observable transient: StepTransientState = new StepTransientState();
     @observable serviceName?: string = '';
     @observable imageSource?: ImageSource = 'catalog';
-    @observable transient?: TransientState = new TransientState();
     @observable image?: string = '';
-    @observable tag?: string = '';
     @observable dockerfile?: string = '';
     @observable target?: string = '';
     @observable generator?: string = '';
@@ -276,12 +292,42 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
     @observable volumes?: Volume[] = [];
 
     static apply(source: IWorkflowStepSimple): WorkflowStepSimple {
-        let step: WorkflowStepSimple = Object.assign(
-            new WorkflowStepSimple({}), 
-            source, {
-                health: new Health(source.health),
-                readiness: new Health(source.readiness)
-            });
+        // let step: WorkflowStepSimple = Object.assign(
+        //     new WorkflowStepSimple({}), 
+        //     source, {
+        //         health: new Health(source.health),
+        //         readiness: new Health(source.readiness)
+        //     });
+
+        let step: WorkflowStepSimple = Object.assign(new WorkflowStepSimple({}));
+
+        tryApply(step, 'health', 
+            () => step.health = new Health(source.health !== undefined ? source.health : {}), 
+            () => step.health = new Health({}));
+        tryApply(step, 'readiness', 
+            () => step.readiness = new Health(source.readiness !== undefined ? source.readiness : {}),
+             () => step.readiness = new Health({}));
+        tryApply(step, 'environment', 
+            () => step.environment = source.environment !== undefined ? cleanEnvironmentSources(source.environment) : [], 
+            () => {step.environment = [];});
+        tryApply(step, 'volumes', 
+            () => step.volumes = source.volumes !== undefined ? cleanVolumes(source.volumes) : [], 
+            () => step.volumes = []);
+
+        tryApplyPrimitive(step, 'name', source, 'string', true);
+        tryApplyEnum(step, 'type', source, StepTypes, true);
+        tryApplyEnum(step, 'imageSource', source, ImageSources);
+
+        tryApplyPrimitive(step, 'serviceName', source, 'string');
+        tryApplyPrimitive(step, 'image', source, 'string');
+        tryApplyPrimitive(step, 'dockerfile', source, 'string');
+        tryApplyPrimitive(step, 'target', source, 'string');
+        tryApplyPrimitive(step, 'generator', source, 'string');
+        tryApplyPrimitive(step, 'script', source, 'string');
+        tryApplyPrimitive(step, 'omitSource', source, 'boolean');
+        tryApplyPrimitive(step, 'ignoreFailure', source, 'boolean');
+        tryApplyPrimitive(step, 'sourceLocation', source, 'string');
+
         return step;
     }
 
@@ -366,7 +412,7 @@ export class WorkflowStepCompound extends WorkflowStepBase implements IWorkflowS
     @observable steps?: WorkflowStep[] = [];
 
     static apply(source: IWorkflowStepCompound): WorkflowStepCompound {
-        return Object.assign(Object.create(WorkflowStepCompound.prototype), source, {
+        return Object.assign(new WorkflowStepCompound({}), source, {
             type: 'compound',
             steps: source.steps.map(step => {
                 if (step.type === 'compound') return WorkflowStepCompound.apply(step);
@@ -397,14 +443,103 @@ function fillObj (source: any, keys: string[]): any {
 function cleanEnvironmentSources (source: EnvironmentSource[]): EnvironmentSource[] {
     let out: EnvironmentSource[] = [];
 
-    for (var i = 0; i < source.length; i++) {
-        if (source[i].file) {
-            out.push({file: source[i].file})
+    try {
+        if (!Array.isArray(source) && !isObservableArray(source)) {
+            throw Error;
         }
-        else {
-            out.push({name: source[i].name, value: source[i].name})
+        for (var i = 0; i < source.length; i++) {
+            if (source[i].file) {
+                out.push({file: source[i].file})
+            }
+            else {
+                out.push({name: source[i].name, value: source[i].name})
+            }
         }
+    }
+    catch (e) {
+        throw "Structure error parsing environment sources";
     }
 
     return out;
+}
+
+function cleanVolumes (source: Volume[]): Volume[] {
+    let out: Volume[] = [];
+
+    try {
+        if (!Array.isArray(source) && !isObservableArray(source)) {
+            throw Error;
+        }
+        for (var i = 0; i < source.length; i++) {
+            out.push({hostPath: source[i].hostPath, mountPath: source[i].mountPath})
+        }
+    }
+    catch (e) {
+        throw "Structure error parsing environment sources";
+    }
+
+    return out;
+}
+
+function cleanPorts (source: string[]): string[] {
+    let out: string[] = [];
+
+    try {
+        if (!Array.isArray(source) && !isObservableArray(source)) {
+            throw Error;
+        }
+        for (var i = 0; i < source.length; i++) {
+            if (source[i] !== undefined) {
+                if (typeof source[i] !== 'string') {
+                    throw "Structure error parsing ports";
+                }
+                out.push(source[i])
+            }
+        }
+    }
+    catch (e) {
+        throw "Structure error parsing ports";
+    }
+
+    return out;
+}
+
+function tryApply (obj: {transient: TransientState}, key: string, fn: () => void, catchFn?: () => void) {
+    let success: any;
+
+    try {
+        success = fn();
+    }
+    catch(e) {
+        success = false;
+    }
+
+    if (success === false) {
+        obj.transient.parseError.push(key);
+        catchFn && catchFn();
+    }
+}
+
+function tryApplyPrimitive (obj: {transient: TransientState}, key: string, source: any, type: string, require: boolean = false) {
+    tryApply(obj, key,
+        () => {
+            if (require || source[key] !== undefined) {
+                if (typeof source[key] === type) {
+                    (obj as any)[key] = source[key];
+                }
+                else throw "type error on field " + key;
+            }
+        });
+}
+
+function tryApplyEnum (obj: {transient: TransientState}, key: string, source: any, enumVals: string[], require: boolean = false) {
+    tryApply(obj, key, 
+    () => {
+        if (require || source[key] !== undefined) {
+            if (enumVals.indexOf(source[key]) > -1) {
+                (obj as any)[key] = source[key];
+            }
+            else throw Error;
+        }
+    });
 }

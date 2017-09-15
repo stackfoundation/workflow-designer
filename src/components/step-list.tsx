@@ -7,6 +7,7 @@ import { observer } from 'mobx-react';
 const Plus = require('react-icons/lib/go/plus');
 const Bars = require('react-icons/lib/fa/bars');
 const Trash = require('react-icons/lib/fa/trash');
+const AlertIcon = require('react-icons/lib/go/alert');
 
 import { themeColors, listStyles } from '../style';
 
@@ -29,6 +30,10 @@ const stepListClass = 'step-list';
 const styles = (theme: any) => {
 
     let list = listStyles(theme);
+
+    list.listItemSelected['& $stepError'] = {
+        color: list.listItemSelected.color
+    };
 
     let styles = {
         addButton: {
@@ -71,10 +76,16 @@ const styles = (theme: any) => {
         },
         handleIcon: {
             composes: `dragula-handle ${theme.ide ? 'icon icon-grabber' : ''}`,
+        },
+        stepError: {
+            composes: theme.ide ? 'text-color-error' : '',
+
+            color: theme.ide ? undefined : themeColors.darkerRed,
+            marginRight: '5px'
         }
     }
 
-    return Object.assign(styles, list);
+    return Object.assign(list, styles);
 };
 
 interface StepListProps {
@@ -235,6 +246,7 @@ export class StepList extends React.Component<StepListProps, {}> {
             prefix = this.stepPrefix(parentList, key);
         return (
             <div>
+                {step.transient.parseError.length > 0 && !step.transient.errorsDismissed && <AlertIcon className={classes.stepError}/>}
                 {prefix.length > 0 && <span className={classes.stepPrefix}>{this.stepPrefix(parentList, key)}&nbsp;</span>}
                 {step.name}
             </div>);
