@@ -13,6 +13,7 @@ import { CenteredContent } from '../../util/centered-content'
 import { translate } from '../../../../../translation-service';
 import { Creatable, Option, OptionValues } from 'react-select';
 import { HealthType, HealthTypes } from "../../../../workflow";
+import { VariablesEditor } from '../../components/step-editor/variables-editor';
 
 interface HealthOptionsProps {
     step: WorkflowStepSimple;
@@ -39,6 +40,13 @@ const styles = (theme: any) => ({
     },
     healthNumberPropField : {
         composes: 'pure-input-1 input-text native-key-bindings'
+    },
+    headersTitle : {
+        composes: theme.ide? 'tab-border' : '',
+        marginTop: '0px',
+        borderBottomWidth: '1px',
+        borderBottomStyle: 'solid',
+        paddingBottom: '5px'
     },
     label: {
         paddingRight: '5px'
@@ -197,6 +205,11 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
             {this.healthCheckNumberProperty('retries')}
             {this.healthCheckNumberProperty('timeout')}
             {this.healthCheckNumberProperty('grace')}
+            {(this.currentHealthCheckType === 'http' || this.currentHealthCheckType === 'https') && 
+                <div className="pure-u-1 block">
+                    <h3 className={classes.headersTitle}>Headers</h3>
+                    <VariablesEditor variables={(this.healthField as any).headers} ide={this.props.ide} />    
+                </div>}
         </div>);
     }
 }

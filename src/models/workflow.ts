@@ -1,5 +1,5 @@
 import { observable, action, computed, toJS, isObservableArray } from "mobx";
-import { IWorkflow, IWorkflowStepBase, IWorkflowStepSimple, IWorkflowStepCompound, IHealth, EnvironmentSource, StepType, Volume, HealthType, keysOfIHealth, keysOfIWorkflowStepSimple, StepTypes, ImageSource, ImageSources }
+import { IWorkflow, IWorkflowStepBase, IWorkflowStepSimple, IWorkflowStepCompound, IHealth, KeyValueEntry, StepType, Volume, HealthType, HealthTypes, keysOfIHealth, keysOfIWorkflowStepSimple, StepTypes, ImageSource, ImageSources }
     from '../../../workflow';
 
 export interface WorkflowStepPos {
@@ -11,7 +11,7 @@ export {ImageSource} from '../../../workflow';
 
 export class Workflow implements IWorkflow {
     @observable steps: WorkflowStep[] = [];
-    @observable workflowVariables: EnvironmentSource[] = [];
+    @observable workflowVariables: KeyValueEntry[] = [];
     @observable transient: WorkFlowTransientState = new WorkFlowTransientState();
 
     constructor(workflow?: Partial<IWorkflow>) {
@@ -179,7 +179,7 @@ export class Workflow implements IWorkflow {
         });
 
         tryApply(out, 'workflowVariables', 
-            () => out.workflowVariables = cleanEnvironmentSources(source.workflowVariables), 
+            () => out.workflowVariables = cleanKeyValueEntryArray(source.workflowVariables), 
             () => out.workflowVariables = []);
 
         return out;
@@ -188,7 +188,7 @@ export class Workflow implements IWorkflow {
     toJS (): IWorkflow {
         return {
             steps: this.steps.map(step => step.toJS()),
-            workflowVariables: this.workflowVariables.length ? cleanEnvironmentSources(this.workflowVariables) : undefined
+            workflowVariables: this.workflowVariables.length ? cleanKeyValueEntryArray(this.workflowVariables) : undefined
         };
     }
 }
@@ -233,7 +233,7 @@ export class StepTransientState extends TransientState {
 }
 
 export class Health implements IHealth {
-    @observable type: HealthType;
+    @observable type: HealthType = 'http';
     @observable script?: string;
     @observable port?: string;
     @observable path?: string;
@@ -241,17 +241,54 @@ export class Health implements IHealth {
     @observable timeout?: number;
     @observable retries?: number;
     @observable grace?: number;
+    @observable headers?: KeyValueEntry[] = [];
+
+    @observable transient: TransientState = new TransientState();
 
     constructor(health: Partial<Health>) {
         Object.assign(this, health);
+    }
+
+    static apply(source: IHealth): Health {
+        let health: Health = Object.assign(new Health({}));
+
+        tryApplyEnum(health, 'type', source, HealthTypes, true, () => health.type = 'http');
+
+        if (health.type === 'script') {
+            tryApplyPrimitive(health, 'script', source, 'string');
+        }
+        else if (health.type === 'tcp') {
+            tryApplyPrimitive(health, 'port', source, 'string');
+        }
+        else {
+            tryApplyPrimitive(health, 'port', source, 'string');
+            tryApplyPrimitive(health, 'path', source, 'string');
+            tryApply(health, 'headers', 
+                () => health.headers = source.headers !== undefined ? cleanKeyValueEntryArray(source.headers) : [], 
+                () => health.headers = []);
+        }
+
+        tryApplyPrimitive(health, 'interval', source, 'number');
+        tryApplyPrimitive(health, 'timeout', source, 'number');
+        tryApplyPrimitive(health, 'retries', source, 'number');
+        tryApplyPrimitive(health, 'grace', source, 'number');
+
+        return health;
     }
 
     filled(): boolean {
         let keys = Object.keys(this);
 
         for (var i = 0; i < keys.length; i++) {
-            if (keys[i] !== 'type' && (this as any)[keys[i]] !== undefined) {
-                return true;
+            if (keys[i] !== 'transient') {
+                if (keys[i] === 'headers') {
+                    if ((this as any)[keys[i]] && (this as any)[keys[i]].length > 0) {
+                        return true;
+                    }
+                }
+                else if (keys[i] !== 'type' && (this as any)[keys[i]] !== undefined) {
+                    return true;
+                }
             }
         }
 
@@ -262,7 +299,30 @@ export class Health implements IHealth {
         if (!this.filled()) {
             return undefined;
         }
-        return fillObj(toJS(this), keysOfIHealth);
+        let out = fillObj(toJS(this), keysOfIHealth);
+        
+        if (out.type === 'script') {
+            delete out.port;
+            delete out.path;
+            delete out.headers;
+        }
+        else if (out.type === 'tcp') {
+            delete out.script;
+            delete out.path;
+            delete out.headers;
+        }
+        else if (out.type === 'http' || out.type === 'https') {
+            delete out.script;
+
+            if (out.headers && out.headers.length === 0) {
+                delete out.headers;
+            }
+            else {
+                out.headers = cleanKeyValueEntryArray(out.headers);
+            }
+        }
+        
+        return out;
     }
 }
 
@@ -287,28 +347,25 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
     @observable sourceLocation?: string = '';
     @observable health?: Health = new Health({});
     @observable readiness?: Health = new Health({});
-    @observable environment?: EnvironmentSource[] = [];
+    @observable environment?: KeyValueEntry[] = [];
     @observable ports?: string[] = [];
     @observable volumes?: Volume[] = [];
 
     static apply(source: IWorkflowStepSimple): WorkflowStepSimple {
-        // let step: WorkflowStepSimple = Object.assign(
-        //     new WorkflowStepSimple({}), 
-        //     source, {
-        //         health: new Health(source.health),
-        //         readiness: new Health(source.readiness)
-        //     });
-
         let step: WorkflowStepSimple = Object.assign(new WorkflowStepSimple({}));
 
         tryApply(step, 'health', 
-            () => step.health = new Health(source.health !== undefined ? source.health : {}), 
-            () => step.health = new Health({}));
+            () => {
+                step.health = source.health !== undefined ? Health.apply(source.health) : new Health({});
+                if (step.health.transient.parseError.length) {
+                    throw Error;
+                }
+            });
         tryApply(step, 'readiness', 
             () => step.readiness = new Health(source.readiness !== undefined ? source.readiness : {}),
              () => step.readiness = new Health({}));
         tryApply(step, 'environment', 
-            () => step.environment = source.environment !== undefined ? cleanEnvironmentSources(source.environment) : [], 
+            () => step.environment = source.environment !== undefined ? cleanKeyValueEntryArray(source.environment) : [], 
             () => {step.environment = [];});
         tryApply(step, 'volumes', 
             () => step.volumes = source.volumes !== undefined ? cleanVolumes(source.volumes) : [], 
@@ -375,7 +432,7 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
             delete out.environment;
         }
         else {
-            out.environment = cleanEnvironmentSources(out.environment);
+            out.environment = cleanKeyValueEntryArray(out.environment);
         }
         if (out.ports && out.ports.length === 0) {
             delete out.ports;
@@ -440,8 +497,8 @@ function fillObj (source: any, keys: string[]): any {
     return out;
 }
 
-function cleanEnvironmentSources (source: EnvironmentSource[]): EnvironmentSource[] {
-    let out: EnvironmentSource[] = [];
+function cleanKeyValueEntryArray (source: KeyValueEntry[]): KeyValueEntry[] {
+    let out: KeyValueEntry[] = [];
 
     try {
         if (!Array.isArray(source) && !isObservableArray(source)) {
@@ -504,7 +561,7 @@ function cleanPorts (source: string[]): string[] {
     return out;
 }
 
-function tryApply (obj: {transient: TransientState}, key: string, fn: () => void, catchFn?: () => void) {
+function tryApply (obj: {transient: TransientState}, key: string, fn: () => void, catchFn?: () => void): boolean {
     let success: any;
 
     try {
@@ -518,10 +575,12 @@ function tryApply (obj: {transient: TransientState}, key: string, fn: () => void
         obj.transient.parseError.push(key);
         catchFn && catchFn();
     }
+
+    return success;
 }
 
 function tryApplyPrimitive (obj: {transient: TransientState}, key: string, source: any, type: string, require: boolean = false) {
-    tryApply(obj, key,
+    return tryApply(obj, key,
         () => {
             if (require || source[key] !== undefined) {
                 if (typeof source[key] === type) {
@@ -532,8 +591,8 @@ function tryApplyPrimitive (obj: {transient: TransientState}, key: string, sourc
         });
 }
 
-function tryApplyEnum (obj: {transient: TransientState}, key: string, source: any, enumVals: string[], require: boolean = false) {
-    tryApply(obj, key, 
+function tryApplyEnum (obj: {transient: TransientState}, key: string, source: any, enumVals: string[], require: boolean = false, catchFn?: () => void) {
+    return tryApply(obj, key, 
     () => {
         if (require || source[key] !== undefined) {
             if (enumVals.indexOf(source[key]) > -1) {
@@ -541,5 +600,6 @@ function tryApplyEnum (obj: {transient: TransientState}, key: string, source: an
             }
             else throw Error;
         }
-    });
+    },
+    catchFn);
 }

@@ -2,7 +2,7 @@ import * as React from 'react';
 let injectSheet = require('@tiagoroldao/react-jss').default;
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
-import { EnvironmentSource, EnvironmentSourceType } from '../../../../workflow';
+import { KeyValueEntry, KeyValueEntryType } from '../../../../workflow';
 import { CenteredContent } from '../../util/centered-content'
 import { translate } from '../../../../../translation-service';
 
@@ -30,8 +30,8 @@ const styles = (theme: any) => ({
 });
 
 interface VariableEditorProps {
-    source: EnvironmentSource;
-    sourceType: EnvironmentSourceType;
+    source: KeyValueEntry;
+    sourceType: KeyValueEntryType;
     onChange: () => void;
     classes?: any;
 }

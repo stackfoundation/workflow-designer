@@ -7,7 +7,7 @@ const Remove = require('react-icons/lib/fa/times-circle');
 
 import { Options } from '../options';
 import { WorkflowStepSimple } from '../../models/workflow';
-import { EnvironmentSource, EnvironmentSourceType } from '../../../../workflow';
+import { KeyValueEntry, KeyValueEntryType } from '../../../../workflow';
 import { translate } from '../../../../../translation-service';
 import { VariableEditor } from './variable-editor';
 import { mediaQueries } from '../../style';
@@ -65,15 +65,15 @@ const jssStyles = (theme: any) => ({
 });
 
 interface VariablesEditorProps {
-    variables: EnvironmentSource[];
+    variables: KeyValueEntry[];
     ide: boolean;
     classes?: any;
 }
 
 class EditorState {
     constructor(
-        private variables: EnvironmentSource[],
-        private source: EnvironmentSource,
+        private variables: KeyValueEntry[],
+        private source: KeyValueEntry,
         public committed: boolean) {
     }
 
@@ -85,7 +85,7 @@ class EditorState {
     }
 }
 
-class EditorEnvironmentSource implements EnvironmentSource {
+class EditorEnvironmentSource implements KeyValueEntry {
     @observable file?: string = '';
     @observable name?: string = '';
     @observable value?: string = '';
@@ -93,7 +93,7 @@ class EditorEnvironmentSource implements EnvironmentSource {
 
 @injectSheet(jssStyles)
 @observer
-export class VariablesEditor extends React.Component<VariablesEditorProps, { sourceType: EnvironmentSourceType }> {
+export class VariablesEditor extends React.Component<VariablesEditorProps, { sourceType: KeyValueEntryType }> {
     constructor(props: VariablesEditorProps) {
         super(props);
     }
@@ -102,7 +102,7 @@ export class VariablesEditor extends React.Component<VariablesEditorProps, { sou
         this.setState({ sourceType: 'pair' });
     }
 
-    private get variables(): EnvironmentSource[] {
+    private get variables(): KeyValueEntry[] {
         return this.props.variables;
     }
 
@@ -122,11 +122,11 @@ export class VariablesEditor extends React.Component<VariablesEditorProps, { sou
     }
 
     @action
-    private remove(source: EnvironmentSource) {
+    private remove(source: KeyValueEntry) {
         this.variables.splice(this.variables.indexOf(source), 1);
     }
 
-    private sourceEditor(source: EnvironmentSource, key: number, committed: boolean) {
+    private sourceEditor(source: KeyValueEntry, key: number, committed: boolean) {
         let state = new EditorState(this.variables, source, committed);
         let editor = (<VariableEditor
             source={source}
@@ -142,7 +142,7 @@ export class VariablesEditor extends React.Component<VariablesEditorProps, { sou
         </div>);
     }
 
-    private deleteButton (source: EnvironmentSource) {
+    private deleteButton (source: KeyValueEntry) {
         return <div className="pure-g">
                 <div className="pure-u-1-4 pure-u-lg-0">
                 </div>
@@ -189,12 +189,11 @@ export class VariablesEditor extends React.Component<VariablesEditorProps, { sou
         ];
     }
 
-    private setSourceType(source: EnvironmentSourceType) {
+    private setSourceType(source: KeyValueEntryType) {
         this.setState({ sourceType: source });
     }
 
     public render() {
-        let classes = this.props.classes || {}
         return (<div>
             {this.sourceEditors()}
         </div>);
