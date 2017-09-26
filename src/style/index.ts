@@ -28,7 +28,8 @@ export function sectionStyles (theme: any): {
     sectionBody: any, 
     sectionTitleLarge: any, 
     sectionBodyTight: any, 
-    sectionBodyBorderless: any} {
+    sectionBodyBorderless: any,
+    sectionTooltip: any} {
     return {
         section: theme.ide ?
             {
@@ -40,15 +41,23 @@ export function sectionStyles (theme: any): {
             },
         sectionTitle: theme.ide ?
             {
-                composes: 'panel-heading'
+                composes: 'panel-heading',
+                position: 'relative'
             } :
             {
                 fontWeight: '700',
                 border: '1px solid #ddd',
                 borderBottom: 'none',
                 padding: '5px',
-                background: '#eee'
+                background: '#eee',
+                position: 'relative'
             },
+        sectionTooltip: {
+            position: 'absolute',
+            right: '6px',
+            top: '3px',
+            display: 'block',
+        },
         sectionTitleLarge: {
             composes: '$sectionTitle',
             fontSize: '2em',
@@ -87,7 +96,7 @@ export function listStyles (theme: any): {listTitle: any, rootListTree: any, lis
             composes: theme.ide ? 'list-tree' : '',
             padding: '0 0 0 8px',
             marginLeft: theme.ide ? '0' : '6px',
-            borderLeft: theme.ide ? 'none' : 'solid 17px #eee',
+            borderLeft: theme.ide ? 'none' : 'solid 17px #ddd',
         },
         rootListTree: {
             composes: '$listTree',
@@ -170,4 +179,28 @@ export function errorStyles (theme: any): {errorPanel: any, errorPanelClose: any
             }
         }
     };
+}
+
+export var shadows = {
+    top: {
+        content: " ",
+        display: 'block',
+        position: 'absolute',
+        height: '20px',
+        left: '-10px',
+        right: '-10px',
+        top: '-20px',
+        boxShadow: '0px 5px 5px rgba(0,0,0,0.2)',
+    },
+
+    bottom: {
+        content: " ",
+        display: 'block',
+        position: 'absolute',
+        height: '20px',
+        left: '-10px',
+        right: '-10px',
+        bottom: '-20px',
+        boxShadow: '0px -5px 5px rgba(0,0,0,0.2)',
+    }
 }

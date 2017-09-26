@@ -3,7 +3,7 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 let injectSheet = require('@tiagoroldao/react-jss').default;
 
-import { editorStyles, themeColors } from '../style';
+import { editorStyles, themeColors, mediaQueries } from '../style';
 
 const activeOption = {
     fontWeight: 'bold',
@@ -20,8 +20,9 @@ const activeSelectedOption = {
 };
 
 const styles = (theme: any) => {
+    let out: any;
     if (theme.ide) {
-        return {
+        out = {
             optionsList: {
                 composes: 'btn-group'
             },
@@ -37,7 +38,7 @@ const styles = (theme: any) => {
         };
     }
     else {
-        return {
+        out = {
             optionsList: {
                 composes: 'pure-menu-list select-list'
             },
@@ -66,7 +67,30 @@ const styles = (theme: any) => {
             }
         };
     }
+
+    Object.assign(out, {
+        'options-1': optionStyle(1),
+        'options-2': optionStyle(2),
+        'options-3': optionStyle(3),
+        'options-4': optionStyle(4),
+        'options-5': optionStyle(5),
+        'options-6': optionStyle(6),
+    });
+
+    return out;
 };
+
+function optionStyle (optionNumber: number) {
+    return {
+        width: '100%',
+        textAlign: 'center',
+        float: 'left',
+
+        [mediaQueries.md]: {
+            width: (100 / optionNumber).toPrecision(5) + '%',
+        }
+    };
+}
 
 export interface Option {
     display: JSX.Element;
@@ -104,17 +128,19 @@ export class Options extends React.Component<OptionsProps, {}> {
     }
 
     private option(option: Option, key: number) {
-        let style: React.CSSProperties = {};
-        if (this.props.fill) {
-            style.textAlign = 'center';
-            style.minWidth = (100 / this.props.options.length).toPrecision(5) + '%';
-        }
+        let optionCount = this.props.options.length,
+            classes = this.props.classes;
 
         return this.props.ide ?
-            (<button key={key} className={this.optionClass(option)} onClick={e => this.setSelected(e, option)} style={style}>
+            (<button 
+                key={key} 
+                className={[this.optionClass(option), classes['options-' + optionCount]].join(' ')} 
+                onClick={e => this.setSelected(e, option)}>
                 {option.display}
             </button>) :
-            (<li key={key} className="pure-menu-item" onClick={e => this.setSelected(e, option)} style={style}>
+            (<li key={key}
+                className={['pure-menu-item', classes['options-' + optionCount]].join(' ')} 
+                onClick={e => this.setSelected(e, option)} >
                 <a href="#" className={this.optionClass(option)}>
                     {option.display}
                 </a>

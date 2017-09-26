@@ -9,7 +9,7 @@ const Bars = require('react-icons/lib/fa/bars');
 const Trash = require('react-icons/lib/fa/trash');
 const AlertIcon = require('react-icons/lib/go/alert');
 
-import { themeColors, listStyles } from '../style';
+import { themeColors, listStyles, mediaQueries } from '../style';
 
 let injectSheet = require('@tiagoroldao/react-jss').default;
 
@@ -40,7 +40,7 @@ const styles = (theme: any) => {
             composes: theme.ide ? 'btn' : 'pure-button',
             display: 'block',
             position: 'relative',
-            marginRight: theme.ide ? '0px' : '20px',
+            backgroundColor: theme.ide ? undefined : '#ddd',
 
             '& > div' : {
                 position: 'absolute',
@@ -48,6 +48,10 @@ const styles = (theme: any) => {
                 bottom: 0,
                 left: 0,
                 right: 0
+            },
+
+            [mediaQueries.md]: {
+                marginRight: theme.ide ? '0px' : '20px',
             },
 
             '& svg' : {

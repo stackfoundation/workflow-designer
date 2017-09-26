@@ -46,6 +46,9 @@ const styles = (theme: any) => {
         form: {
             composes: theme.ide ? '' : 'pure-form',
         },
+        formInner: {
+            minWidth: '100%'
+        },
         stepNameDiv: {
             composes: 'pure-g pure-u-1 pure-u-lg-7-12 block-md',
             position: 'relative',
@@ -108,7 +111,7 @@ export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
         let classes = this.props.classes;
         return (
             <form className={classes.form}>
-                <fieldset>
+                <fieldset className={classes.formInner}>
                     {
                         this.props.step.transient.parseError.length > 0 && !this.props.step.transient.errorsDismissed && 
                         <ErrorPanel 

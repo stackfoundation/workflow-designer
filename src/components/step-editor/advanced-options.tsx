@@ -13,6 +13,8 @@ import { HealthOptions } from './health-options';
 import { DropDownMenu, Item } from '../drop-down-menu';
 import { translate } from '../../../../../translation-service';
 import { sectionStyles } from '../../style';
+import { InfoTooltip } from '../../components/tooltip';
+const InfoCircle = require('react-icons/lib/fa/info-circle');
 
 interface AdvancedOptionsProps {
     step: WorkflowStepSimple,
@@ -133,10 +135,13 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
         return this.props.step.ignoreFailure;
     }
 
-    private section(title: string, body: JSX.Element) {
+    private section(title: string, body: JSX.Element, helpMessage?:string) {
         const classes = this.props.classes || {};
         return (<div className={classes.section}>
-            <div className={classes.sectionTitle}>{title}</div>
+            <div className={classes.sectionTitle}>
+                {title}
+                {helpMessage && <InfoTooltip message={helpMessage} className={classes.sectionTooltip}></InfoTooltip>}
+            </div>
             <div className={classes.sectionBody}>
                 {body}
             </div>
@@ -221,19 +226,40 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
 
         return (<div className={classes.advanced}>
             {step.type === 'service' && this.healthConfigured &&
-                this.section(translate('HELP_HEALTH'), <HealthOptions step={step} ide={this.props.ide} />)}
+                this.section(
+                    translate('TITLE_HEALTH'),
+                    <HealthOptions step={step} ide={this.props.ide} />,
+                    translate('HELP_HEALTH'))}
             {step.type === 'service' && this.readinessConfigured &&
-                this.section(translate('HELP_READINESS'), <HealthOptions field="readiness" step={step} ide={this.props.ide} />)}
+                this.section(
+                    translate('TITLE_READINESS'), 
+                    <HealthOptions field="readiness" step={step} ide={this.props.ide} />,
+                    translate('HELP_READINESS'))}
             {this.sourceOptions &&
-                this.section(translate('HELP_SOURCE'), <SourceOptions step={step} />)}
+                this.section(
+                    translate('TITLE_SOURCE'), 
+                    <SourceOptions step={step} />,
+                    translate('HELP_SOURCE'))}
             {this.failureOptions &&
-                this.section(translate('HELP_FAILURE'), <FailureOptions step={step} />)}
+                this.section(
+                    translate('TITLE_FAILURE'), 
+                    <FailureOptions step={step} />,
+                    translate('HELP_FAILURE'))}
             {this.environmentConfigured &&
-                this.section(translate('HELP_ENVIRONMENT'), <VariablesEditor variables={step.environment} ide={this.props.ide} />)}
+                this.section(
+                    translate('TITLE_ENVIRONMENT'), 
+                    <VariablesEditor variables={step.environment} ide={this.props.ide} />,
+                    translate('HELP_ENVIRONMENT'))}
             {this.volumesConfigured &&
-                this.section(translate('HELP_VOLUMES'), <VolumeOptions step={step} ide={this.props.ide} />)}
+                this.section(
+                    translate('TITLE_VOLUMES'), 
+                    <VolumeOptions step={step} ide={this.props.ide} />,
+                    translate('HELP_VOLUMES'))}
             {this.portsConfigured &&
-                this.section(translate('HELP_PORTS'), <PortOptions step={step} ide={this.props.ide} />)}
+                this.section(
+                    translate('TITLE_PORTS'), 
+                    <PortOptions step={step} ide={this.props.ide} />,
+                    translate('HELP_PORTS'))}
 
             {items.length > 0 &&
                 <DropDownMenu
