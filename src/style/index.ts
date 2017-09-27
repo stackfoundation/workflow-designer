@@ -15,12 +15,7 @@ export const editorStyles = {
     normalSelect: 'select-normal'
 };
 
-export const mediaQueries = {
-    sm: '@media screen and (min-width: 35.5em)',
-    md: '@media screen and (min-width: 48em)',
-    lg: '@media screen and (min-width: 64em)',
-    xl: '@media screen and (min-width: 80em)'
-}
+export {mediaQueries} from '../../../../style-constants';
 
 export function sectionStyles (theme: any): {
     section:any, 
