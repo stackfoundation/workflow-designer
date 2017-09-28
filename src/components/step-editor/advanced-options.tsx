@@ -164,6 +164,7 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
         return !this.sourceOptions ||
             !this.failureOptions ||
             !this.healthConfigured ||
+            !this.readinessConfigured ||
             !this.environmentConfigured ||
             !this.volumesConfigured ||
             !this.portsConfigured;
@@ -233,7 +234,7 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
             {step.type === 'service' && this.readinessConfigured &&
                 this.section(
                     translate('TITLE_READINESS'), 
-                    <HealthOptions field="readiness" step={step} ide={this.props.ide} />,
+                    <HealthOptions typeField="readinessCheckType" field="readiness" step={step} ide={this.props.ide} />,
                     translate('HELP_READINESS'))}
             {this.sourceOptions &&
                 this.section(

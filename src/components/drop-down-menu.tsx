@@ -58,7 +58,6 @@ const styles = (theme: any) => {
                 composes: 'pure-menu-children',
                 padding: '5px',
                 border: 'solid 1px #ccc',
-                borderLeft: 'solid 10px #ccc',
                 minWidth: '230px'
             },
             item: {

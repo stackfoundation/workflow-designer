@@ -18,6 +18,7 @@ import { VariablesEditor } from '../../components/step-editor/variables-editor';
 interface HealthOptionsProps {
     step: WorkflowStepSimple;
     field?: string;
+    typeField?: string;
     ide: boolean;
     classes?: any;
 }
@@ -60,6 +61,11 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
         super(props);
     }
 
+    private get typeField() {
+        let field = this.props.typeField || 'healthCheckType';
+        return (this.props.step.transient as any)[field] as HealthType;
+    }
+
     private get healthField() {
         let field = this.props.field || 'health';
         return (this.props.step as any)[field] as Health;
@@ -67,8 +73,8 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
 
     private get currentHealthCheckType() {
         if (this.props.step) {
-            if (this.props.step.transient.healthCheckType) {
-                return this.props.step.transient.healthCheckType;
+            if (this.typeField) {
+                return this.typeField;
             } else if (this.healthField && this.healthField.type) {
                 return this.healthField.type;
             }
@@ -80,7 +86,8 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
 
     @action
     private setHealthCheckType(checkType: HealthType) {
-        this.props.step.transient.healthCheckType = checkType;
+        let field = this.props.typeField || 'healthCheckType';
+        (this.props.step.transient as any)[field] = checkType;
     }
 
     private healthCheckTypes() {
@@ -208,7 +215,7 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
             {(this.currentHealthCheckType === 'http' || this.currentHealthCheckType === 'https') && 
                 <div className="pure-u-1 block">
                     <h3 className={classes.headersTitle}>Headers</h3>
-                    <VariablesEditor variables={(this.healthField as any).headers} ide={this.props.ide} />    
+                    <VariablesEditor variables={(this.healthField as any).headers} ide={this.props.ide} onlyPairs={true} />    
                 </div>}
         </div>);
     }

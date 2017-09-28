@@ -67,6 +67,7 @@ const jssStyles = (theme: any) => ({
 interface VariablesEditorProps {
     variables: KeyValueEntry[];
     ide: boolean;
+    onlyPairs?: boolean;
     classes?: any;
 }
 
@@ -122,8 +123,9 @@ export class VariablesEditor extends React.Component<VariablesEditorProps, { sou
     }
 
     @action
-    private remove(source: KeyValueEntry) {
+    private remove(e: React.MouseEvent<HTMLButtonElement>, source: KeyValueEntry) {
         this.variables.splice(this.variables.indexOf(source), 1);
+        e.preventDefault();
     }
 
     private sourceEditor(source: KeyValueEntry, key: number, committed: boolean) {
@@ -137,7 +139,7 @@ export class VariablesEditor extends React.Component<VariablesEditorProps, { sou
             <div className={this.props.classes.editorDiv}>{editor}</div>
             <div className={this.props.classes.optionSettings}>
                 {committed && this.deleteButton(source)}
-                {!committed && this.sourceTypeEditor()}
+                {!committed && !this.props.onlyPairs && this.sourceTypeEditor()}
             </div>
         </div>);
     }
@@ -147,7 +149,7 @@ export class VariablesEditor extends React.Component<VariablesEditorProps, { sou
                 <div className="pure-u-1-4 pure-u-lg-0">
                 </div>
                 <div className="pure-u-3-4 pure-u-lg-1">
-                    <button className={this.props.classes.deleteButton} onClick={_ => this.remove(source)}><Remove /> Remove</button>
+                    <button className={this.props.classes.deleteButton} onClick={e => this.remove(e, source)}><Remove /> Remove</button>
                 </div>
             </div>;
     }
