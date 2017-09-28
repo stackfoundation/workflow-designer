@@ -3,7 +3,7 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 
 const InfoCircle = require('react-icons/lib/fa/info-circle');
-import ReactTooltip from 'react-tooltip';
+const ReactTooltip = require('react-tooltip');
 
 export interface TooltipProps {
     onClose?: () => void;

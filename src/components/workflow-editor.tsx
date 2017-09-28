@@ -9,7 +9,7 @@ import 'react-virtualized/styles.css';
 import 'react-virtualized-select/styles.css';
 const AngleDown = require('react-icons/lib/fa/angle-down');
 const AngleUp = require('react-icons/lib/fa/angle-up');
-import ReactTooltip from 'react-tooltip';
+const ReactTooltip = require('react-tooltip');
 
 import { EditorState } from '../models/state';
 import { StepEditor } from './step-editor/step-editor';
@@ -163,7 +163,7 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, classe
 
     public render() {
         let classes = this.props.classes || {},
-            workflowVarCount = this.props.state.workflow.workflowVariables.length;
+            workflowVarCount = this.props.state.workflow ? this.props.state.workflow.workflowVariables.length : 0;
 
         return (
             <div className={classes.editor}>
@@ -196,6 +196,7 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, classe
                         </ul>
                         <h3 className={classes.listTitle}>{translate('TITLE_STEPS')}</h3>
                         <StepList state={this.props.state} onStepSelect={step => this.selectStep(step)}></StepList>
+                        {this.props.children}
                     </div>
                 </div>
                 <div className={classes.mainEditor}>
@@ -214,7 +215,7 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, classe
                                 <div className={classes.sectionTitleLarge}>Workflow Variables</div>
                                 <div className={classes.sectionBody}>
                                     <VariablesEditor
-                                        variables={this.props.state.workflow.workflowVariables}
+                                        variables={this.props.state.workflow ? this.props.state.workflow.workflowVariables : []}
                                         ide={this.props.state.ide}>
                                     </VariablesEditor>
                                 </div>
