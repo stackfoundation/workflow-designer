@@ -9,7 +9,7 @@ const Bars = require('react-icons/lib/fa/bars');
 const Trash = require('react-icons/lib/fa/trash');
 const AlertIcon = require('react-icons/lib/go/alert');
 
-import { themeColors, listStyles, mediaQueries } from '../style';
+import { themeColors, listStyles, mediaQueries, noSelectStyle } from '../style';
 
 let injectSheet = require('@tiagoroldao/react-jss').default;
 
@@ -71,15 +71,22 @@ const styles = (theme: any) => {
         hidden: {
             display: 'none'
         },
-        handle: {
-            composes: 'dragula-handle',
+        handle: Object.assign({
             position: 'absolute !important',
             top: '0px',
             right: theme.ide ? '0px' : '25px',
             cursor: 'move',
-        },
+        }, noSelectStyle),
         handleIcon: {
-            composes: `dragula-handle ${theme.ide ? 'icon icon-grabber' : ''}`,
+            composes: theme.ide ? 'icon icon-grabber' : '',
+        },
+        handleDragger: {
+            composes: 'dragula-handle',
+            position: 'absolute',
+            top: '0',
+            bottom: '0',
+            left: '0',
+            right: '0',
         },
         stepError: {
             composes: theme.ide ? 'text-color-error' : '',
@@ -166,13 +173,9 @@ export class StepList extends React.Component<StepListProps, {}> {
     }
 
     private onDrop = (el: Element, target: Element, source: Element, sibling: Element) => {
-        let deleting = this.state.deleting;
-        this.drake.cancel(true);
-
-        if (deleting) {
-            this.props.state.deleteStep((el as any).relatedStep);
-        }
-        else {
+        
+        if (!this.state.deleting) {
+            this.drake.cancel(true);
             let siblingStep: WorkflowStep = sibling && (sibling as any).relatedStep,
                 parentStep: WorkflowStepCompound | Workflow = (target as any).parentStep;
 
@@ -183,11 +186,20 @@ export class StepList extends React.Component<StepListProps, {}> {
                 targetIndex, 
                 parentStep);
         }
+        else {
+            this.drake.cancel(true);
+        }
     }
-
+    
     private onDrag = (el: Element, source: Element) => {
         if (source.classList.contains(stepListClass)) {
             this.setState({dragging: true});
+        }
+    }
+    
+    private onCancel = (el: Element, container: Element, source: Element) => {
+        if (this.state.deleting) {
+            this.props.state.deleteStep((el as any).relatedStep);
         }
     }
 
@@ -226,6 +238,7 @@ export class StepList extends React.Component<StepListProps, {}> {
 
         this.drake.on('drag', this.onDrag);
         this.drake.on('dragend', this.onDragEnd);
+        this.drake.on('cancel', this.onCancel);
         this.drake.on('drop', this.onDrop);
     }
 
@@ -265,6 +278,7 @@ export class StepList extends React.Component<StepListProps, {}> {
 
     private StepHandle () {
         return <div className={this.props.classes.handle}>
+            <div className={this.props.classes.handleDragger}></div>
             {this.props.state.ide ? <span className={this.props.classes.handleIcon}></span> : <Bars className={this.props.classes.handleIcon}/>}
         </div>
     }
