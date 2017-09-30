@@ -1,5 +1,21 @@
 import { observable, action, computed, toJS, isObservableArray } from "mobx";
-import { IWorkflow, IWorkflowStepBase, IWorkflowStepSimple, IWorkflowStepCompound, IHealth, KeyValueEntry, StepType, Volume, HealthType, HealthTypes, keysOfIHealth, keysOfIWorkflowStepSimple, StepTypes, ImageSource, ImageSources }
+import { IWorkflow,
+    IWorkflowStepBase,
+    IWorkflowStepSimple,
+    IWorkflowStepCompound,
+    IHealth,
+    IReadiness,
+    KeyValueEntry,
+    StepType,
+    Volume,
+    HealthType,
+    HealthTypes,
+    keysOfIHealth,
+    keysOfIReadiness,
+    keysOfIWorkflowStepSimple,
+    StepTypes,
+    ImageSource,
+    ImageSources }
     from '../../../workflow';
 
 export interface WorkflowStepPos {
@@ -301,26 +317,58 @@ export class Health implements IHealth {
         }
         let out = fillObj(toJS(this), keysOfIHealth);
         
-        if (out.type === 'script') {
-            delete out.port;
-            delete out.path;
-            delete out.headers;
-        }
-        else if (out.type === 'tcp') {
-            delete out.script;
-            delete out.path;
-            delete out.headers;
-        }
-        else if (out.type === 'http' || out.type === 'https') {
-            delete out.script;
+        Health.cleanupJSFields(out);
+        
+        return out;
+    }
 
-            if (out.headers && out.headers.length === 0) {
-                delete out.headers;
+    static cleanupJSFields (obj: IHealth) {
+        if (obj.type === 'script') {
+            delete obj.port;
+            delete obj.path;
+            delete obj.headers;
+        }
+        else if (obj.type === 'tcp') {
+            delete obj.script;
+            delete obj.path;
+            delete obj.headers;
+        }
+        else if (obj.type === 'http' || obj.type === 'https') {
+            delete obj.script;
+
+            if (obj.headers && obj.headers.length === 0) {
+                delete obj.headers;
             }
             else {
-                out.headers = cleanKeyValueEntryArray(out.headers);
+                obj.headers = cleanKeyValueEntryArray(obj.headers);
             }
         }
+    }
+}
+
+export class Readiness extends Health implements IReadiness {
+    @observable skipWait: boolean = false;
+
+    constructor(readiness: Partial<Readiness>) {
+        super(readiness);
+        Object.assign(this, readiness);
+    }
+
+    static apply(source: IReadiness): Readiness {
+        let readiness: Readiness = Object.assign(new Readiness({}), super.apply(source));
+
+        tryApplyPrimitive(readiness, 'skipCheck', source, 'boolean');
+
+        return readiness;
+    }
+
+    toJS(): IReadiness {
+        if (!this.filled()) {
+            return undefined;
+        }
+        let out = fillObj(toJS(this), keysOfIReadiness);
+
+        Health.cleanupJSFields(out);
         
         return out;
     }
@@ -346,7 +394,7 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
     @observable ignoreFailure?: boolean = false;
     @observable sourceLocation?: string = '';
     @observable health?: Health = new Health({});
-    @observable readiness?: Health = new Health({});
+    @observable readiness?: Readiness = new Readiness({});
     @observable environment?: KeyValueEntry[] = [];
     @observable ports?: string[] = [];
     @observable volumes?: Volume[] = [];
@@ -362,8 +410,12 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
                 }
             });
         tryApply(step, 'readiness', 
-            () => step.readiness = new Health(source.readiness !== undefined ? source.readiness : {}),
-             () => step.readiness = new Health({}));
+            () => {
+                step.readiness = source.readiness !== undefined ? Readiness.apply(source.readiness) : new Readiness({});
+                if (step.readiness.transient.parseError.length) {
+                    throw Error;
+                }
+            });
         tryApply(step, 'environment', 
             () => step.environment = source.environment !== undefined ? cleanKeyValueEntryArray(source.environment) : [], 
             () => {step.environment = [];});

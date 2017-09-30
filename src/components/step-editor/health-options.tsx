@@ -8,7 +8,7 @@ const Remove = require('react-icons/lib/fa/times-circle');
 
 import { editorStyles } from '../../style';
 import { Options } from '../options';
-import { WorkflowStepSimple, Health } from '../../models/workflow';
+import { WorkflowStepSimple, Health, Readiness } from '../../models/workflow';
 import { CenteredContent } from '../../util/centered-content'
 import { translate } from '../../../../../translation-service';
 import { Creatable, Option, OptionValues } from 'react-select';
@@ -67,9 +67,18 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
         return (this.props.step.transient as any)[field] as HealthType;
     }
 
-    private get healthField() {
+    private get healthField(): Health | Readiness {
         let field = this.props.field || 'health';
-        return (this.props.step as any)[field] as Health;
+        if ((this.props.step as any)[field].skipCheck !== undefined) {
+            return (this.props.step as any)[field] as Readiness;
+        }
+        else {
+            return (this.props.step as any)[field] as Health;
+        }
+    }
+
+    private get isReadiness(): boolean {
+        return (this.healthField as any).skipCheck !== undefined;
     }
 
     private get currentHealthCheckType() {
@@ -163,6 +172,15 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
     private setHealthCheckProperty(setter: () => void) {
         setter();
     }
+    
+    @action
+    private toggleSkipWait(e: React.ChangeEvent<HTMLInputElement>) {
+        (this.healthField as Readiness).skipWait = e.currentTarget.checked;
+    }
+
+    private get skipWait() {
+        return (this.healthField as Readiness).skipWait === true;
+    }
 
     private healthCheckNumberProperty(property: string) {
         let classes = this.props.classes || {};
@@ -208,6 +226,17 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
                     onChange={a => this.setHealthCheckType(a.value)}
                     selected={this.currentHealthCheckType} />
             </div>
+            {this.isReadiness && 
+                (<div className="pure-u-1 block">
+                    <label className="input-label">
+                        <input className="input-checkbox" 
+                            type="checkbox" 
+                            checked={this.skipWait} 
+                            onChange={e => this.toggleSkipWait(e)} />{' '}
+                            {translate('OPTION_OMIT_SOURCE')}
+                    </label>
+                </div>)
+            }
             {this.selectedEditor()}
             {this.healthCheckNumberProperty('interval')}
             {this.healthCheckNumberProperty('retries')}

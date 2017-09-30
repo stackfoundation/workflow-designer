@@ -21,7 +21,7 @@ export class SourceOptions extends React.Component<SourceOptionsProps, {}> {
         super(props);
     }
 
-    private get soureOmitted() {
+    private get sourceOmitted() {
         return this.props.step.omitSource === true;
     }
 
@@ -34,7 +34,7 @@ export class SourceOptions extends React.Component<SourceOptionsProps, {}> {
         let classes = this.props.classes || {}
         return (<div className="pure-u-1">
             <label className="input-label">
-                <input className="input-checkbox" type="checkbox" checked={this.soureOmitted} onChange={e => this.omitSource(e)} />{' '}
+                <input className="input-checkbox" type="checkbox" checked={this.sourceOmitted} onChange={e => this.omitSource(e)} />{' '}
                 {translate('OPTION_OMIT_SOURCE')}
             </label>
         </div>);
