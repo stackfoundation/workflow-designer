@@ -10,6 +10,52 @@ import { WorkflowStepSimple } from '../../models/workflow';
 import { Volume } from '../../../../workflow';
 import { translate } from '../../../../../translation-service';
 import { VolumeEditor } from './volume-editor';
+import { mediaQueries } from '../../style';
+
+let injectSheet = require('@tiagoroldao/react-jss').default;
+
+const jssStyles = (theme: any) => {
+    return {
+        fieldBlock: {
+            composes: 'pure-g block-force base-border-color component-padding-bottom',
+            borderBottomWidth: theme.ide ? '1px' : '0px',
+            borderBottomStyle: 'solid',
+    
+            '&:last-child': {
+                borderBottom: 'none',
+                paddingBottom: '0px'
+            },
+    
+            [mediaQueries.lg]: {
+                borderBottom: 'none',
+                paddingBottom: '0px'
+            }
+        },
+        optionSettings: {
+            composes: 'pure-u-1 pure-u-lg-1-6',
+            textAlign: 'right',
+            paddingLeft: '0px',
+    
+            [mediaQueries.lg]: {
+                paddingLeft: '10px'
+            }
+        },
+        deleteButton: {
+            composes: theme.ide ? 'btn btn-error btn-block' : 'pure-button',
+            width: '100%',
+            display: 'block',
+    
+            '& > svg': {
+                position: 'relative',
+                display: 'inline-block',
+                top: '-0.10em'
+            }
+        },
+        editorDiv: {
+            composes: 'pure-u-1 pure-u-lg-5-6'
+        }
+    };
+};
 
 interface EnvironmentOptionsProps {
     step: WorkflowStepSimple;
@@ -41,6 +87,7 @@ class EditorVolume implements Volume {
     @observable hostPath?: string = '';
 }
 
+@injectSheet(jssStyles)
 @observer
 export class VolumeOptions extends React.Component<EnvironmentOptionsProps, {}> {
     constructor(props: EnvironmentOptionsProps) {
@@ -57,17 +104,33 @@ export class VolumeOptions extends React.Component<EnvironmentOptionsProps, {}> 
     }
 
     private volumeEditor(volume: Volume, key: number, committed: boolean) {
-        let state = new EditorState(this.props.step, volume, committed);
-        let editor = (<VolumeEditor
+        let state = new EditorState(this.props.step, volume, committed),
+            classes = this.props.classes,
+            editor = (<VolumeEditor
             volume={volume}
             onChange={() => state.commitIfNecessary()} />);
 
-        return (<div className="pure-g" key={key}>
-            <div className="pure-u-11-12">{editor}</div>
-            <div className="pure-u-1-12">
-                {committed && <div onClick={_ => this.remove(volume)}><Remove /></div>}
+        return (<div className={classes.fieldBlock} key={key}>
+
+            <div className={classes.editorDiv}>{editor}</div>
+            <div className={classes.optionSettings}>
+                {committed && this.deleteButton(volume)}
             </div>
         </div>);
+    }
+
+    private deleteButton (volume: Volume) {
+        return <div className="pure-g">
+                <div className="pure-u-1-4 pure-u-lg-0">
+                </div>
+                <div className="pure-u-3-4 pure-u-lg-1">
+                    <button 
+                        className={this.props.classes.deleteButton} 
+                        onClick={e => this.remove(volume)}>
+                        <Remove /> Remove
+                    </button>
+                </div>
+            </div>;
     }
 
     private sourceEditors() {
