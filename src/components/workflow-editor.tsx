@@ -212,7 +212,7 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, classe
                     {this.state.section === 'workflowVars' && 
                         <form className={classes.form}>
                             <div className={[classes.section, workflowVarCount.toString()].join(' ')}>
-                                <div className={classes.sectionTitleLarge}>Workflow Variables</div>
+                                <div className={classes.sectionTitle}>Workflow Variables</div>
                                 <div className={classes.sectionBody}>
                                     <VariablesEditor
                                         variables={this.props.state.workflow ? this.props.state.workflow.workflowVariables : []}

@@ -47,7 +47,8 @@ const styles = (theme: any) => ({
         marginTop: '0px',
         borderBottomWidth: '1px',
         borderBottomStyle: 'solid',
-        paddingBottom: '5px'
+        paddingBottom: '5px',
+        fontSize: '1em'
     },
     label: {
         paddingRight: '5px'

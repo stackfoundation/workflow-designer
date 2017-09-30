@@ -49,16 +49,19 @@ const styles = (theme: any) => {
                 '&:focus': hoverLabel
             },
             labelLink: {
+                composes: theme.ide ? "" : "pure-button",
                 color: '#444',
                 textDecoration: 'none',
-                '&:hover': Object.assign({cursor: "pointer"}, hoverLabel),
+                '&:hover': theme.ide? Object.assign({cursor: "pointer"}, hoverLabel) : {},
                 '&:focus': hoverLabel
             },
             menuContainer: {
                 composes: 'pure-menu-children',
                 padding: '5px',
                 border: 'solid 1px #ccc',
-                minWidth: '230px'
+                zIndex: '10',
+                minWidth: '100%',
+                boxSizing: 'border-box',
             },
             item: {
                 composes: 'pure-menu-link',
@@ -128,13 +131,13 @@ export class DropDownMenu extends React.Component<DropDownMenuProps, {}> {
                     </div>
                 </div>
             </div>):
-            (<ul className={classes.menuLabelContainer}>
+            (<div className={classes.menuLabelContainer}>
                 <li className={classes.menuLabel}>
                     <a className={classes.labelLink}>{this.props.label} <span className="Select-arrow"></span></a>
                     <ul className={classes.menuContainer}>
                         {this.props.items && this.props.items.map((b, i) => this.item(b, i))}
                     </ul>
                 </li>
-            </ul>);
+            </div>);
     }
 }
