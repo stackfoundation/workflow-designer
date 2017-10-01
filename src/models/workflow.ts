@@ -458,9 +458,11 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
         let out: IWorkflowStepSimple = fillObj(toJS(this), keysOfIWorkflowStepSimple);
 
         if (out.type === 'service') {
+            out.serviceName = this.serviceName;
             out.health = this.health.toJS();
             out.readiness = this.readiness.toJS();
         } else {
+            delete out.serviceName;
             delete out.health;
             delete out.readiness;
         }

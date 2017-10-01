@@ -12,6 +12,9 @@ import { ExtWorkflowStepEditor } from './ext-workflow-step-editor';
 import { ScriptEditorFactory } from "../../models/state";
 import { editorStyles, themeColors } from '../../style';
 import { CatalogImage } from "../../models/catalog";
+import { CenteredContent } from '../../util/centered-content';
+
+let injectSheet = require('@tiagoroldao/react-jss').default;
 
 interface SimpleStepEditorProps {
     step: WorkflowStepSimple,
@@ -22,6 +25,19 @@ interface SimpleStepEditorProps {
     classes?: any
 }
 
+const styles = (theme: any) => {
+    return {
+        labelContainer: {
+            composes: 'pure-u-1-6',
+            textAlign: 'right'
+        },
+        label: {
+            paddingRight: '5px'
+        }
+    };
+};
+
+@injectSheet(styles)
 @observer
 export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}> {
     constructor(props: SimpleStepEditorProps) {
@@ -43,6 +59,11 @@ export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}>
         }
 
         this.props.step.transient.action = action;
+    }
+
+    @action
+    private setServiceName (name: string) {
+        this.props.step.serviceName = name;
     }
 
     private actionOption(action: ActionType) {
@@ -96,6 +117,19 @@ export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}>
         let classes = this.props.classes || {};
         return (
             <div>
+                {this.props.step.type === "service" && <div className="pure-g">
+                    <label className={classes.labelContainer}>
+                        <CenteredContent>
+                            <span className={classes.label}>{translate('LABEL_SCRIPT')}:</span>
+                        </CenteredContent>
+                    </label>
+                    <div className="pure-u-5-6">
+                        <input className="pure-input-1 input-text native-key-bindings"
+                            type="text"
+                            value={this.props.step.serviceName || ""}
+                            onChange={e => this.setServiceName(e.target.value)} />
+                    </div>
+                </div>}
                 <Options
                     ide={this.props.ide}
                     fill={true}

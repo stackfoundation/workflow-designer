@@ -50,15 +50,14 @@ const styles = (theme: any) => {
             minWidth: '100%'
         },
         stepNameDiv: {
-            composes: 'pure-g pure-u-1 pure-u-lg-7-12 block-md',
+            composes: 'pure-g pure-u-1 pure-u-lg-1-2 block-md',
             position: 'relative',
             [mediaQueries.lg]: {
-                paddingRight: '10px',
                 marginBottom: '0px'
             }
         },
         stepNameLabel: {
-            composes: 'pure-u-1-6',
+            composes: 'pure-u-1-6 pure-u-lg-1-3',
             fontSize: theme.ide ? '2em' : '26px',
             paddingRight: '10px',
             height: '100%',
@@ -69,7 +68,7 @@ const styles = (theme: any) => {
             }
         },
         stepNameInputDiv: {
-            composes: 'pure-u-5-6',
+            composes: 'pure-u-5-6 pure-u-lg-2-3',
             height: '100%'
         },
         stepNameInput: {
@@ -79,7 +78,11 @@ const styles = (theme: any) => {
             fontSize: theme.ide ? '2em' : '26px',
         },
         stepTypeInputDiv: {
-            composes: 'pure-u-1 pure-u-lg-5-12 step-type-input',
+            composes: 'pure-u-1 pure-u-lg-1-2 step-type-input',
+
+            [mediaQueries.lg]: {
+                paddingLeft: '10px'
+            }
         }
     };
 };
