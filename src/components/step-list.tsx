@@ -262,11 +262,11 @@ export class StepList extends React.Component<StepListProps, {}> {
         let classes = this.props.classes || {},
             prefix = this.stepPrefix(parentList, key);
         return (
-            <div>
+            <span>
                 {step.transient.parseError.length > 0 && !step.transient.errorsDismissed && <AlertIcon className={classes.stepError}/>}
                 {prefix.length > 0 && <span className={classes.stepPrefix}>{this.stepPrefix(parentList, key)}&nbsp;</span>}
                 {step.name}
-            </div>);
+            </span>);
     }
 
     setStep = (el: HTMLLIElement, parent: any, step: any) => {

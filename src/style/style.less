@@ -17,10 +17,17 @@
 .workflow-editor.base-ide-style  {
     position: relative;
     height: 100%;
+    overflow-y: auto;
+
+    @media screen and (min-width: 64em) {
+        overflow-y: hidden;
+    }
 
     > div {
-        height: 100%;
-        overflow-y: auto;
+        @media screen and (min-width: 64em) {
+            height: 100%;
+            overflow-y: auto;
+        }
     }
 
     fieldset {

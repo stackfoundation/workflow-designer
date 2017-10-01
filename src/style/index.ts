@@ -84,7 +84,7 @@ export function listStyles (theme: any): {listTitle: any, rootListTree: any, lis
     return {
         listTitle: {
             composes: 'title',
-
+            fontSize: theme.ide ? undefined : '1.2em',
             marginTop: '10px',
         },
         listTree: {
@@ -112,24 +112,38 @@ export function listStyles (theme: any): {listTitle: any, rootListTree: any, lis
                 listStyle: 'none',
                 lineHeight: '2em',
                 fontSize: '16px',
-                color: '#000',
+                color: '#666',
                 fontWeight: 'normal',
                 cursor: 'pointer',
                 position: 'relative',
-                paddingLeft: '10px'
+                paddingLeft: '10px',
+                
+                '& > span': {
+                    lineHeight: '2em',
+                    overflowX: 'hidden',
+                    marginRight: '45px',
+                    maxWidth: '100%',
+                    whiteSpace: 'nowrap',
+                    boxSizing: 'border-box',
+                    display: 'block',
+                },
+
+                '&:hover': {
+                    color: '#000',
+                }
             },
         listItemSelected: theme.ide ? {
                 composes: 'selected'
             } : {
                 fontWeight: 'bold',
-                color: themeColors.darkerGreen
+                color: themeColors.darkerGreen,
+                
+                '&:hover': {
+                    color: themeColors.darkerGreen,
+                }
             },
         listItemSubList: {
             composes: theme.ide ? 'list-nested-item' : '',
-
-            '& > div': {
-                'line-height': '2em'
-            },
 
             '& > $listTree': {
                 position: 'relative',

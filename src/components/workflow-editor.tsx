@@ -25,6 +25,13 @@ const styles = (theme: any) => {
     let list = listStyles(theme);
     let section = sectionStyles(theme);
 
+    list.rootListTree.marginBottom = '0px';
+    list.listItem.fontSize = '1.2em';
+    list.listItem.paddingLeft = '0px';
+    list.listItem.fontWeight = 'bold';
+
+    list.listTitle.color = theme.ide ? undefined : '#666';
+
     return Object.assign({
         form: {
             composes: theme.ide ? '' : 'pure-form',
@@ -183,18 +190,17 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, classe
                     <div className={classes.listWrapperTopShadow}></div>
                     <div className={classes.listWrapperBottomShadow}></div>
                     <div className={[classes.list, this.state.mobileMenuOpen ? 'open' : 'closed'].join(' ')}>
-                        <h3 className={classes.listTitle}>{translate('TITLE_WORKFLOW')}</h3>
                         <ul className={classes.rootListTree}>
                             <li 
                                 className={[classes.listItem, this.state.section === 'workflowVars' ? classes.listItemSelected : ''].join(' ')} 
                                 onClick={e => this.selectSection('workflowVars')}>
                                 <span>
                                     {workflowVarCount > 0 && <span className={classes.workflowVarsCount}>{workflowVarCount}</span>}
-                                    <span>{translate('TITLE_WORKFLOW_VARIABLES')}</span>
+                                    <span>{translate('TITLE_WORKFLOW')}</span>
                                 </span>
                             </li>
                         </ul>
-                        <h3 className={classes.listTitle}>{translate('TITLE_STEPS')}</h3>
+                        <h3 className={[classes.listTitle, this.state.section === 'step' ? classes.listItemSelected : ''].join(' ')}>{translate('TITLE_STEPS')}</h3>
                         <StepList state={this.props.state} onStepSelect={step => this.selectStep(step)}></StepList>
                         {this.props.children}
                     </div>
