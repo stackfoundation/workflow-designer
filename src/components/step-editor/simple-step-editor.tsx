@@ -28,7 +28,7 @@ interface SimpleStepEditorProps {
 const styles = (theme: any) => {
     return {
         labelContainer: {
-            composes: 'pure-u-1-6',
+            composes: 'pure-u-1-4 pure-u-md-1-6',
             textAlign: 'right'
         },
         label: {
@@ -120,10 +120,10 @@ export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}>
                 {this.props.step.type === "service" && <div className="pure-g">
                     <label className={classes.labelContainer}>
                         <CenteredContent>
-                            <span className={classes.label}>{translate('LABEL_SCRIPT')}:</span>
+                            <span className={classes.label}>{translate('LABEL_SERVICE_NAME')}:</span>
                         </CenteredContent>
                     </label>
-                    <div className="pure-u-5-6">
+                    <div className="pure-u-3-4 pure-u-md-5-6">
                         <input className="pure-input-1 input-text native-key-bindings"
                             type="text"
                             value={this.props.step.serviceName || ""}

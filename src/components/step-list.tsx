@@ -29,18 +29,12 @@ const stepListClass = 'step-list';
 
 const styles = (theme: any) => {
 
-    let list = listStyles(theme);
-
-    list.listItemSelected['& $stepError'] = {
-        color: list.listItemSelected.color
-    };
-
-    let styles = {
-        addButton: {
-            composes: theme.ide ? 'btn' : 'pure-button',
+    let list = listStyles(theme),
+        addButton = {
+            composes: theme.ide ? 'btn' : 'pure-button success',
             display: 'block',
             position: 'relative',
-            backgroundColor: theme.ide ? undefined : '#ddd',
+            backgroundColor: theme.ide ? undefined : '#f5f5f5',
 
             '& > div' : {
                 position: 'absolute',
@@ -59,11 +53,19 @@ const styles = (theme: any) => {
                 top: '-0.15em',
             },
         },
-        deleteStep: {
-            composes: theme.ide ? 'btn-error' : '',
-        },
+        deleteButton = Object.assign({}, addButton, {
+            composes: theme.ide ? 'btn btn-error' : 'pure-button danger',
+        });
+
+    list.listItemSelected['& $stepError'] = {
+        color: list.listItemSelected.color
+    };
+
+    let styles = {
+        addButton,
+        deleteButton,
         deleteStepDeleting: {
-            color: theme.ide ? undefined : 'red'
+            composes: theme.ide ? '' : 'pure-button-hover',
         },
         stepPrefix: {
             fontWeight: 'bold'
@@ -317,8 +319,7 @@ export class StepList extends React.Component<StepListProps, {}> {
                     onClick={this.addStep}
                     className={[
                         stepListClass,
-                        classes.addButton,
-                        (this.state.dragging ? classes.deleteStep : ''),
+                        (this.state.dragging ? classes.deleteButton : classes.addButton),
                         (this.state.deleting ? classes.deleteStepDeleting : '')].join(' ')
                     }>
                     {this.state.dragging ? 

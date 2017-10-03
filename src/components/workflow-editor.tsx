@@ -18,7 +18,7 @@ import { IWorkflow } from "../../../workflow";
 import '../util/translations.ts';
 import { translate } from '../../../../translation-service';
 import { themeColors, listStyles, sectionStyles, mediaQueries, shadows } from '../style';
-import { WorkflowStep } from '../models/workflow';
+import { WorkflowStep, Workflow } from '../models/workflow';
 import { VariablesEditor } from '../components/step-editor/variables-editor';
 
 const styles = (theme: any) => {
@@ -138,18 +138,38 @@ interface WorkflowEditorState {
 
 @injectSheet(styles)
 @observer
-export class WorkflowEditor extends React.Component<{ state: EditorState, classes?: any }, {}> {
+export class WorkflowEditor extends React.Component<{ state: EditorState, workflow: Workflow, classes?: any }, {}> {
     public state: WorkflowEditorState = {
         section: 'workflowVars',
         mobileMenuOpen: false
     }
 
-    constructor(props: { state: EditorState, classes?: any }) {
+    constructor(props: { state: EditorState, classes?: any, workflow: Workflow }) {
         super(props);
     }
 
     private selectStep (step: WorkflowStep) {
         this.setState({section: 'step'});
+    }
+
+    componentWillMount () {
+        if (this.props.workflow.steps.length) {
+            this.props.state.selectInitialStep();
+            this.selectStep(this.props.workflow.steps[0]);
+        } else {
+            this.selectSection('workflowVars');
+        }
+    }
+
+    componentWillReceiveProps (nextProps: {workflow: Workflow}) {
+        if (nextProps.workflow !== this.props.workflow) {
+            if (nextProps.workflow.steps.length) {
+                this.props.state.selectInitialStep();
+                this.selectStep(nextProps.workflow.steps[0]);
+            } else {
+                this.selectSection('workflowVars');
+            }
+        }
     }
 
     private selectSection (section: WorkflowEditorState['section']) {
@@ -170,7 +190,7 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, classe
 
     public render() {
         let classes = this.props.classes || {},
-            workflowVarCount = this.props.state.workflow ? this.props.state.workflow.workflowVariables.length : 0;
+            workflowVarCount = this.props.workflow ? this.props.workflow.workflowVariables.length : 0;
 
         return (
             <div className={classes.editor}>
@@ -196,7 +216,7 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, classe
                                 onClick={e => this.selectSection('workflowVars')}>
                                 <span>
                                     {workflowVarCount > 0 && <span className={classes.workflowVarsCount}>{workflowVarCount}</span>}
-                                    <span>{translate('TITLE_WORKFLOW')}</span>
+                                    <span>{translate('TITLE_WORKFLOWS_VARIABLES')}</span>
                                 </span>
                             </li>
                         </ul>
@@ -212,7 +232,7 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, classe
                             ide={this.props.state.ide}
                             scriptEditorFactory={this.props.state.scriptEditorFactory}
                             catalog={this.props.state.catalog}
-                            workflow={this.props.state.workflow}
+                            workflow={this.props.workflow}
                             step={this.props.state.currentStep}>
                         </StepEditor>}
                     {this.state.section === 'workflowVars' && 
@@ -221,7 +241,7 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, classe
                                 <div className={classes.sectionTitle}>Workflow Variables</div>
                                 <div className={classes.sectionBody}>
                                     <VariablesEditor
-                                        variables={this.props.state.workflow ? this.props.state.workflow.workflowVariables : []}
+                                        variables={this.props.workflow ? this.props.workflow.workflowVariables : []}
                                         ide={this.props.state.ide}>
                                     </VariablesEditor>
                                 </div>

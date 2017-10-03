@@ -57,7 +57,7 @@ const styles = (theme: any) => {
             }
         },
         stepNameLabel: {
-            composes: 'pure-u-1-6 pure-u-lg-1-3',
+            composes: 'pure-u-1-4 pure-u-md-1-6 pure-u-lg-1-3',
             fontSize: theme.ide ? '2em' : '26px',
             paddingRight: '10px',
             height: '100%',
@@ -68,7 +68,7 @@ const styles = (theme: any) => {
             }
         },
         stepNameInputDiv: {
-            composes: 'pure-u-5-6 pure-u-lg-2-3',
+            composes: 'pure-u-3-4 pure-u-md-5-6 pure-u-lg-2-3',
             height: '100%'
         },
         stepNameInput: {

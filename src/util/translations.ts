@@ -29,6 +29,7 @@
     LABEL_PORT: 'Port',
     LABEL_RETRIES: 'Number of retry attempts',
     LABEL_SCRIPT: 'Script',
+    LABEL_SERVICE_NAME: 'Service Name',
     LABEL_TIMEOUT: 'Timeout for check (in seconds)',
     LABEL_VALUE: 'Value',
     LABEL_WORKFLOW: 'Workflow',

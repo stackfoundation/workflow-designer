@@ -202,10 +202,18 @@ export class Workflow implements IWorkflow {
     }
 
     toJS (): IWorkflow {
-        return {
-            steps: this.steps.map(step => step.toJS()),
-            workflowVariables: this.workflowVariables.length ? cleanKeyValueEntryArray(this.workflowVariables) : undefined
-        };
+        let out: IWorkflow = {
+            steps: this.steps.map(step => step.toJS())
+        } 
+
+        if (this.workflowVariables.length) {
+            let arr = cleanKeyValueEntryArray(this.workflowVariables);
+            if (arr.length) {
+                out.workflowVariables = arr;
+            }
+        }
+
+        return out;
     }
 }
 
@@ -459,8 +467,14 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
 
         if (out.type === 'service') {
             out.serviceName = this.serviceName;
-            out.health = this.health.toJS();
-            out.readiness = this.readiness.toJS();
+            let health = this.health.toJS();
+            if (health) {
+                out.health = health;
+            }
+            let readiness = this.readiness.toJS();
+            if (readiness) {
+                out.readiness = readiness;
+            }
         } else {
             delete out.serviceName;
             delete out.health;

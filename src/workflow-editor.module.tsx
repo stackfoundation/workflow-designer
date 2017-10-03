@@ -37,7 +37,7 @@ export class WorkFlowEditorIO implements IWorkFlowEditorIO {
         ReactDOM.render((
             <JssProvider jss={jss}>
             <ThemeProvider theme={theme}>
-                <WorkflowEditor state={this.editorState}></WorkflowEditor>
+                <WorkflowEditor state={this.editorState} workflow={this.editorState.workflow}></WorkflowEditor>
             </ThemeProvider>
             </JssProvider>
         ), parentElement);

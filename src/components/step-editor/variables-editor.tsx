@@ -52,7 +52,7 @@ const jssStyles = (theme: any) => ({
         }
     },
     deleteButton: {
-        composes: theme.ide ? 'btn btn-error btn-block' : 'pure-button',
+        composes: theme.ide ? 'btn btn-error btn-block' : 'pure-button danger',
         width: '100%',
         display: 'block',
 
