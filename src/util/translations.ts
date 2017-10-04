@@ -9,13 +9,27 @@
     CONFIGURE_PORTS: 'Ports',
     CONFIGURE_READINESS: 'Readiness check',
     DELETE: 'Delete',
-    HELP_HEALTH: 'Help text for Health check',
-    HELP_ENVIRONMENT: 'Help text for Environment variables',
-    HELP_FAILURE: 'Help text for Behavior on step failure',
-    HELP_SOURCE: 'Help text for Project source availability',
-    HELP_VOLUMES: 'Help text for Volumes',
-    HELP_PORTS: 'Help text for Exposed ports',
-    HELP_READINESS: 'Help text for Readiness check',
+    HELP_HEALTH: 
+    'Configure the check that determines whether the service started by this step is healthy<br /><br />' +
+    '<a href="/docs/workflows#health">Read more about health checks in the documentation</a>',
+    HELP_ENVIRONMENT:
+    'Environment variables that you want to be made available to the Docker container that is run for this step<br /><br />' +
+    '<a href="/docs/workflows#environment">Read more about environment variables in the documentation</a>',
+    HELP_FAILURE: 
+    'Configure what happens when a particular step fails<br /><br />' +
+    '<a href="/docs/workflows#failure">Read more about failure behavior in the documentation</a>',
+    HELP_SOURCE: 
+    'Change how your project source files are made available to the Docker container that is run for this step<br /><br />' +
+    '<a href="/docs/workflows#source">Read more about source availability in the documentation</a>',
+    HELP_VOLUMES: 
+    'Volumes are paths relative to your project source folder that you want available in the Docker container for this step<br /><br />' +
+    '<a href="/docs/workflows#volumes">Read more about volumes in the documentation</a>',
+    HELP_PORTS: 
+    'Configure the ports on the Docker container for this step that should be exposed<br /><br />' +
+    '<a href="/docs/workflows#ports">Read more about exposing ports in the documentation</a>',
+    HELP_READINESS: 
+    'Configure the check that determines whether the service started by this step is considered ready<br /><br />' +
+    '<a href="/docs/workflows#health">Read more about readiness checks in the documentation</a>',
     INSTRUCTION_PORTS: 'Enter a valid port number ( format: [tcp|udp/]sourcePort[:targetContainerPort] )',
     LABEL_DOCKERFILE: 'Dockerfile',
     LABEL_FILE: 'File',
