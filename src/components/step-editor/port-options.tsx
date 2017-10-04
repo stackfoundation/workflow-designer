@@ -18,6 +18,12 @@ interface PortOptionsProps {
     classes?: any;
 }
 
+interface MappedPort {
+    protocol?: string,
+    sourcePort?: string,
+    targetPort?: string
+}
+
 const jssStyles = (theme: any) => {
     return {
         selectInput: {
@@ -57,17 +63,24 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
         console.log(event);
     }
 
-    private breakPorts (portsString: string): string[] {
-        let out: string[] = [];
+    private breakPorts (portsString: string): MappedPort {
+        let out: MappedPort = {};
+
+        if (portsString.indexOf('/') > -1) {
+            out.protocol = portsString.substr(0, portsString.indexOf('/'));
+            portsString = portsString.substr(portsString.indexOf('/') + 1)
+        }
 
         if (portsString.indexOf(':') === portsString.length - 1) {
-            out = [portsString.substr(0, portsString.length - 1)];
+            out.sourcePort = out.targetPort = portsString.substr(0, portsString.length - 1);
         }
         else if (portsString.indexOf(':') > -1) {
-            out = portsString.split(':');
+            let ports = portsString.split(':');
+            out.sourcePort = ports[0];
+            out.targetPort = ports[1];
         }
         else {
-            out = [portsString];
+            out.sourcePort = out.targetPort = portsString;
         }
 
         return out;
@@ -79,13 +92,19 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
         }
         let portMappings = this.breakPorts(arg.label);
 
-        if (portMappings.length > 2) {
+        if (!portMappings.sourcePort || !portMappings.sourcePort.length) {
             return false;
         }
 
         try {
-            for (var i = 0; i < portMappings.length; i++) {
-                if (parseInt(portMappings[i]).toString() !== portMappings[i]) {
+            let ports = [portMappings.sourcePort, portMappings.targetPort],
+                varRegex = /^\$\{[a-zA-Z]+\}$/;
+
+            if (!varRegex.test(portMappings.protocol) && ['tcp', 'udp'].indexOf(portMappings.protocol) === -1) {
+                return false;
+            }
+            for (var i = 0; i < ports.length; i++) {
+                if (!varRegex.test(ports[i]) && parseInt(ports[i]).toString() !== ports[i]) {
                     return false;
                 }
             }
@@ -97,13 +116,16 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
     }
 
     private portCreateText = (label: string): string => {
-        let ports = this.breakPorts(label);
-
-        if (ports.length == 1) {
-            ports.push(ports[0]);
+        if (this.validPort({label})) {
+            let ports = this.breakPorts(label);
+            return translate('SELECT_TEXT_CREATE_PORT', [ports.protocol || '', ports.sourcePort, ports.targetPort]);
         }
-
-        return translate('SELECT_TEXT_CREATE_PORT', ports);
+        
+        return translate('INSTRUCTION_PORTS');
+    }
+    
+    shouldKeyDownEventCreateNewOption (arg: { keyCode: number }) {
+        return arg.keyCode === 32 || arg.keyCode === 9 || arg.keyCode === 13 || arg.keyCode === 188;
     }
 
     public render() {
@@ -117,8 +139,10 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
                 className={`${editorStyles.normalSelect} native-key-bindings`}
                 inputProps={{className: this.props.classes.selectInput}}
                 isValidNewOption={this.validPort}
+                shouldKeyDownEventCreateNewOption={this.shouldKeyDownEventCreateNewOption}
                 multi={true}
                 clearable={true}
+                placeholder={translate('PLACEHOLDER_PORTS')}
                 promptTextCreator={this.portCreateText}
                 noResultsText={translate('INSTRUCTION_PORTS')}
                 value={portsArray} 
