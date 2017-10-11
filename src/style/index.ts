@@ -173,6 +173,7 @@ export function errorStyles (theme: any): {errorPanel: any, errorPanelClose: any
                 padding: '16px',
                 position: 'relative',
                 borderRadius: '5px',
+                boxSizing: 'border-box'
             },
         errorPanelClose: {
             composes: theme.ide ? 'text-error': '',

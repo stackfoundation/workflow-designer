@@ -65,13 +65,13 @@ const jssStyles = (theme: any) => ({
     }
 });
 
-function extractImage(image: string) {
-    let tagSeparator = image.lastIndexOf(':');
-    if (tagSeparator > 0) {
-        return image.substring(0, tagSeparator);
-    }
+export function parseImage(imageString: string): {image: string, tag: string} {
+    let tagSeparator = imageString.lastIndexOf(':');
 
-    return image;
+    return {
+        image: tagSeparator > 0 ? imageString.substring(0, tagSeparator) : imageString,
+        tag: tagSeparator > 0 ? imageString.substring(tagSeparator+1) : ''
+    };
 }
 
 
@@ -87,7 +87,7 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
         let currentStep = this.props.step as WorkflowStepSimple;
 
         if (currentStep && currentStep.image && this.props.catalog) {
-            let currentImage = extractImage(currentStep.image);
+            let currentImage = parseImage(currentStep.image).image;
             let image = this.props.catalog.find(image => image.name === currentImage);
             if (image) {
                 return image.tags.map(tag => ({ label: tag, value: tag }));
@@ -100,7 +100,7 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
     private get image() {
         if (this.props.step && (this.props.step as WorkflowStepSimple).image) {
             let image = (this.props.step as WorkflowStepSimple).image;
-            return extractImage(image);
+            return parseImage(image).image;
         }
 
         return '';
@@ -132,7 +132,7 @@ export class CatalogImageField extends React.Component<{ catalog: CatalogImage[]
         let image = (this.props.step as WorkflowStepSimple).image;
 
         if (image) {
-            image = extractImage(image);
+            image = parseImage(image).image;
             
             if (!tag || tag === '') {
                 tag = 'latest';

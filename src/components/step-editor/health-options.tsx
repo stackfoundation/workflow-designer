@@ -69,7 +69,7 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
 
     private get healthField(): Health | Readiness {
         let field = this.props.field || 'health';
-        if ((this.props.step as any)[field].skipCheck !== undefined) {
+        if ((this.props.step as any)[field].skipWait !== undefined) {
             return (this.props.step as any)[field] as Readiness;
         }
         else {
@@ -78,7 +78,7 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
     }
 
     private get isReadiness(): boolean {
-        return (this.healthField as any).skipCheck !== undefined;
+        return (this.healthField as any).skipWait !== undefined;
     }
 
     private get currentHealthCheckType() {
@@ -233,7 +233,7 @@ export class HealthOptions extends React.Component<HealthOptionsProps, {}> {
                             type="checkbox" 
                             checked={this.skipWait} 
                             onChange={e => this.toggleSkipWait(e)} />{' '}
-                            {translate('OPTION_OMIT_SOURCE')}
+                            {translate('OPTION_SKIP_WAIT')}
                     </label>
                 </div>)
             }

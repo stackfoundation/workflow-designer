@@ -15,13 +15,14 @@ import { observer } from "mobx-react";
 import { CustomInputIO } from "../../models/custom-input";
 import { autorun } from "mobx";
 import { CatalogImage } from "../../models/catalog";
-import { ScriptEditorFactory } from "../../models/state";
+import { ScriptEditorFactory, SfLinkFactory } from "../../models/state";
 import { Option } from "react-select";
 import { CenteredContent } from "../../util/centered-content";
 import { translate } from '../../../../../translation-service';
 import { AdvancedOptions } from './advanced-options';
 // const atom = require('atom');
 import { editorStyles, themeColors, sectionStyles } from '../../style';
+import { StepWorkflowVariables } from '../../components/step-editor/step-workflow-variables';
 
 
 const styles = (theme: any) => {
@@ -65,8 +66,10 @@ interface ScriptStepEditorProps {
     scriptField: string,
     workflow: Workflow,
     ide: boolean,
+    includeWorkflowVariables?: boolean,
     catalog: CatalogImage[],
     scriptEditorFactory: ScriptEditorFactory,
+    sfLinkFactory: SfLinkFactory,
     classes?: any
 }
 
@@ -92,9 +95,14 @@ export class ScriptStepEditor extends React.Component<ScriptStepEditorProps, {}>
                         workflow={this.props.workflow}
                         step={this.props.step}></ImageField>
                 </div>
+                {this.props.includeWorkflowVariables && 
+                    <div className="pure-u-1">
+                        <StepWorkflowVariables step={this.props.step}/>
+                    </div>}
                 <AdvancedOptions
                     ide={this.props.ide}
-                    step={this.props.step} />
+                    step={this.props.step}
+                    sfLinkFactory={this.props.sfLinkFactory} />
                 <div className="pure-u-1">
                     <div className={classes.section}>
                         <div className={classes.sectionTitle}>{translate('LABEL_'+this.props.scriptField.toUpperCase())}:</div>

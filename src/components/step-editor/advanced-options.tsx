@@ -14,11 +14,13 @@ import { DropDownMenu, Item } from '../drop-down-menu';
 import { translate } from '../../../../../translation-service';
 import { sectionStyles } from '../../style';
 import { InfoTooltip } from '../../components/tooltip';
+import { SfLinkFactory } from '../../models/state';
 const InfoCircle = require('react-icons/lib/fa/info-circle');
 
 interface AdvancedOptionsProps {
     step: WorkflowStepSimple,
     ide: boolean,
+    sfLinkFactory: SfLinkFactory,
     classes?: any
 }
 
@@ -132,15 +134,15 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
             return true;
         }
 
-        return this.props.step.ignoreFailure;
+        return this.props.step.ignoreFailure || this.props.step.ignoreMissing || this.props.step.ignoreValidation;
     }
 
-    private section(title: string, body: JSX.Element, helpMessage?:string) {
+    private section(title: string, body: JSX.Element, helpMessage?:JSX.Element) {
         const classes = this.props.classes || {};
         return (<div className={classes.section}>
             <div className={classes.sectionTitle}>
                 {title}
-                {helpMessage && <InfoTooltip message={helpMessage} className={classes.sectionTooltip}></InfoTooltip>}
+                {helpMessage && <InfoTooltip className={classes.sectionTooltip}>{helpMessage}</InfoTooltip>}
             </div>
             <div className={classes.sectionBody}>
                 {body}
@@ -230,37 +232,65 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
                 this.section(
                     translate('TITLE_HEALTH'),
                     <HealthOptions step={step} ide={this.props.ide} />,
-                    translate('HELP_HEALTH'))}
+                    <div>
+                        {translate('HELP_HEALTH_TEXT')}
+                        <br /><br />
+                        {this.props.sfLinkFactory("/docs/workflows#health", translate('HELP_HEALTH_LINK'))}
+                    </div>)}
             {step.type === 'service' && this.readinessConfigured &&
                 this.section(
                     translate('TITLE_READINESS'), 
                     <HealthOptions typeField="readinessCheckType" field="readiness" step={step} ide={this.props.ide} />,
-                    translate('HELP_READINESS'))}
+                    <div>
+                        {translate('HELP_READINESS_TEXT')}
+                        <br /><br />
+                        {this.props.sfLinkFactory("/docs/workflows#readiness", translate('HELP_READINESS_LINK'))}
+                    </div>)}
             {this.sourceOptions &&
                 this.section(
                     translate('TITLE_SOURCE'), 
                     <SourceOptions step={step} />,
-                    translate('HELP_SOURCE'))}
+                    <div>
+                        {translate('HELP_SOURCE_TEXT')}
+                        <br /><br />
+                        {this.props.sfLinkFactory("/docs/workflows#source", translate('HELP_SOURCE_LINK'))}
+                    </div>)}
             {this.failureOptions &&
                 this.section(
                     translate('TITLE_FAILURE'), 
-                    <FailureOptions step={step} />,
-                    translate('HELP_FAILURE'))}
+                    <FailureOptions obj={step} />,
+                    <div>
+                        {translate('HELP_FAILURE_TEXT')}
+                        <br /><br />
+                        {this.props.sfLinkFactory("/docs/workflows#failure", translate('HELP_FAILURE_LINK'))}
+                    </div>)}
             {this.environmentConfigured &&
                 this.section(
                     translate('TITLE_ENVIRONMENT'), 
                     <VariablesEditor variables={step.environment} ide={this.props.ide} />,
-                    translate('HELP_ENVIRONMENT'))}
+                    <div>
+                        {translate('HELP_ENVIRONMENT_TEXT')}
+                        <br /><br />
+                        {this.props.sfLinkFactory("/docs/workflows#environment", translate('HELP_ENVIRONMENT_LINK'))}
+                    </div>)}
             {this.volumesConfigured &&
                 this.section(
                     translate('TITLE_VOLUMES'), 
                     <VolumeOptions step={step} ide={this.props.ide} />,
-                    translate('HELP_VOLUMES'))}
+                    <div>
+                        {translate('HELP_VOLUMES_TEXT')}
+                        <br /><br />
+                        {this.props.sfLinkFactory("/docs/workflows#volumes", translate('HELP_VOLUMES_LINK'))}
+                    </div>)}
             {this.portsConfigured &&
                 this.section(
                     translate('TITLE_PORTS'), 
                     <PortOptions step={step} ide={this.props.ide} />,
-                    translate('HELP_PORTS'))}
+                    <div>
+                        {translate('HELP_PORTS_TEXT')}
+                        <br /><br />
+                        {this.props.sfLinkFactory("/docs/workflows#ports", translate('HELP_PORTS_LINK'))}
+                    </div>)}
 
             {items.length > 0 &&
                 <DropDownMenu

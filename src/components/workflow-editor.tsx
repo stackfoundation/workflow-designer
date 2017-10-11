@@ -20,6 +20,7 @@ import { translate } from '../../../../translation-service';
 import { themeColors, listStyles, sectionStyles, mediaQueries, shadows } from '../style';
 import { WorkflowStep, Workflow } from '../models/workflow';
 import { VariablesEditor } from '../components/step-editor/variables-editor';
+import { FailureOptions } from '../components/step-editor/failure-options';
 
 const styles = (theme: any) => {
     let list = listStyles(theme);
@@ -131,7 +132,7 @@ const styles = (theme: any) => {
 };
 
 interface WorkflowEditorState {
-    section: 'step' | 'workflowVars',
+    section: 'step' | 'workflow',
     mobileMenuOpen: boolean
 }
 
@@ -140,7 +141,7 @@ interface WorkflowEditorState {
 @observer
 export class WorkflowEditor extends React.Component<{ state: EditorState, workflow: Workflow, classes?: any }, {}> {
     public state: WorkflowEditorState = {
-        section: 'workflowVars',
+        section: 'workflow',
         mobileMenuOpen: false
     }
 
@@ -157,7 +158,7 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, workfl
             this.props.state.selectInitialStep();
             this.selectStep(this.props.workflow.steps[0]);
         } else {
-            this.selectSection('workflowVars');
+            this.selectSection('workflow');
         }
     }
 
@@ -167,7 +168,7 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, workfl
                 this.props.state.selectInitialStep();
                 this.selectStep(nextProps.workflow.steps[0]);
             } else {
-                this.selectSection('workflowVars');
+                this.selectSection('workflow');
             }
         }
     }
@@ -180,7 +181,7 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, workfl
     private get selectedItemDescription () {
         let out = '';
 
-        if (this.state.section === 'workflowVars') {
+        if (this.state.section === 'workflow') {
             return translate('TITLE_WORKFLOW_VARIABLES');
         }
         else {
@@ -212,11 +213,10 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, workfl
                     <div className={[classes.list, this.state.mobileMenuOpen ? 'open' : 'closed'].join(' ')}>
                         <ul className={classes.rootListTree}>
                             <li 
-                                className={[classes.listItem, this.state.section === 'workflowVars' ? classes.listItemSelected : ''].join(' ')} 
-                                onClick={e => this.selectSection('workflowVars')}>
+                                className={[classes.listItem, this.state.section === 'workflow' ? classes.listItemSelected : ''].join(' ')} 
+                                onClick={e => this.selectSection('workflow')}>
                                 <span>
-                                    {workflowVarCount > 0 && <span className={classes.workflowVarsCount}>{workflowVarCount}</span>}
-                                    <span>{translate('TITLE_WORKFLOWS_VARIABLES')}</span>
+                                    <span>{translate('TITLE_WORKFLOW')}</span>
                                 </span>
                             </li>
                         </ul>
@@ -231,19 +231,26 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, workfl
                             state={this.props.state}
                             ide={this.props.state.ide}
                             scriptEditorFactory={this.props.state.scriptEditorFactory}
+                            sfLinkFactory={this.props.state.sfLinkFactory}
                             catalog={this.props.state.catalog}
                             workflow={this.props.workflow}
                             step={this.props.state.currentStep}>
                         </StepEditor>}
-                    {this.state.section === 'workflowVars' && 
+                    {this.state.section === 'workflow' && 
                         <form className={classes.form}>
                             <div className={[classes.section, workflowVarCount.toString()].join(' ')}>
-                                <div className={classes.sectionTitle}>Workflow Variables</div>
+                                <div className={classes.sectionTitle}>{translate('TITLE_WORKFLOW_VARIABLES')}</div>
                                 <div className={classes.sectionBody}>
                                     <VariablesEditor
                                         variables={this.props.workflow ? this.props.workflow.workflowVariables : []}
                                         ide={this.props.state.ide}>
                                     </VariablesEditor>
+                                </div>
+                            </div>
+                            <div className={classes.section}>
+                                <div className={classes.sectionTitle}>{translate('TITLE_WORKFLOW_FAILURE')}</div>
+                                <div className={classes.sectionBody}>
+                                    <FailureOptions obj={this.props.workflow} />
                                 </div>
                             </div>
                         </form>}

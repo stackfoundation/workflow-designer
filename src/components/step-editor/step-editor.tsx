@@ -11,7 +11,7 @@ import {
     WorkflowStepCompound,
     WorkflowStepSimple,
 } from '../../models/workflow';
-import { EditorState, ScriptEditorFactory } from '../../models/state';
+import { EditorState, ScriptEditorFactory, SfLinkFactory } from '../../models/state';
 import { WorkflowService } from '../../services/workflow_service';
 import { StepTypeSelect } from '../step-type-select';
 import { SimpleStepEditor } from './simple-step-editor';
@@ -38,6 +38,7 @@ interface StepEditorProps {
     workflow: Workflow,
     catalog: CatalogImage[],
     scriptEditorFactory: ScriptEditorFactory,
+    sfLinkFactory: SfLinkFactory,
     classes?: any
 }
 
@@ -143,6 +144,7 @@ export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
                     {this.props.step && this.props.step.type === 'compound' ?
                         null :
                         (<SimpleStepEditor
+                            sfLinkFactory={this.props.sfLinkFactory}
                             scriptEditorFactory={this.props.scriptEditorFactory}
                             workflow={this.props.workflow}
                             ide={this.props.ide}

@@ -29,6 +29,10 @@ export class Workflow implements IWorkflow {
     @observable steps: WorkflowStep[] = [];
     @observable workflowVariables: KeyValueEntry[] = [];
     @observable transient: WorkFlowTransientState = new WorkFlowTransientState();
+    
+    @observable ignoreFailure?: boolean = false;
+    @observable ignoreValidation?: boolean = false;
+    @observable ignoreMissing?: boolean = false;
 
     constructor(workflow?: Partial<IWorkflow>) {
         if (workflow) {
@@ -195,8 +199,12 @@ export class Workflow implements IWorkflow {
         });
 
         tryApply(out, 'workflowVariables', 
-            () => out.workflowVariables = cleanKeyValueEntryArray(source.workflowVariables), 
+            () => out.workflowVariables = source.workflowVariables !== undefined ? cleanKeyValueEntryArray(source.workflowVariables) : [], 
             () => out.workflowVariables = []);
+        
+        tryApplyPrimitive(out, 'ignoreFailure', source, 'boolean');
+        tryApplyPrimitive(out, 'ignoreValidation', source, 'boolean');
+        tryApplyPrimitive(out, 'ignoreMissing', source, 'boolean');
 
         return out;
     }
@@ -213,6 +221,10 @@ export class Workflow implements IWorkflow {
             }
         }
 
+        if (this.ignoreFailure !== undefined) { out.ignoreFailure = this.ignoreFailure; }
+        if (this.ignoreValidation !== undefined) { out.ignoreValidation = this.ignoreValidation; }
+        if (this.ignoreMissing !== undefined) { out.ignoreMissing = this.ignoreMissing; }
+
         return out;
     }
 }
@@ -227,6 +239,7 @@ export class WorkFlowTransientState extends TransientState {
 
 export type WorkflowStep = WorkflowStepSimple | WorkflowStepCompound;
 export type ActionType = 'script' | 'call' | 'generated' | 'dockerfile';
+export type UXImageSourceType = 'manual' | 'catalog' | 'step';
 
 export abstract class WorkflowStepBase implements IWorkflowStepBase {
     @observable name: string = '';
@@ -244,6 +257,8 @@ export abstract class WorkflowStepBase implements IWorkflowStepBase {
 }
 
 export class StepTransientState extends TransientState {
+    @observable imageSourceTypeSelected?: UXImageSourceType;
+
     @observable healthCheckType?: HealthType;
     @observable action?: ActionType;
     @observable healthConfigured: boolean;
@@ -254,6 +269,10 @@ export class StepTransientState extends TransientState {
     @observable environmentConfigured: boolean;
     @observable volumesConfigured: boolean;
     @observable portsConfigured: boolean;
+
+
+    @observable explicitIncludeVariables: boolean;
+    @observable explicitExcludeVariables: boolean;
 }
 
 export class Health implements IHealth {
@@ -392,7 +411,7 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
 
     @observable transient: StepTransientState = new StepTransientState();
     @observable serviceName?: string = '';
-    @observable imageSource?: ImageSource = 'catalog';
+    @observable imageSource?: ImageSource = 'image';
     @observable image?: string = '';
     @observable dockerfile?: string = '';
     @observable target?: string = '';
@@ -400,12 +419,18 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
     @observable script?: string = '';
     @observable omitSource?: boolean = false;
     @observable ignoreFailure?: boolean = false;
+    @observable ignoreValidation?: boolean = false;
+    @observable ignoreMissing?: boolean = false;
     @observable sourceLocation?: string = '';
     @observable health?: Health = new Health({});
     @observable readiness?: Readiness = new Readiness({});
     @observable environment?: KeyValueEntry[] = [];
     @observable ports?: string[] = [];
     @observable volumes?: Volume[] = [];
+    @observable dockerignore?: string = '';
+
+    @observable includeVariables?: string[] | string = [];
+    @observable excludeVariables?: string[] | string = [];
 
     static apply(source: IWorkflowStepSimple): WorkflowStepSimple {
         let step: WorkflowStepSimple = Object.assign(new WorkflowStepSimple({}));
@@ -431,11 +456,50 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
             () => step.volumes = source.volumes !== undefined ? cleanVolumes(source.volumes) : [], 
             () => step.volumes = []);
 
+
+        tryApply(step, 'ports', 
+            () => step.ports = source.ports !== undefined ? source.ports : [], 
+            () => step.ports = []);
+        
+
+        tryApply(step, 'includeVariables', 
+            () => {
+                if (source.includeVariables !== undefined) {
+                    if (!Array.isArray(source.includeVariables)) {
+                        step.includeVariables = [source.includeVariables];
+                    }
+                    else {
+                        step.includeVariables = source.includeVariables;
+                    }
+                } else {
+                    step.includeVariables = ['*'];
+                }
+                step.transient.explicitIncludeVariables = source.includeVariables !== undefined;
+            }, 
+            () => step.includeVariables = ['*']);
+
+        tryApply(step, 'excludeVariables', 
+            () => {
+                if (source.excludeVariables !== undefined) {
+                    if (!Array.isArray(source.excludeVariables)) {
+                        step.excludeVariables = [source.excludeVariables];
+                    }
+                    else {
+                        step.excludeVariables = source.excludeVariables;
+                    }
+                } else {
+                    step.excludeVariables = [];
+                }
+                step.transient.explicitExcludeVariables = source.includeVariables !== undefined;
+            }, 
+            () => step.excludeVariables = []);
+
         tryApplyPrimitive(step, 'name', source, 'string', true);
         tryApplyEnum(step, 'type', source, StepTypes, true);
         tryApplyEnum(step, 'imageSource', source, ImageSources);
 
         tryApplyPrimitive(step, 'serviceName', source, 'string');
+        tryApplyPrimitive(step, 'dockerignore', source, 'string');
         tryApplyPrimitive(step, 'image', source, 'string');
         tryApplyPrimitive(step, 'dockerfile', source, 'string');
         tryApplyPrimitive(step, 'target', source, 'string');
@@ -443,6 +507,8 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
         tryApplyPrimitive(step, 'script', source, 'string');
         tryApplyPrimitive(step, 'omitSource', source, 'boolean');
         tryApplyPrimitive(step, 'ignoreFailure', source, 'boolean');
+        tryApplyPrimitive(step, 'ignoreValidation', source, 'boolean');
+        tryApplyPrimitive(step, 'ignoreMissing', source, 'boolean');
         tryApplyPrimitive(step, 'sourceLocation', source, 'string');
 
         return step;
@@ -486,11 +552,24 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
         if (this.action !== 'script') {
             delete out.script;
         }
-        if (this.action !== 'generated') {
-            delete out.generator;
-        }
-        if (this.action !== 'dockerfile') {
-            delete out.dockerfile;
+        if (this.action !== 'dockerfile' && this.action !== 'generated') {
+            delete out.includeVariables;
+            delete out.excludeVariables;
+        } else {
+            if (this.action !== 'generated') {
+                delete out.generator;
+            }
+            if (this.action !== 'dockerfile') {
+                delete out.dockerfile;
+            }
+            
+            if (this.transient.explicitExcludeVariables) {
+                out.excludeVariables = this.excludeVariables || [];
+            }
+
+            if (this.transient.explicitIncludeVariables) {
+                out.includeVariables = this.includeVariables || [];
+            }
         }
         if (this.action !== 'call') {
             delete out.target;
@@ -517,8 +596,11 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
         delete step.generator;
         delete step.health;
         delete step.ignoreFailure;
+        delete step.ignoreMissing;
+        delete step.ignoreValidation;
         delete step.image;
         delete step.omitSource;
+        delete step.dockerignore;
         delete step.ports;
         delete step.readiness;
         delete step.script;
@@ -582,7 +664,8 @@ function cleanKeyValueEntryArray (source: KeyValueEntry[]): KeyValueEntry[] {
         }
     }
     catch (e) {
-        throw "Structure error parsing environment sources";
+        console.error(e);
+        throw "Structure error parsing KeyValueEntry";
     }
 
     return out;
@@ -600,7 +683,8 @@ function cleanVolumes (source: Volume[]): Volume[] {
         }
     }
     catch (e) {
-        throw "Structure error parsing environment sources";
+        console.error(e);
+        throw "Structure error parsing Volumes";
     }
 
     return out;

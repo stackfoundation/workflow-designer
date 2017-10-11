@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 
 import { observable, action, toJS, spy, reaction } from 'mobx';
 
-import { EditorState, ScriptEditorFactory } from './models/state'
+import { EditorState, ScriptEditorFactory, SfLinkFactory } from './models/state'
 import { Workflow, WorkflowStepSimple, WorkflowStepCompound } from './models/workflow'
 import { WorkflowEditor } from './components/workflow-editor'
 
@@ -72,7 +72,8 @@ export function bootstrap(
     element: Element, 
     ide: boolean, 
     workflow: IWorkflow, 
-    scriptEditorFactory: ScriptEditorFactory): IWorkFlowEditorIO {
+    scriptEditorFactory: ScriptEditorFactory,
+    sfLinkFactory: SfLinkFactory): IWorkFlowEditorIO {
 
     let state = new EditorState();
     new WorkflowService().getWorkflowImagesCatalog()
@@ -81,6 +82,7 @@ export function bootstrap(
     state.workflow = Workflow.apply(workflow) || new Workflow();
     state.ide = ide;
     state.scriptEditorFactory = scriptEditorFactory;
+    state.sfLinkFactory = sfLinkFactory;
     
     if (ide) {
         (window as any).ide = ide;

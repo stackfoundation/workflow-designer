@@ -9,33 +9,31 @@
     CONFIGURE_PORTS: 'Ports',
     CONFIGURE_READINESS: 'Readiness check',
     DELETE: 'Delete',
-    HELP_HEALTH: 
-    'Configure the check that determines whether the service started by this step is healthy<br /><br />' +
-    '<a href="/docs/workflows#health">Read more about health checks in the documentation</a>',
-    HELP_ENVIRONMENT:
-    'Environment variables that you want to be made available to the Docker container that is run for this step<br /><br />' +
-    '<a href="/docs/workflows#environment">Read more about environment variables in the documentation</a>',
-    HELP_FAILURE: 
-    'Configure what happens when a particular step fails<br /><br />' +
-    '<a href="/docs/workflows#failure">Read more about failure behavior in the documentation</a>',
-    HELP_SOURCE: 
-    'Change how your project source files are made available to the Docker container that is run for this step<br /><br />' +
-    '<a href="/docs/workflows#source">Read more about source availability in the documentation</a>',
-    HELP_VOLUMES: 
-    'Volumes are paths relative to your project source folder that you want available in the Docker container for this step<br /><br />' +
-    '<a href="/docs/workflows#volumes">Read more about volumes in the documentation</a>',
-    HELP_PORTS: 
-    'Configure the ports on the Docker container for this step that should be exposed<br /><br />' +
-    '<a href="/docs/workflows#ports">Read more about exposing ports in the documentation</a>',
-    HELP_READINESS: 
-    'Configure the check that determines whether the service started by this step is considered ready<br /><br />' +
-    '<a href="/docs/workflows#health">Read more about readiness checks in the documentation</a>',
+    HELP_HEALTH_TEXT: 'Configure the check that determines whether the service started by this step is healthy',
+    HELP_HEALTH_LINK: 'Read more about health checks in the documentation',
+    HELP_ENVIRONMENT_TEXT: 'Environment variables that you want to be made available to the Docker container that is run for this step',
+    HELP_ENVIRONMENT_LINK: 'Read more about environment variables in the documentation',
+    HELP_FAILURE_TEXT: 'Configure what happens when a particular step fails',
+    HELP_FAILURE_LINK: 'Read more about failure behavior in the documentation',
+    HELP_SOURCE_TEXT: 'Change how your project source files are made available to the Docker container that is run for this step',
+    HELP_SOURCE_LINK: 'Read more about source availability in the documentation',
+    HELP_VOLUMES_TEXT: 'Volumes are paths relative to your project source folder that you want available in the Docker container for this step',
+    HELP_VOLUMES_LINK: 'Read more about volumes in the documentation',
+    HELP_PORTS_TEXT: 'Configure the ports on the Docker container for this step that should be exposed',
+    HELP_PORTS_LINK: 'Read more about exposing ports in the documentation',
+    HELP_READINESS_TEXT: 'Configure the check that determines whether the service started by this step is considered ready',
+    HELP_READINESS_LINK: 'Read more about readiness checks in the documentation',
     INSTRUCTION_PORTS: 'Enter a valid port number ( format: [tcp|udp/]sourcePort[:targetContainerPort] )',
+    INSTRUCTION_INCLUDE_VARIABLES: 'Add variables to include in the workflow. "*" will include all.',
+    INSTRUCTION_EXCLUDE_VARIABLES: 'Add variables to exclude in the workflow. "*" will exclude all.',
     LABEL_DOCKERFILE: 'Dockerfile',
+    LABEL_DOCKERIGNORE: 'dockerignore file',
+    LABEL_EXCLUDE_VARIABLES: 'Variables to exclude',
     LABEL_FILE: 'File',
     LABEL_GENERATOR: 'Generator',
     LABEL_GRACE: 'Initial grace period (in seconds)',
     LABEL_HOST_PATH: 'Host path',
+    LABEL_INCLUDE_VARIABLES: 'Variables to include',
     LABEL_INTERVAL: 'Interval between checks (in seconds)',
     LABEL_MOUNT_PATH: 'Mount path',
     LABEL_NAME: 'Name',
@@ -46,17 +44,22 @@
     LABEL_SERVICE_NAME: 'Service Name',
     LABEL_TIMEOUT: 'Timeout for check (in seconds)',
     LABEL_VALUE: 'Value',
+    LABEL_VARIABLE_PROMPT: 'Add variable {}',
     LABEL_WORKFLOW: 'Workflow',
-    OPTION_FAILURE: 'If this step fails, continue running rest of workflow',
     OPTION_HTTP: 'HTTP port readiness',
     OPTION_HTTPS: 'HTTPS port readiness',
+    OPTION_IGNORE_FAILURE: 'If step fails, continue running rest of workflow',
+    OPTION_IGNORE_MISSING: 'Ignore missing variables when expanding variable placeholders',
+    OPTION_IGNORE_VALIDATION: 'Ignore any validation errors',
     OPTION_OMIT_SOURCE: 'Do not mount the project source for this step',
+    OPTION_SKIP_WAIT: 'Skip waiting for this readiness check before starting following step',
     OPTION_SCRIPT: 'Health check script',
     OPTION_TCP: 'TCP port readiness',
     PLACEHOLDER_IMAGE: 'Select image for step...',
     PLACEHOLDER_PORTS: 'Add ports...',
     PLACEHOLDER_VERSION: 'Select version...',
     PLACEHOLDER_TYPE: 'Select step type...',
+    PLACEHOLDER_VARIABLES: 'Add variables...',
     RUN_CALL: 'Call another workflow',
     RUN_GENERATED: 'Generate and run a workflow',
     RUN_SCRIPT: 'Run a script',
@@ -75,6 +78,7 @@
     TITLE_STEPS: 'Steps',
     TITLE_WORKFLOW: 'Workflow',
     TITLE_WORKFLOW_VARIABLES: 'Workflow Variables',
+    TITLE_WORKFLOW_FAILURE: 'General behavior on step failure',
     STEP_HAS_ERRORS: 'This step had errors in the workflow definition in the following fields: {}.',
     TYPE_DESCRIPTION_COMPOUND: 'Wait for all sub-steps to complete or be healthy',
     TYPE_DESCRIPTION_SEQUENTIAL: 'Workflow will wait for the step to complete',

@@ -9,7 +9,7 @@ import { WorkflowStepSimple, Workflow, ActionType, StepTransientState } from '..
 import { ScriptStepEditor } from './script-step-editor';
 import { DockerfileStepEditor } from './dockerfile-step-editor';
 import { ExtWorkflowStepEditor } from './ext-workflow-step-editor';
-import { ScriptEditorFactory } from "../../models/state";
+import { ScriptEditorFactory, SfLinkFactory } from "../../models/state";
 import { editorStyles, themeColors } from '../../style';
 import { CatalogImage } from "../../models/catalog";
 import { CenteredContent } from '../../util/centered-content';
@@ -22,6 +22,7 @@ interface SimpleStepEditorProps {
     ide: boolean,
     catalog: CatalogImage[],
     scriptEditorFactory: ScriptEditorFactory,
+    sfLinkFactory: SfLinkFactory,
     classes?: any
 }
 
@@ -91,6 +92,7 @@ export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}>
         if (this.action == 'script') {
             return (<ScriptStepEditor
                 scriptEditorFactory={this.props.scriptEditorFactory}
+                sfLinkFactory={this.props.sfLinkFactory}
                 scriptField={'script'}
                 workflow={this.props.workflow}
                 ide={this.props.ide}
@@ -100,6 +102,8 @@ export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}>
         } else if (this.action == 'generated') {
             return (<ScriptStepEditor
                 scriptEditorFactory={this.props.scriptEditorFactory}
+                sfLinkFactory={this.props.sfLinkFactory}
+                includeWorkflowVariables={true}
                 scriptField={'generator'}
                 workflow={this.props.workflow}
                 ide={this.props.ide}

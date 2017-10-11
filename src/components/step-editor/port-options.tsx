@@ -28,6 +28,11 @@ const jssStyles = (theme: any) => {
     return {
         selectInput: {
             composes: theme.ide ? 'text-color' : ''
+        },
+        ports: {
+            '& .Select-arrow-zone': {
+                display: 'none'
+            }
         }
     };
 };
@@ -57,10 +62,6 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
     @action
     private remove(port: string) {
         this.ports.splice(this.ports.indexOf(port), 1);
-    }
-
-    private log(event: React.KeyboardEvent<HTMLInputElement>) {
-        console.log(event);
     }
 
     private breakPorts (portsString: string): MappedPort {
@@ -100,7 +101,7 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
             let ports = [portMappings.sourcePort, portMappings.targetPort],
                 varRegex = /^\$\{[a-zA-Z]+\}$/;
 
-            if (!varRegex.test(portMappings.protocol) && ['tcp', 'udp'].indexOf(portMappings.protocol) === -1) {
+            if (portMappings.protocol && !varRegex.test(portMappings.protocol) && ['tcp', 'udp'].indexOf(portMappings.protocol) === -1) {
                 return false;
             }
             for (var i = 0; i < ports.length; i++) {
@@ -134,7 +135,7 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
 
         this.ports.forEach(port => portsArray.push({ label: port, value: port }));
 
-        return (<div>
+        return (<div className={classes.ports}>
             <Creatable
                 className={`${editorStyles.normalSelect} native-key-bindings`}
                 inputProps={{className: this.props.classes.selectInput}}

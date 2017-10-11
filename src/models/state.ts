@@ -5,6 +5,7 @@ import {Workflow, WorkflowStep, WorkflowStepSimple, ImageSource} from './workflo
 import { StepType } from "../../../workflow";
 
 export type ScriptEditorFactory = (step: WorkflowStepSimple, fieldName: string) => JSX.Element;
+export type SfLinkFactory = (link: string, text: string) => JSX.Element;
 
 export class EditorState {
     ide: boolean;
@@ -12,6 +13,7 @@ export class EditorState {
     @observable currentStep?: WorkflowStep;
     @observable catalog: CatalogImage[];
     scriptEditorFactory: ScriptEditorFactory;
+    sfLinkFactory: SfLinkFactory;
 
     @action setCatalog(catalog: CatalogImage[]) {
         this.catalog = catalog;
