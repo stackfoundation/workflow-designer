@@ -374,7 +374,7 @@ export class Health implements IHealth {
 }
 
 export class Readiness extends Health implements IReadiness {
-    @observable skipWait: boolean = false;
+    @observable skipWait?: boolean;
 
     constructor(readiness: Partial<Readiness>) {
         super(readiness);
@@ -533,14 +533,12 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
 
         if (out.type === 'service') {
             out.serviceName = this.serviceName;
+            
             let health = this.health.toJS();
-            if (health) {
-                out.health = health;
-            }
+            health ? out.health = health : delete out.health;
+
             let readiness = this.readiness.toJS();
-            if (readiness) {
-                out.readiness = readiness;
-            }
+            readiness ? out.readiness = readiness : delete out.readiness;
         } else {
             delete out.serviceName;
             delete out.health;
