@@ -50,6 +50,9 @@ const styles = (theme: any) => {
                 color: '#aaa',
                 fontWeight: 'bold',
                 borderBottom: 'solid 3px transparent',
+                'a&': {
+                    color: '#aaa',
+                },
                 '&:hover': activeOption,
                 '&:focus': {
                     background: 'none',
@@ -62,6 +65,9 @@ const styles = (theme: any) => {
                 borderBottom: 'solid 3px ' + themeColors.darkerGreen,
                 color: themeColors.darkerGreen,
                 fontWeight: 'bold',
+                'a&': {
+                    color: themeColors.darkerGreen
+                },
                 '&:hover': activeSelectedOption,
                 '&:focus': activeSelectedOption
             }
