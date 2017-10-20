@@ -70,7 +70,8 @@ export class WorkFlowEditorIO implements IWorkFlowEditorIO {
 
 export function bootstrap(
     element: Element, 
-    ide: boolean, 
+    ide: boolean,
+    allowCalls: boolean,
     workflow: IWorkflow, 
     scriptEditorFactory: ScriptEditorFactory,
     sfLinkFactory: SfLinkFactory): IWorkFlowEditorIO {
@@ -81,6 +82,7 @@ export function bootstrap(
 
     state.workflow = Workflow.apply(workflow) || new Workflow();
     state.ide = ide;
+    state.allowCalls = allowCalls;
     state.scriptEditorFactory = scriptEditorFactory;
     state.sfLinkFactory = sfLinkFactory;
     

@@ -20,6 +20,7 @@ interface SimpleStepEditorProps {
     step: WorkflowStepSimple,
     workflow: Workflow,
     ide: boolean,
+    allowCalls: boolean,
     catalog: CatalogImage[],
     scriptEditorFactory: ScriptEditorFactory,
     sfLinkFactory: SfLinkFactory,
@@ -75,7 +76,7 @@ export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}>
     }
 
     private options() {
-        return this.props.ide ?
+        return this.props.allowCalls ?
             [
                 this.actionOption('script'),
                 this.actionOption('call'),

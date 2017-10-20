@@ -227,7 +227,7 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, workfl
                 </div>
                 <div className={classes.mainEditor}>
                     {this.state.section === 'step' && 
-                        <StepEditor 
+                        <StepEditor
                             state={this.props.state}
                             ide={this.props.state.ide}
                             scriptEditorFactory={this.props.state.scriptEditorFactory}

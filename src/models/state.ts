@@ -9,6 +9,7 @@ export type SfLinkFactory = (link: string, text: string) => JSX.Element;
 
 export class EditorState {
     ide: boolean;
+    allowCalls: boolean;
     @observable workflow: Workflow;
     @observable currentStep?: WorkflowStep;
     @observable catalog: CatalogImage[];

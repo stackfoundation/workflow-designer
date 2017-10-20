@@ -267,7 +267,7 @@ export class StepList extends React.Component<StepListProps, {}> {
             <span>
                 {step.transient.parseError.length > 0 && !step.transient.errorsDismissed && <AlertIcon className={classes.stepError}/>}
                 {prefix.length > 0 && <span className={classes.stepPrefix}>{this.stepPrefix(parentList, key)}&nbsp;</span>}
-                {step.name}
+                {step.name && step.name.length > 0 ? step.name : '(Unnamed step)'}
             </span>);
     }
 
@@ -295,7 +295,7 @@ export class StepList extends React.Component<StepListProps, {}> {
                     {parent.steps.map((step, i) => (
                         <li 
                             className={this.stepClasses(step)} 
-                            key={step.name} 
+                            key={'step-' + i + '-' + step.name} 
                             ref={el => this.setStep(el, parent, step)}
                             onClick={e => this.selectStep(step, e)}>
                             {this.stepTitle(parent.steps, step, i)}

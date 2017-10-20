@@ -192,7 +192,7 @@ export class Workflow implements IWorkflow {
 
     static apply(source: IWorkflow): Workflow {
         let out = Object.assign(new Workflow(), {
-            steps: source.steps.map(step => {
+            steps: (source.steps || []).map(step => {
                 if (step.type === 'compound') return WorkflowStepCompound.apply(step as IWorkflowStepCompound);
                 else return WorkflowStepSimple.apply(step as IWorkflowStepSimple);
             })
@@ -494,8 +494,8 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
             }, 
             () => step.excludeVariables = []);
 
-        tryApplyPrimitive(step, 'name', source, 'string', true);
-        tryApplyEnum(step, 'type', source, StepTypes, true);
+        tryApplyPrimitive(step, 'name', source, 'string', false);
+        tryApplyEnum(step, 'type', source, StepTypes, false);
         tryApplyEnum(step, 'imageSource', source, ImageSources);
 
         tryApplyPrimitive(step, 'serviceName', source, 'string');
@@ -544,6 +544,11 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
             delete out.health;
             delete out.readiness;
         }
+
+        if (out.type === 'sequential') {
+            delete out.type;
+        }
+
         if (this.action !== 'script' && this.action !== 'generated') {
             this.deleteScriptStepFields(out);
         }
@@ -573,10 +578,14 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
             delete out.target;
         }
 
+        if (out.imageSource === 'image') {
+            delete out.imageSource;
+        }
+
         if (out.environment && out.environment.length === 0) {
             delete out.environment;
         }
-        else {
+        else if (out.environment) {
             out.environment = cleanKeyValueEntryArray(out.environment);
         }
         if (out.ports && out.ports.length === 0) {
@@ -619,7 +628,7 @@ export class WorkflowStepCompound extends WorkflowStepBase implements IWorkflowS
     static apply(source: IWorkflowStepCompound): WorkflowStepCompound {
         return Object.assign(new WorkflowStepCompound({}), source, {
             type: 'compound',
-            steps: source.steps.map(step => {
+            steps: (source.steps || []).map(step => {
                 if (step.type === 'compound') return WorkflowStepCompound.apply(step);
                 else return WorkflowStepSimple.apply(step as WorkflowStepSimple);
             })

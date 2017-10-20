@@ -117,7 +117,7 @@ export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
             <form className={classes.form}>
                 <fieldset className={classes.formInner}>
                     {
-                        this.props.step.transient.parseError.length > 0 && !this.props.step.transient.errorsDismissed && 
+                        this.props.step.transient.parseError.length > 0 && !this.props.step.transient.errorsDismissed &&
                         <ErrorPanel 
                             message={translate('STEP_HAS_ERRORS', this.props.step.transient.parseError.join(', '))}
                             onClose={() => this.props.step.transient.errorsDismissed = true}/>
@@ -137,7 +137,7 @@ export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
                         </div>
                         <div className={classes.stepTypeInputDiv}>
                             <StepTypeSelect
-                                type={(this.props.step && this.props.step.type || WorkflowStepSimple.name)}
+                                type={(this.props.step && this.props.step.type || 'sequential')}
                                 onChange={this.onTypeChange}></StepTypeSelect>
                         </div>
                     </div>
@@ -148,6 +148,7 @@ export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
                             scriptEditorFactory={this.props.scriptEditorFactory}
                             workflow={this.props.workflow}
                             ide={this.props.ide}
+                            allowCalls={this.props.state.allowCalls}
                             catalog={this.props.catalog}
                             step={this.props.step as WorkflowStepSimple}>
                         </SimpleStepEditor>)}
