@@ -50,8 +50,8 @@ const styles = (theme: any) => {
             },
             labelLink: {
                 composes: theme.ide ? "" : "pure-button",
-                color: '#444',
                 textDecoration: 'none',
+                'a&': {color: '#444'},
                 '&:hover': theme.ide? Object.assign({cursor: "pointer"}, hoverLabel) : {},
                 '&:focus': hoverLabel
             },
@@ -65,10 +65,10 @@ const styles = (theme: any) => {
             },
             item: {
                 composes: 'pure-menu-link',
-                color: '#444',
                 padding: '10px 15px',
                 fontWeight: '500',
                 borderBottom: 'solid 3px transparent',
+                'a&': {color: '#444'},
                 '&:hover': hoverItem,
                 '&:focus': {
                     background: 'none',

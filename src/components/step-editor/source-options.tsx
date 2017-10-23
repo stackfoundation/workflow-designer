@@ -35,6 +35,11 @@ export class SourceOptions extends React.Component<SourceOptionsProps, {}> {
         this.props.step.omitSource = e.currentTarget.checked;
     }
 
+    @action
+    private updateDockerignore(e: React.ChangeEvent<HTMLInputElement>) {
+        this.props.step.dockerignore = e.target.value;
+    }
+
     public render() {
         let classes = this.props.classes || {}
         return (<div>
@@ -57,7 +62,7 @@ export class SourceOptions extends React.Component<SourceOptionsProps, {}> {
                     <input className='pure-input-1 code input-text native-key-bindings'
                         type="text"
                         value={this.props.step.dockerignore || ''}
-                        onChange={e => this.props.step.dockerignore = e.target.value} />
+                        onChange={e => this.updateDockerignore(e)} />
                 </div>
             </div>
         </div>);
