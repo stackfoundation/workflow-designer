@@ -411,7 +411,6 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
     }
 
     @observable transient: StepTransientState = new StepTransientState();
-    @observable serviceName?: string = '';
     @observable imageSource?: ImageSource = 'image';
     @observable image?: string = '';
     @observable dockerfile?: string = '';
@@ -497,7 +496,6 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
         tryApplyEnum(step, 'type', source, StepTypes, false);
         tryApplyEnum(step, 'imageSource', source, ImageSources);
 
-        tryApplyPrimitive(step, 'serviceName', source, 'string');
         tryApplyPrimitive(step, 'dockerignore', source, 'string');
         tryApplyPrimitive(step, 'image', source, 'string');
         tryApplyPrimitive(step, 'dockerfile', source, 'string');
@@ -531,15 +529,12 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
         let out: IWorkflowStepSimple = fillObj(toJS(this), keysOfIWorkflowStepSimple);
 
         if (out.type === 'service') {
-            out.serviceName = this.serviceName;
-            
             let health = this.health.toJS();
             health ? out.health = health : delete out.health;
 
             let readiness = this.readiness.toJS();
             readiness ? out.readiness = readiness : delete out.readiness;
         } else {
-            delete out.serviceName;
             delete out.health;
             delete out.readiness;
         }

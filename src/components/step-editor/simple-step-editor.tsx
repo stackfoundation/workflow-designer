@@ -63,11 +63,6 @@ export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}>
         this.props.step.transient.action = action;
     }
 
-    @action
-    private setServiceName (name: string) {
-        this.props.step.serviceName = name;
-    }
-
     private actionOption(action: ActionType) {
         return {
             value: action,
@@ -122,19 +117,6 @@ export class SimpleStepEditor extends React.Component<SimpleStepEditorProps, {}>
         let classes = this.props.classes || {};
         return (
             <div>
-                {this.props.step.type === "service" && <div className="pure-g">
-                    <label className={classes.labelContainer}>
-                        <CenteredContent>
-                            <span className={classes.label}>{translate('LABEL_SERVICE_NAME')}:</span>
-                        </CenteredContent>
-                    </label>
-                    <div className="pure-u-3-4 pure-u-md-5-6">
-                        <input className="pure-input-1 input-text native-key-bindings"
-                            type="text"
-                            value={this.props.step.serviceName || ""}
-                            onChange={e => this.setServiceName(e.target.value)} />
-                    </div>
-                </div>}
                 <Options
                     ide={this.props.ide}
                     fill={true}

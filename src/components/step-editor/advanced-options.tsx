@@ -8,7 +8,6 @@ import { SourceOptions } from './source-options';
 import { FailureOptions } from './failure-options';
 import { VariablesEditor } from './variables-editor';
 import { VolumeOptions } from './volume-options';
-import { PortOptions } from './port-options';
 import { HealthOptions } from './health-options';
 import { DropDownMenu, Item } from '../drop-down-menu';
 import { translate } from '../../../../../translation-service';
