@@ -455,7 +455,7 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
         tryApply(step, 'volumes', 
             () => step.volumes = source.volumes !== undefined ? cleanVolumes(source.volumes) : [], 
             () => step.volumes = []);
-        tryApply(step, 'environment', 
+        tryApply(step, 'ports', 
             () => step.ports = source.ports !== undefined ? cleanPortEntryArray(source.ports) : [], 
             () => {step.ports = [];});
         
