@@ -150,7 +150,7 @@ export class PortEditor extends React.Component<PortEditorProps> {
                             <input className={classes.input}
                                 
                                 type="text"
-                                value={this.props.source.name}
+                                value={this.props.source.name || ''}
                                 onChange={e => this.setName(e.target.value)} />
                         </div>
                     </div>
@@ -183,7 +183,7 @@ export class PortEditor extends React.Component<PortEditorProps> {
                             <input className={classes.input}
                                 
                                 type="text"
-                                value={this.props.source.protocol}
+                                value={this.props.source.protocol || ''}
                                 onChange={e => this.setProtocol(e.target.value)} />
                         </div>
                     </div>
