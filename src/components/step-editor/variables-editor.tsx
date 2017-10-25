@@ -17,18 +17,20 @@ let injectSheet = require('@tiagoroldao/react-jss').default;
 const jssStyles = (theme: any) => ({
     fieldBlock: {
         composes: 'pure-g block-force base-border-color component-padding-bottom',
-        borderBottomWidth: theme.ide ? '1px' : '0px',
+        borderBottomWidth: '1px',
         borderBottomStyle: 'solid',
+        borderBottomColor: theme.ide ? undefined : '#ddd',
+        paddingBottom: '10px',
 
         '&:last-child': {
             borderBottom: 'none',
             paddingBottom: '0px'
         },
 
-        [mediaQueries.lg]: {
-            borderBottom: 'none',
-            paddingBottom: '0px'
-        }
+        // [mediaQueries.lg]: {
+        //     borderBottom: 'none',
+        //     paddingBottom: '0px'
+        // }
     },
     editorDiv: {
         composes: 'pure-u-1 pure-u-lg-5-6'
@@ -65,17 +67,20 @@ const jssStyles = (theme: any) => ({
 });
 
 interface VariablesEditorProps {
-    variables: KeyValueEntry[];
+    variables: any[];
     ide: boolean;
     onlyPairs?: boolean;
     classes?: any;
+    sourceEditorFactory: (source: any, state: EditorState) => JSX.Element;
+    sourceFactory: () => any;
 }
 
-class EditorState {
+export class EditorState {
     constructor(
-        private variables: KeyValueEntry[],
-        private source: KeyValueEntry,
-        public committed: boolean) {
+        private variables: any[],
+        private source: any,
+        public committed: boolean,
+        public sourceType: any) {
     }
 
     commitIfNecessary() {
@@ -84,12 +89,6 @@ class EditorState {
             this.committed = true;
         }
     }
-}
-
-class EditorEnvironmentSource implements KeyValueEntry {
-    @observable file?: string = '';
-    @observable name?: string = '';
-    @observable value?: string = '';
 }
 
 @injectSheet(jssStyles)
@@ -129,11 +128,7 @@ export class VariablesEditor extends React.Component<VariablesEditorProps, { sou
     }
 
     private sourceEditor(source: KeyValueEntry, key: number, committed: boolean) {
-        let state = new EditorState(this.variables, source, committed);
-        let editor = (<VariableEditor
-            source={source}
-            sourceType={state.committed ? (source.file ? 'file' : 'pair') : this.state.sourceType}
-            onChange={() => state.commitIfNecessary()} />);
+        let editor = this.props.sourceEditorFactory(source, new EditorState(this.variables, source, committed, this.state.sourceType));
 
         return (<div className={this.props.classes.fieldBlock} key={key}>
             <div className={this.props.classes.editorDiv}>{editor}</div>
@@ -166,13 +161,13 @@ export class VariablesEditor extends React.Component<VariablesEditorProps, { sou
                     source = this.variables[i];
                     committed = true;
                 } else {
-                    source = new EditorEnvironmentSource();
+                    source = this.props.sourceFactory();
                 }
 
                 editors.push(this.sourceEditor(source, i, committed));
             } 
         } else {
-            editors.push(this.sourceEditor(new EditorEnvironmentSource, 0, false));
+            editors.push(this.sourceEditor(this.props.sourceFactory(), 0, false));
         }
 
         return editors;

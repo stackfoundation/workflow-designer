@@ -21,6 +21,7 @@ import { themeColors, listStyles, sectionStyles, mediaQueries, shadows } from '.
 import { WorkflowStep, Workflow } from '../models/workflow';
 import { VariablesEditor } from '../components/step-editor/variables-editor';
 import { FailureOptions } from '../components/step-editor/failure-options';
+import { variableEditorFactory, variableSourceFactory } from '../components/step-editor/variable-editor';
 
 const styles = (theme: any) => {
     let list = listStyles(theme);
@@ -243,8 +244,9 @@ export class WorkflowEditor extends React.Component<{ state: EditorState, workfl
                                 <div className={classes.sectionBody}>
                                     <VariablesEditor
                                         variables={this.props.workflow ? this.props.workflow.workflowVariables : []}
-                                        ide={this.props.state.ide}>
-                                    </VariablesEditor>
+                                        ide={this.props.state.ide}
+                                        sourceEditorFactory={variableEditorFactory} 
+                                        sourceFactory={variableSourceFactory}/>
                                 </div>
                             </div>
                             <div className={classes.section}>

@@ -1,10 +1,11 @@
 import * as React from 'react';
 let injectSheet = require('@tiagoroldao/react-jss').default;
-import { action } from 'mobx';
+import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { KeyValueEntry, KeyValueEntryType } from '../../../../workflow';
 import { CenteredContent } from '../../util/centered-content'
 import { translate } from '../../../../../translation-service';
+import { EditorState } from '../../components/step-editor/variables-editor';
 
 const styles = (theme: any) => ({
     labelContainer: {
@@ -34,6 +35,23 @@ interface VariableEditorProps {
     sourceType: KeyValueEntryType;
     onChange: () => void;
     classes?: any;
+}
+
+export class VariableSource implements KeyValueEntry {
+    @observable file?: string = '';
+    @observable name?: string = '';
+    @observable value?: string = '';
+}
+
+export function variableSourceFactory(): VariableSource {
+    return new VariableSource();
+}
+
+export function variableEditorFactory(source: KeyValueEntry, state: EditorState) {
+    return <VariableEditor
+        source={source}
+        sourceType={state.committed ? (source.file ? 'file' : 'pair') : state.sourceType}
+        onChange={() => state.commitIfNecessary()} />;
 }
 
 @injectSheet(styles)

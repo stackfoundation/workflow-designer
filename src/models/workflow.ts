@@ -6,6 +6,7 @@ import { IWorkflow,
     IHealth,
     IReadiness,
     KeyValueEntry,
+    PortEntry,
     StepType,
     Volume,
     HealthType,
@@ -425,7 +426,7 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
     @observable health?: Health = new Health({});
     @observable readiness?: Readiness = new Readiness({});
     @observable environment?: KeyValueEntry[] = [];
-    @observable ports?: string[] = [];
+    @observable ports?: PortEntry[] = [];
     @observable volumes?: Volume[] = [];
     @observable dockerignore?: string = '';
 
@@ -455,11 +456,9 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
         tryApply(step, 'volumes', 
             () => step.volumes = source.volumes !== undefined ? cleanVolumes(source.volumes) : [], 
             () => step.volumes = []);
-
-
-        tryApply(step, 'ports', 
-            () => step.ports = source.ports !== undefined ? source.ports : [], 
-            () => step.ports = []);
+        tryApply(step, 'environment', 
+            () => step.ports = source.ports !== undefined ? cleanPortEntryArray(source.ports) : [], 
+            () => {step.ports = [];});
         
 
         tryApply(step, 'includeVariables', 
@@ -673,6 +672,30 @@ function cleanKeyValueEntryArray (source: KeyValueEntry[]): KeyValueEntry[] {
     catch (e) {
         console.error(e);
         throw "Structure error parsing KeyValueEntry";
+    }
+
+    return out;
+}
+
+function cleanPortEntryArray (source: PortEntry[]): PortEntry[] {
+    let out: PortEntry[] = [];
+
+    try {
+        if (!Array.isArray(source) && !isObservableArray(source)) {
+            throw Error;
+        }
+        for (var i = 0; i < source.length; i++) {
+            out.push({
+                name: source[i].name, 
+                internalPort: source[i].internalPort,
+                externalPort: source[i].externalPort,
+                containerPort: source[i].containerPort
+            });
+        }
+    }
+    catch (e) {
+        console.error(e);
+        throw "Structure error parsing PortEntry";
     }
 
     return out;

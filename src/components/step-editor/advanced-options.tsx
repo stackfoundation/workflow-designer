@@ -15,6 +15,8 @@ import { translate } from '../../../../../translation-service';
 import { sectionStyles } from '../../style';
 import { InfoTooltip } from '../../components/tooltip';
 import { SfLinkFactory } from '../../models/state';
+import { variableEditorFactory, variableSourceFactory } from '../../components/step-editor/variable-editor';
+import { portEntrySourceFactory, portEditorFactory } from '../../components/step-editor/port-editor';
 const InfoCircle = require('react-icons/lib/fa/info-circle');
 
 interface AdvancedOptionsProps {
@@ -267,7 +269,11 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
             {this.environmentConfigured &&
                 this.section(
                     translate('TITLE_ENVIRONMENT'), 
-                    <VariablesEditor variables={step.environment} ide={this.props.ide} />,
+                    <VariablesEditor 
+                        variables={step.environment} 
+                        ide={this.props.ide} 
+                        sourceEditorFactory={variableEditorFactory} 
+                        sourceFactory={variableSourceFactory} />,
                     <div>
                         {translate('HELP_ENVIRONMENT_TEXT')}
                         <br /><br />
@@ -285,7 +291,11 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
             {this.portsConfigured &&
                 this.section(
                     translate('TITLE_PORTS'), 
-                    <PortOptions step={step} ide={this.props.ide} />,
+                    <VariablesEditor 
+                        variables={step.ports} 
+                        ide={this.props.ide} 
+                        sourceEditorFactory={portEditorFactory} 
+                        sourceFactory={portEntrySourceFactory} />,
                     <div>
                         {translate('HELP_PORTS_TEXT')}
                         <br /><br />

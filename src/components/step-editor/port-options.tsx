@@ -20,6 +20,7 @@ interface PortOptionsProps {
 
 interface MappedPort {
     protocol?: string,
+    externalPort?: string,
     sourcePort?: string,
     targetPort?: string
 }
@@ -48,95 +49,96 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
         return this.props.step.ports;
     }
 
-    @action
-    private add(ports: Option<OptionValues>) {
-        if (ports) {
-            let newPorts: string[] = [];
-            for (let i = 0; i < ports.length; i++) {
-                newPorts.push(ports[i].value as string);
-            }
-            this.props.step.ports = newPorts;
-        }
-    }
+    // @action
+    // private add(ports: Option<OptionValues>) {
+    //     if (ports) {
+    //         let newPorts: string[] = [];
+    //         for (let i = 0; i < ports.length; i++) {
+    //             newPorts.push(ports[i].value as string);
+    //         }
+    //         this.props.step.ports = newPorts;
+    //     }
+    // }
 
-    @action
-    private remove(port: string) {
-        this.ports.splice(this.ports.indexOf(port), 1);
-    }
+    // @action
+    // private remove(port: string) {
+    //     this.ports.splice(this.ports.indexOf(port), 1);
+    // }
 
-    private breakPorts (portsString: string): MappedPort {
-        let out: MappedPort = {};
+    // private breakPorts (portsString: string): MappedPort {
+    //     let out: MappedPort = {};
 
-        if (portsString.indexOf('/') > -1) {
-            out.protocol = portsString.substr(0, portsString.indexOf('/'));
-            portsString = portsString.substr(portsString.indexOf('/') + 1)
-        }
+    //     if (portsString.indexOf('/') > -1) {
+    //         out.protocol = portsString.substr(0, portsString.indexOf('/'));
+    //         portsString = portsString.substr(portsString.indexOf('/') + 1)
+    //     }
 
-        if (portsString.indexOf(':') === portsString.length - 1) {
-            out.sourcePort = out.targetPort = portsString.substr(0, portsString.length - 1);
-        }
-        else if (portsString.indexOf(':') > -1) {
-            let ports = portsString.split(':');
-            out.sourcePort = ports[0];
-            out.targetPort = ports[1];
-        }
-        else {
-            out.sourcePort = out.targetPort = portsString;
-        }
+    //     if (portsString.indexOf(':') === portsString.length - 1) {
+    //         out.sourcePort = out.targetPort = portsString.substr(0, portsString.length - 1);
+    //     }
+    //     else if (portsString.indexOf(':') > -1) {
+    //         let ports = portsString.split(':');
+    //         out.externalPort = ports[0];
+    //         out.sourcePort = ports.length > 2 ? ports[1] : ports[0];
+    //         out.targetPort = ports.length > 2 ? ports[2] : ports[1];
+    //     }
+    //     else {
+    //         out.sourcePort = out.targetPort = out.externalPort = portsString;
+    //     }
 
-        return out;
-    }
+    //     return out;
+    // }
 
-    private validPort = (arg: { label: string }): boolean => {
-        if (!arg.label || !arg.label.length) {
-            return false;
-        }
-        let portMappings = this.breakPorts(arg.label);
+    // private validPort = (arg: { label: string }): boolean => {
+    //     if (!arg.label || !arg.label.length) {
+    //         return false;
+    //     }
+    //     let portMappings = this.breakPorts(arg.label);
 
-        if (!portMappings.sourcePort || !portMappings.sourcePort.length) {
-            return false;
-        }
+    //     if (!portMappings.sourcePort || !portMappings.sourcePort.length) {
+    //         return false;
+    //     }
 
-        try {
-            let ports = [portMappings.sourcePort, portMappings.targetPort],
-                varRegex = /^\$\{[a-zA-Z]+\}$/;
+    //     try {
+    //         let ports = [portMappings.sourcePort, portMappings.targetPort],
+    //             varRegex = /^\$\{[a-zA-Z]+\}$/;
 
-            if (portMappings.protocol && !varRegex.test(portMappings.protocol) && ['tcp', 'udp'].indexOf(portMappings.protocol) === -1) {
-                return false;
-            }
-            for (var i = 0; i < ports.length; i++) {
-                if (!varRegex.test(ports[i]) && parseInt(ports[i]).toString() !== ports[i]) {
-                    return false;
-                }
-            }
-        } catch (e) {
-            return false;
-        }
+    //         if (portMappings.protocol && !varRegex.test(portMappings.protocol) && ['tcp', 'udp'].indexOf(portMappings.protocol) === -1) {
+    //             return false;
+    //         }
+    //         for (var i = 0; i < ports.length; i++) {
+    //             if (!varRegex.test(ports[i]) && parseInt(ports[i]).toString() !== ports[i]) {
+    //                 return false;
+    //             }
+    //         }
+    //     } catch (e) {
+    //         return false;
+    //     }
         
-        return true;
-    }
+    //     return true;
+    // }
 
-    private portCreateText = (label: string): string => {
-        if (this.validPort({label})) {
-            let ports = this.breakPorts(label);
-            return translate('SELECT_TEXT_CREATE_PORT', [ports.protocol || '', ports.sourcePort, ports.targetPort]);
-        }
+    // private portCreateText = (label: string): string => {
+    //     if (this.validPort({label})) {
+    //         let ports = this.breakPorts(label);
+    //         return translate('SELECT_TEXT_CREATE_PORT', [ports.protocol || '', ports.sourcePort, ports.targetPort]);
+    //     }
         
-        return translate('INSTRUCTION_PORTS');
-    }
+    //     return translate('INSTRUCTION_PORTS');
+    // }
     
-    shouldKeyDownEventCreateNewOption (arg: { keyCode: number }) {
-        return arg.keyCode === 32 || arg.keyCode === 9 || arg.keyCode === 13 || arg.keyCode === 188;
-    }
+    // shouldKeyDownEventCreateNewOption (arg: { keyCode: number }) {
+    //     return arg.keyCode === 32 || arg.keyCode === 9 || arg.keyCode === 13 || arg.keyCode === 188;
+    // }
 
     public render() {
         let classes = this.props.classes || {};
         let portsArray: Option[] = [];
 
-        this.ports.forEach(port => portsArray.push({ label: port, value: port }));
+        /* this.ports.forEach(port => portsArray.push({ label: port, value: port })); */
 
         return (<div className={classes.ports}>
-            <Creatable
+            {/* <Creatable
                 className={`${editorStyles.normalSelect} native-key-bindings`}
                 inputProps={{className: this.props.classes.selectInput}}
                 isValidNewOption={this.validPort}
@@ -147,7 +149,7 @@ export class PortOptions extends React.Component<PortOptionsProps, {}> {
                 promptTextCreator={this.portCreateText}
                 noResultsText={translate('INSTRUCTION_PORTS')}
                 value={portsArray} 
-                onChange={p => this.add(p)} />
+                onChange={p => this.add(p)} /> */}
         </div>);
     }
 }
