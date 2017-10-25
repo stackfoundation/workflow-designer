@@ -26,11 +26,6 @@ const jssStyles = (theme: any) => ({
             borderBottom: 'none',
             paddingBottom: '0px'
         },
-
-        // [mediaQueries.lg]: {
-        //     borderBottom: 'none',
-        //     paddingBottom: '0px'
-        // }
     },
     editorDiv: {
         composes: 'pure-u-1 pure-u-lg-5-6'
