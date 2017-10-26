@@ -292,6 +292,7 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
                     translate('TITLE_PORTS'), 
                     <VariablesEditor 
                         variables={step.ports} 
+                        onlyPairs={true}
                         ide={this.props.ide} 
                         sourceEditorFactory={portEditorFactory} 
                         sourceFactory={portEntrySourceFactory} />,
