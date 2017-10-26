@@ -681,10 +681,11 @@ function cleanPortEntryArray (source: PortEntry[]): PortEntry[] {
         }
         for (var i = 0; i < source.length; i++) {
             out.push({
-                name: source[i].name, 
-                internalPort: source[i].internalPort,
-                externalPort: source[i].externalPort,
-                containerPort: source[i].containerPort
+                name: source[i].name || undefined, 
+                internalPort: source[i].internalPort || undefined,
+                externalPort: source[i].externalPort || undefined,
+                containerPort: source[i].containerPort,
+                protocol: source[i].protocol || 'tcp'
             });
         }
     }

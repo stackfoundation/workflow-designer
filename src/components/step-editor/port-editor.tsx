@@ -6,6 +6,8 @@ import { PortEntry } from '../../../../workflow';
 import { CenteredContent } from '../../util/centered-content'
 import { translate } from '../../../../../translation-service';
 import { EditorState } from '../../components/step-editor/variables-editor';
+import { Option } from 'react-select';
+import * as Select from 'react-select';
 
 const styles = (theme: any) => ({
     labelContainer: {
@@ -105,6 +107,8 @@ export class PortEditor extends React.Component<PortEditorProps> {
 
     public render() {
         let classes = this.props.classes || {};
+        let portProtocols = [{ label: 'tcp', value: 'tcp' }, { label: 'udp', value: 'udp' }]
+
         return <div>
             <div className="pure-g block not-block-md">
                 <div className="pure-u-1 pure-u-lg-1-2 block-md">
@@ -180,11 +184,14 @@ export class PortEditor extends React.Component<PortEditorProps> {
                             </CenteredContent>
                         </label>
                         <div className={classes.fieldContainer}>
-                            <input className={classes.input}
-                                
-                                type="text"
-                                value={this.props.source.protocol || ''}
-                                onChange={e => this.setProtocol(e.target.value)} />
+
+                            <Select
+                                className={classes.tagSelect}
+                                clearable={false}
+                                searchable={false}
+                                options={portProtocols}
+                                onChange={option => this.setProtocol((option as Option).value as string)}
+                                value={this.props.source.protocol || 'tcp'} />
                         </div>
                     </div>
                 </div>
