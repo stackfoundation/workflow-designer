@@ -2,11 +2,11 @@ import * as React from 'react';
 import { EditorState } from '../../models/state';
 import { WorkflowStepSimple, Workflow } from "../../models/workflow";
 import { CenteredContent } from "../../util/centered-content";
-import { translate } from '../../../../../translation-service';
+import { translate } from '../../services/translation-service';
 import { observer } from 'mobx-react';
 import { action } from 'mobx';
 
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 
 const styles = (theme: any) => ({
     label: {

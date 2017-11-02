@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 
 import { editorStyles, themeColors, mediaQueries } from '../style';
 

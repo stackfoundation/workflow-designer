@@ -15,7 +15,7 @@ export const editorStyles = {
     normalSelect: 'select-normal'
 };
 
-export {mediaQueries, noSelectStyle} from '../../../../style-constants';
+export {mediaQueries, noSelectStyle} from './style-constants';
 
 export function sectionStyles (theme: any): {
     section:any, 

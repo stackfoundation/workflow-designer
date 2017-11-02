@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 
 const InfoCircle = require('react-icons/lib/fa/info-circle');
 const ReactTooltip = require('react-tooltip');
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 
 var tooltipCount = 0;
 

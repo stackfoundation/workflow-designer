@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 
 import { WorkflowStepSimple, StepTransientState } from '../../models/workflow';
 import { SourceOptions } from './source-options';
@@ -10,7 +10,7 @@ import { VariablesEditor } from './variables-editor';
 import { VolumeOptions } from './volume-options';
 import { HealthOptions } from './health-options';
 import { DropDownMenu, Item } from '../drop-down-menu';
-import { translate } from '../../../../../translation-service';
+import { translate } from '../../services/translation-service';
 import { sectionStyles } from '../../style';
 import { InfoTooltip } from '../../components/tooltip';
 import { SfLinkFactory } from '../../models/state';

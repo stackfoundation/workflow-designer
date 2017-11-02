@@ -2,7 +2,7 @@ import { setTimeout } from 'timers';
 import * as React from 'react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 
 import { CatalogImage } from '../../models/catalog';
 import {
@@ -17,11 +17,11 @@ import { StepTypeSelect } from '../step-type-select';
 import { SimpleStepEditor } from './simple-step-editor';
 import { CenteredContent } from '../../util/centered-content';
 import { ChangeEvent } from 'react';
-import { FormReactComponent } from '../../../../../react-forms/validating-react-component';
-import { Field } from "../../../../../react-forms/field";
-import { StepType } from "../../../../workflow";
+import { FormReactComponent } from '../react-forms/validating-react-component';
+import { Field } from "../react-forms/field";
+import { StepType } from "../../models/workflow";
 import { mediaQueries } from '../../style';
-import { translate } from '../../../../../translation-service';
+import { translate } from '../../services/translation-service';
 import { ErrorPanel } from '../../components/error-panel';
 
 const CloseIcon = require('react-icons/lib/go/x');

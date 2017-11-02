@@ -8,11 +8,11 @@ import { Workflow, WorkflowStepSimple, WorkflowStepCompound } from './models/wor
 import { WorkflowEditor } from './components/workflow-editor'
 
 import { WorkflowService } from './services/workflow_service'
-import { IWorkflow } from "../../workflow";
+import { IWorkflow } from "./models/workflow";
 
-let jss: any = require('@tiagoroldao/react-jss').jss,
-    JssProvider: any = require('@tiagoroldao/react-jss').JssProvider,
-    ThemeProvider: any = require('@tiagoroldao/react-jss').ThemeProvider,
+let jss: any = require('react-jss').jss,
+    JssProvider: any = require('react-jss').JssProvider,
+    ThemeProvider: any = require('react-jss').ThemeProvider,
     jssComposer: any = require('jss-compose').default,
     jssNested: any = require('jss-nested').default;
 
@@ -92,3 +92,5 @@ export function bootstrap(
 
     return new WorkFlowEditorIO(state, element);
 }
+
+export * from './models/workflow';

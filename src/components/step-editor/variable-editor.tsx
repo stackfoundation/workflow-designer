@@ -1,10 +1,10 @@
 import * as React from 'react';
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { KeyValueEntry, KeyValueEntryType } from '../../../../workflow';
+import { KeyValueEntry, KeyValueEntryType } from '../../models/workflow';
 import { CenteredContent } from '../../util/centered-content'
-import { translate } from '../../../../../translation-service';
+import { translate } from '../../services/translation-service';
 import { EditorState } from '../../components/step-editor/variables-editor';
 
 const styles = (theme: any) => ({

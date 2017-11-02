@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 
 const styles = (theme: any) => ({
     container: {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 
 // import { AceEditor } from '../ace-editor';
 
@@ -18,7 +18,7 @@ import { CatalogImage } from "../../models/catalog";
 import { ScriptEditorFactory, SfLinkFactory } from "../../models/state";
 import { Option } from "react-select";
 import { CenteredContent } from "../../util/centered-content";
-import { translate } from '../../../../../translation-service';
+import { translate } from '../../services/translation-service';
 import { AdvancedOptions } from './advanced-options';
 // const atom = require('atom');
 import { editorStyles, themeColors, sectionStyles } from '../../style';

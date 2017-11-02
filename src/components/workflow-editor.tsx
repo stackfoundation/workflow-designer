@@ -1,5 +1,5 @@
 import * as React from 'react';
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 import * as mobx from "mobx";
 import { observer } from "mobx-react";
 import 'purecss/build/pure.css';
@@ -14,9 +14,9 @@ const ReactTooltip = require('react-tooltip');
 import { EditorState } from '../models/state';
 import { StepEditor } from './step-editor/step-editor';
 import { StepList } from './step-list';
-import { IWorkflow } from "../../../workflow";
+import { IWorkflow } from "../models/workflow";
 import '../util/translations.ts';
-import { translate } from '../../../../translation-service';
+import { translate } from '../services/translation-service';
 import { themeColors, listStyles, sectionStyles, mediaQueries, shadows } from '../style';
 import { WorkflowStep, Workflow } from '../models/workflow';
 import { VariablesEditor } from '../components/step-editor/variables-editor';

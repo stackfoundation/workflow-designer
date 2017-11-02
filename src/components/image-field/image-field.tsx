@@ -2,7 +2,7 @@ import * as React from 'react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
 
-import { translate } from '../../../../../translation-service';
+import { translate } from '../../services/translation-service';
 import { EditorState } from '../../models/state';
 import { ImageSource, WorkflowStepSimple, Workflow, UXImageSourceType } from '../../models/workflow';
 import { Options } from '../options';
@@ -13,7 +13,7 @@ import { StepImageField } from './step-image-field';
 import { editorStyles, themeColors } from '../../style';
 import { CatalogImage } from "../../models/catalog";
 
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 
 const styles = (theme: any) => ({
     editor: {

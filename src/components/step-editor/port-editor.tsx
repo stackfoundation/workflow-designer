@@ -1,17 +1,17 @@
 import * as React from 'react';
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { PortEntry } from '../../../../workflow';
+import { PortEntry } from '../../models/workflow';
 import { CenteredContent } from '../../util/centered-content'
-import { translate } from '../../../../../translation-service';
+import { translate } from '../../services/translation-service';
 import { EditorState } from '../../components/step-editor/variables-editor';
 import { Option } from 'react-select';
-import * as Select from 'react-select';
+import Select from 'react-select';
 
 const styles = (theme: any) => ({
     labelContainer: {
-        composes: 'pure-u-1-3',
+    composes: 'pure-u-1-3',
         textAlign: 'right'
     },
     fieldContainer: {

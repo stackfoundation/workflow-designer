@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 
 import { WorkflowStepSimple } from '../../models/workflow';
-import { translate } from '../../../../../translation-service';
+import { translate } from '../../services/translation-service';
 import { CenteredContent } from '../../util/centered-content';
 
 interface SourceOptionsProps {

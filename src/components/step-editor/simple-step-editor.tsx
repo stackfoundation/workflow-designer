@@ -2,7 +2,7 @@ import * as React from 'react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
 
-import { translate } from '../../../../../translation-service';
+import { translate } from '../../services/translation-service';
 import { EditorState } from '../../models/state';
 import { Options } from '../options';
 import { WorkflowStepSimple, Workflow, ActionType, StepTransientState } from '../../models/workflow';
@@ -14,7 +14,7 @@ import { editorStyles, themeColors } from '../../style';
 import { CatalogImage } from "../../models/catalog";
 import { CenteredContent } from '../../util/centered-content';
 
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 
 interface SimpleStepEditorProps {
     step: WorkflowStepSimple,

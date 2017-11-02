@@ -4,12 +4,12 @@ import { observer } from 'mobx-react';
 const Text = require('react-icons/lib/fa/font');
 const File = require('react-icons/lib/fa/file-text-o');
 const Remove = require('react-icons/lib/fa/times-circle');
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 
 import { editorStyles, sectionStyles } from '../../style';
 import { Options } from '../options';
 import { WorkflowStepSimple } from '../../models/workflow';
-import { translate } from '../../../../../translation-service';
+import { translate } from '../../services/translation-service';
 import { Creatable, Option, OptionValues } from 'react-select';
 import { CenteredContent } from '../../util/centered-content';
 

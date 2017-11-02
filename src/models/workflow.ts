@@ -17,14 +17,14 @@ import { IWorkflow,
     StepTypes,
     ImageSource,
     ImageSources }
-    from '../../../workflow';
+    from '../workflow-interfaces';
 
 export interface WorkflowStepPos {
     parent: Workflow | WorkflowStepCompound;
     index: number;
 }
 
-export {ImageSource} from '../../../workflow';
+export * from '../workflow-interfaces';
 
 export class Workflow implements IWorkflow {
     @observable steps: WorkflowStep[] = [];

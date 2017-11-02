@@ -7,12 +7,12 @@ const Remove = require('react-icons/lib/fa/times-circle');
 
 import { Options } from '../options';
 import { WorkflowStepSimple } from '../../models/workflow';
-import { KeyValueEntry, KeyValueEntryType } from '../../../../workflow';
-import { translate } from '../../../../../translation-service';
+import { KeyValueEntry, KeyValueEntryType } from '../../models/workflow';
+import { translate } from '../../services/translation-service';
 import { VariableEditor } from './variable-editor';
 import { mediaQueries } from '../../style';
 
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 
 const jssStyles = (theme: any) => ({
     fieldBlock: {

@@ -1,5 +1,5 @@
 import * as React from 'react';
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 import { action, observable, computed } from 'mobx';
 import { observer } from 'mobx-react';
 const Text = require('react-icons/lib/fa/font');
@@ -10,9 +10,9 @@ import { editorStyles } from '../../style';
 import { Options } from '../options';
 import { WorkflowStepSimple, Health, Readiness } from '../../models/workflow';
 import { CenteredContent } from '../../util/centered-content'
-import { translate } from '../../../../../translation-service';
+import { translate } from '../../services/translation-service';
 import { Creatable, Option, OptionValues } from 'react-select';
-import { HealthType, HealthTypes } from "../../../../workflow";
+import { HealthType, HealthTypes } from "../../models/workflow";
 import { VariablesEditor } from '../../components/step-editor/variables-editor';
 import { variableEditorFactory, variableSourceFactory } from '../../components/step-editor/variable-editor';
 

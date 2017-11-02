@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 
 import { editorStyles, themeColors, errorStyles } from '../style';
-import { translate } from '../../../../translation-service';
+import { translate } from '../services/translation-service';
 const CloseIcon = require('react-icons/lib/go/x');
 
 const styles = (theme: any) => {

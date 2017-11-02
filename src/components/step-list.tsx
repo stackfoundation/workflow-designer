@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as Dragula from 'dragula';
-import * as classNames from 'classnames';
 import { observable, computed, action } from 'mobx';
 import { observer } from 'mobx-react';
 const Plus = require('react-icons/lib/go/plus');
@@ -11,11 +10,11 @@ const AlertIcon = require('react-icons/lib/go/alert');
 
 import { themeColors, listStyles, mediaQueries, noSelectStyle } from '../style';
 
-let injectSheet = require('@tiagoroldao/react-jss').default;
+let injectSheet = require('react-jss').default;
 
 import { Workflow, WorkflowStep, WorkflowStepCompound, WorkflowStepSimple } from '../models/workflow';
 import { EditorState } from '../models/state';
-import { translate } from '../../../../translation-service';
+import { translate } from '../services/translation-service';
 
 declare global {
     namespace JSX {
