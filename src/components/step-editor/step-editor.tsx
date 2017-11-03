@@ -111,6 +111,11 @@ export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
         });
     }
 
+    @action
+    dismissErrors () {
+        this.props.step.transient.errorsDismissed = true;
+    }
+
     public render() {
         let classes = this.props.classes;
         return (
@@ -120,7 +125,7 @@ export class StepEditor extends FormReactComponent<StepEditorProps, {}> {
                         this.props.step.transient.parseError.length > 0 && !this.props.step.transient.errorsDismissed &&
                         <ErrorPanel 
                             message={translate('STEP_HAS_ERRORS', this.props.step.transient.parseError.join(', '))}
-                            onClose={() => this.props.step.transient.errorsDismissed = true}/>
+                            onClose={() => this.dismissErrors()}/>
                     }
                     <div className="pure-g block">
                         <div className={classes.stepNameDiv}>
