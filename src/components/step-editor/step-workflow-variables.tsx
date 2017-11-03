@@ -13,7 +13,7 @@ import { translate } from '../../services/translation-service';
 import { Creatable, Option, OptionValues } from 'react-select';
 import { CenteredContent } from '../../util/centered-content';
 
-interface StepWorkflowVariablesProps {
+export interface StepWorkflowVariablesProps {
     step: WorkflowStepSimple;
     classes?: any;
 }

@@ -16,7 +16,7 @@ import { HealthType, HealthTypes } from "../../models/workflow";
 import { VariablesEditor } from '../../components/step-editor/variables-editor';
 import { variableEditorFactory, variableSourceFactory } from '../../components/step-editor/variable-editor';
 
-interface HealthOptionsProps {
+export interface HealthOptionsProps {
     step: WorkflowStepSimple;
     field?: string;
     typeField?: string;

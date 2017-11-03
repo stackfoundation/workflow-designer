@@ -15,7 +15,7 @@ const styles = (theme: any) => ({
     }
 });
 
-interface CodeEditorProps {
+export interface CodeEditorProps {
     step?: WorkflowStepSimple;
     fieldName: string;
     classes?: any;

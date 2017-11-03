@@ -15,7 +15,7 @@ export interface IWorkflow {
 
 export type IWorkflowStep = IWorkflowStepSimple | IWorkflowStepCompound;
 
-const imageSources = {
+export const imageSources = {
     image: '',
     step: ''
 }
@@ -23,7 +23,7 @@ const imageSources = {
 export type ImageSource = keyof typeof imageSources;
 export const ImageSources = Object.keys(imageSources);
 
-const stepTypes = {
+export const stepTypes = {
     sequential: '',
     parallel: '',
     service: '',
@@ -33,7 +33,7 @@ const stepTypes = {
 export type StepType = keyof typeof stepTypes;
 export const StepTypes = Object.keys(stepTypes);
 
-const healthTypes = {
+export const healthTypes = {
     http: '',
     https: '',
     tcp: '',

@@ -57,7 +57,7 @@ const jssStyles = (theme: any) => {
     };
 };
 
-interface EnvironmentOptionsProps {
+export interface EnvironmentOptionsProps {
     step: WorkflowStepSimple;
     ide: boolean;
     classes?: any;

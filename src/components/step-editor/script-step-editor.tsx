@@ -61,7 +61,7 @@ const styles = (theme: any) => {
     }, section);
 };
 
-interface ScriptStepEditorProps {
+export interface ScriptStepEditorProps {
     step: WorkflowStepSimple,
     scriptField: string,
     workflow: Workflow,

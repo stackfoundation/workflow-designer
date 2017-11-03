@@ -30,7 +30,7 @@ const styles = (theme: any) => ({
     }
 });
 
-interface VariableEditorProps {
+export interface VariableEditorProps {
     source: KeyValueEntry;
     sourceType: KeyValueEntryType;
     onChange: () => void;

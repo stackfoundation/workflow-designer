@@ -6,7 +6,7 @@ let injectSheet = require('react-jss').default;
 import { WorkflowStepSimple } from '../../models/workflow';
 import { translate } from '../../services/translation-service';
 
-interface SourceOptionsProps {
+export interface SourceOptionsProps {
     obj: {ignoreFailure?: boolean, ignoreMissing?: boolean, ignoreValidation?: boolean},
     classes?: any
 }

@@ -15,7 +15,7 @@ import { EditorState } from '../models/state';
 import { StepEditor } from './step-editor/step-editor';
 import { StepList } from './step-list';
 import { IWorkflow } from "../models/workflow";
-import '../util/translations.ts';
+import '../util/translations';
 import { translate } from '../services/translation-service';
 import { themeColors, listStyles, sectionStyles, mediaQueries, shadows } from '../style';
 import { WorkflowStep, Workflow } from '../models/workflow';
@@ -132,7 +132,7 @@ const styles = (theme: any) => {
     }, list, section);
 };
 
-interface WorkflowEditorState {
+export interface WorkflowEditorState {
     section: 'step' | 'workflow',
     mobileMenuOpen: boolean
 }

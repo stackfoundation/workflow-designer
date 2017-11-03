@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { bootstrap } from './src/workflow-designer.module';
+import { bootstrap } from './src';
 import { Workflow, WorkflowStepSimple } from './src/models/workflow';
 import Loadable from 'react-loadable';
 

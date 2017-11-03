@@ -1,5 +1,5 @@
 import 'dragula/dist/dragula.css'
-import './style.less';
+import '../../style.less';
 
 export const themeColors = {
     darkerGreen: '#33A626',

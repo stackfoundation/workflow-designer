@@ -18,7 +18,7 @@ import { variableEditorFactory, variableSourceFactory } from '../../components/s
 import { portEntrySourceFactory, portEditorFactory } from '../../components/step-editor/port-editor';
 const InfoCircle = require('react-icons/lib/fa/info-circle');
 
-interface AdvancedOptionsProps {
+export interface AdvancedOptionsProps {
     step: WorkflowStepSimple,
     ide: boolean,
     sfLinkFactory: SfLinkFactory,

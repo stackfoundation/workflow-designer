@@ -1,7 +1,7 @@
 {
     "name": "@stackfoundation/workflow-designer",
     "description": "StackFoundation Worfkflow Designer Package",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "license": "MIT",
     "repository": "https://github.com/stackfoundation/workflow-designer",
     "author": "StackFoundation Limited",
@@ -50,9 +50,10 @@
         "webpack-dev-server": "^2.7.1"
     },
     "directories": {
-        "lib": "./src"
+        "lib": "./lib"
     },
-    "main": "./src/workflow-designer.module.tsx",
+    "main": "./lib/index.js",
+    "types": "./lib/index.d.ts",
     "scripts": {
         "watch": "node tools/watch.js",
         "build": "node tools/build.js"

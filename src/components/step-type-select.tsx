@@ -45,7 +45,7 @@ const styles = (theme: any) => ({
 
 const typeOptions = StepTypes.map(type => ({ value: type }));
 
-interface StepTypeSelectProps {
+export interface StepTypeSelectProps {
     type: string;
     onChange: (value: string) => void;
     classes?: any

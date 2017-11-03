@@ -7,7 +7,7 @@ import { WorkflowStepSimple } from '../../models/workflow';
 import { translate } from '../../services/translation-service';
 import { CenteredContent } from '../../util/centered-content';
 
-interface SourceOptionsProps {
+export interface SourceOptionsProps {
     step: WorkflowStepSimple,
     classes?: any
 }

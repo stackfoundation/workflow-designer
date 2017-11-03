@@ -50,7 +50,7 @@ export function portEditorFactory(source: PortEntry, state: EditorState) {
         onChange={() => state.commitIfNecessary()} />;
 }
 
-interface PortEditorProps {
+export interface PortEditorProps {
     source: PortEntry;
     onChange: () => void;
     classes?: any;

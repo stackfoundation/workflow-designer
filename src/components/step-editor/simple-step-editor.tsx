@@ -16,7 +16,7 @@ import { CenteredContent } from '../../util/centered-content';
 
 let injectSheet = require('react-jss').default;
 
-interface SimpleStepEditorProps {
+export interface SimpleStepEditorProps {
     step: WorkflowStepSimple,
     workflow: Workflow,
     ide: boolean,

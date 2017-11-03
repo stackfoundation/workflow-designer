@@ -61,7 +61,7 @@ const jssStyles = (theme: any) => ({
     }
 });
 
-interface VariablesEditorProps {
+export interface VariablesEditorProps {
     variables: any[];
     ide: boolean;
     onlyPairs?: boolean;

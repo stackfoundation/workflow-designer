@@ -21,7 +21,7 @@ const styles = (theme: any) => ({
     }
 });
 
-interface ImageFieldProps {
+export interface ImageFieldProps {
     ide: boolean,
     catalog: CatalogImage[],
     workflow: Workflow,

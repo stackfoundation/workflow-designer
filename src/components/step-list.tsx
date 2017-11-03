@@ -100,7 +100,7 @@ const styles = (theme: any) => {
     return Object.assign(list, styles);
 };
 
-interface StepListProps {
+export interface StepListProps {
     state: EditorState;
     onStepSelect?: (step: WorkflowStep) => void
     classes?:any;

@@ -23,7 +23,7 @@ const styles = (theme: any) => ({
     }
 });
 
-interface VolumeEditorProps {
+export interface VolumeEditorProps {
     volume: Volume;
     onChange: () => void;
     classes?: any;

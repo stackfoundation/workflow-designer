@@ -92,5 +92,3 @@ export function bootstrap(
 
     return new WorkFlowEditorIO(state, element);
 }
-
-export * from './models/workflow';

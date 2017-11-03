@@ -31,7 +31,7 @@ export interface WorkflowStepTypeChangeEvent {
     type: string;
 };
 
-interface StepEditorProps {
+export interface StepEditorProps {
     state: EditorState,
     ide: boolean,
     step: WorkflowStep,

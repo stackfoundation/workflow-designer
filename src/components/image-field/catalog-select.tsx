@@ -88,7 +88,7 @@ class ImageOption implements select.Option {
     }
 }
 
-interface CatalogSelectProps {
+export interface CatalogSelectProps {
     className?: string,
     onChange: (value: CatalogImage) => void, 
     value: string, 
