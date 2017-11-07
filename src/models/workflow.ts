@@ -270,7 +270,11 @@ export class StepTransientState extends TransientState {
     @observable environmentConfigured: boolean;
     @observable volumesConfigured: boolean;
     @observable portsConfigured: boolean;
+    @observable sourceType?: 'dockerignore' | 'includeExclude';
 
+
+    @observable explicitSourceIncludes: boolean;
+    @observable explicitSourceExcludes: boolean;
 
     @observable explicitIncludeVariables: boolean;
     @observable explicitExcludeVariables: boolean;
@@ -302,10 +306,10 @@ export class Health implements IHealth {
             tryApplyPrimitive(health, 'script', source, 'string');
         }
         else if (health.type === 'tcp') {
-            tryApplyPrimitive(health, 'port', source, 'string');
+            tryApplyPrimitive(health, 'port', source, 'string', false, (value) => typeof value === 'number' ? value.toString(): value);
         }
         else {
-            tryApplyPrimitive(health, 'port', source, 'string');
+            tryApplyPrimitive(health, 'port', source, 'string', false, (value) => typeof value === 'number' ? value.toString(): value);
             tryApplyPrimitive(health, 'path', source, 'string');
             tryApply(health, 'headers', 
                 () => health.headers = source.headers !== undefined ? cleanKeyValueEntryArray(source.headers) : [], 
@@ -343,7 +347,7 @@ export class Health implements IHealth {
         if (!this.filled()) {
             return undefined;
         }
-        let out = fillObj(toJS(this), keysOfIHealth);
+        let out = fillObj(toJS(this));
         
         Health.cleanupJSFields(out);
         
@@ -394,7 +398,7 @@ export class Readiness extends Health implements IReadiness {
         if (!this.filled()) {
             return undefined;
         }
-        let out = fillObj(toJS(this), keysOfIReadiness);
+        let out = fillObj(toJS(this));
 
         Health.cleanupJSFields(out);
         
@@ -428,12 +432,14 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
     @observable ports?: PortEntry[] = [];
     @observable volumes?: Volume[] = [];
     @observable dockerignore?: string = '';
+    @observable sourceIncludes?: string[] = [];
+    @observable sourceExcludes?: string[] = [];
 
     @observable includeVariables?: string[] | string = [];
     @observable excludeVariables?: string[] | string = [];
 
     static apply(source: IWorkflowStepSimple): WorkflowStepSimple {
-        let step: WorkflowStepSimple = Object.assign(new WorkflowStepSimple({}));
+        let step: WorkflowStepSimple = Object.assign(new WorkflowStepSimple(source as any));
 
         tryApply(step, 'health', 
             () => {
@@ -526,7 +532,7 @@ export class WorkflowStepSimple extends WorkflowStepBase implements IWorkflowSte
     }
 
     toJS(): IWorkflowStepSimple {
-        let out: IWorkflowStepSimple = fillObj(toJS(this), keysOfIWorkflowStepSimple);
+        let out: IWorkflowStepSimple = fillObj(toJS(this));
 
         if (out.type === 'service') {
             let health = this.health.toJS();
@@ -638,11 +644,14 @@ export class WorkflowStepCompound extends WorkflowStepBase implements IWorkflowS
     }
 }
 
-function fillObj (source: any, keys: string[]): any {
-    let out: any = {};
+function fillObj (source: any): any {
+    let out: any = {},
+        keys = Object.keys(source);
 
     for (var i = 0; i < keys.length; i++) {
-        out[keys[i]] = source[keys[i]];
+        if(typeof source[keys[i]] !== 'function' && keys[i] !== 'transient') {
+            out[keys[i]] = source[keys[i]];
+        }
     }
 
     return out;
@@ -757,12 +766,16 @@ function tryApply (obj: {transient: TransientState}, key: string, fn: () => void
     return success;
 }
 
-function tryApplyPrimitive (obj: {transient: TransientState}, key: string, source: any, type: string, require: boolean = false) {
+function tryApplyPrimitive (obj: {transient: TransientState}, key: string, source: any, type: string, require: boolean = false, cast?: (input: any) => any) {
     return tryApply(obj, key,
         () => {
             if (require || source[key] !== undefined) {
-                if (typeof source[key] === type) {
-                    (obj as any)[key] = source[key];
+                let value = source[key];
+                if (cast) {
+                    value = cast(value);
+                }
+                if (typeof value === type) {
+                    (obj as any)[key] = value;
                 }
                 else throw "type error on field " + key;
             }

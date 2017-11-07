@@ -73,18 +73,6 @@ export class StepWorkflowVariables extends React.Component<StepWorkflowVariables
         }
     }
 
-    @action
-    private remove(port: string, arrayName: 'includeVariables' | 'excludeVariables') {
-        this[arrayName].splice(this.includeVariables.indexOf(port), 1);
-        
-        if (arrayName === 'includeVariables') {
-            this.props.step.transient.explicitIncludeVariables = true;
-        }
-        else {
-            this.props.step.transient.explicitExcludeVariables = true;
-        }
-    }
-
     private promptTextCreator = (label: string): string => {
         return translate('LABEL_VARIABLE_PROMPT', label);
     }
