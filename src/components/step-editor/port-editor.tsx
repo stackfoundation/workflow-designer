@@ -93,8 +93,8 @@ export class PortEditor extends React.Component<PortEditorProps> {
 
     @action
     private setExternalPort(value: number) {
-        if (this.props.source.containerPort !== value) {
-            this.props.source.containerPort = value;
+        if (this.props.source.externalPort !== value) {
+            this.props.source.externalPort = value;
             this.notifyChange();
         }
     }

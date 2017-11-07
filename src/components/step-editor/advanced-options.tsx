@@ -250,7 +250,7 @@ export class AdvancedOptions extends React.Component<AdvancedOptionsProps, {}> {
             {this.sourceOptions &&
                 this.section(
                     translate('TITLE_SOURCE'), 
-                    <SourceOptions step={step} />,
+                    <SourceOptions step={step} ide={this.props.ide} />,
                     <div>
                         {translate('HELP_SOURCE_TEXT')}
                         <br /><br />
